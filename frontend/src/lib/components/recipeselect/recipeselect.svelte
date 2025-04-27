@@ -1,49 +1,43 @@
-<script lang="ts">
-  import * as Select from "$lib/components/ui/select/index.js";                
-  import Check from "phosphor-svelte/lib/Check";                                                           
-  import CaretDown from "phosphor-svelte/lib/CaretDown";                       
-  
-  // Your fruit options
-  const fruits = [
-    { label: "Apple", value: "apple" },
-    { label: "Banana", value: "banana" },
-    { label: "Cherry", value: "cherry" },
-    { label: "Date", value: "date" },
-    { label: "Elderberry", value: "elderberry" },
-  ];
-  
+<script>
+  import * as Select from "$lib/components/ui/select/index.js";
+  import { getRecipeListsByUserId } from "$lib/services/recipelists";
+  import { Check } from "lucide-svelte";
+  import { onMount } from "svelte";
+  import { user } from "$lib/stores/authStore.js";
+
+  let userId = $user.id; // fetched from authStore
+
+  let recipeLists = $state([]);
   // Bound value for the Select
-  let value = "";
-  
-  // Reactive label for display
-  $: selectedLabel =
-    fruits.find((fruit) => fruit.value === value)?.label || "Select a fruit";
+  let value = $state("");
+
+  onMount(async () => {
+    // Fetch the recipe lists when the component mounts
+    recipeLists = await getRecipeListsByUserId(userId);
+  });
+
 </script>
 
 <Select.Root
   bind:value={value}
-  name="favoriteFruit"
+  on:change={e => {
+    console.log("Selected recipe list:", e.detail.value);
+  }}
+  name="recipeList"
   type="single"
 >
-  <Select.Trigger class="h-input rounded-9px border-border-input bg-background inline-flex w-[296px] items-center px-[11px] text-sm">
-    {selectedLabel}
+  <Select.Trigger>
+    {value || "Select a recipe list"}
   </Select.Trigger>
-  
     <Select.Content>
-      <Select.ScrollUpButton class="flex w-full justify-center">
+      <Select.ScrollUpButton>
       </Select.ScrollUpButton>
         <Select.Group>
-
-          {#each fruits as fruit (fruit.value)}
+          {#each recipeLists as list, index (list.id || index)}
             <Select.Item
-              value={fruit.value}
-              disabled={fruit.disabled}
-              class="flex items-center justify-between py-2 px-4 text-sm capitalize data-disabled:opacity-50"
+              value={list.name}
             >
-              {fruit.label}
-              {#if fruit.value === value}
-                <Check class="size-4 text-primary" />
-              {/if}
+              {list.name}
             </Select.Item>
           {/each}
         </Select.Group>

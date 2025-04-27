@@ -35,8 +35,6 @@
     const username = formData.get('username');
     const password = formData.get('password');
 
-    console.log(username, password);
-
     try {
       let response;
      
@@ -69,7 +67,7 @@
 <Card.Root class="mx-auto max-w-sm mt-60">
   <Card.Header>
     <Card.Title class="text-2xl">Login</Card.Title>
-    <Card.Description>Enter your email below to login to your account</Card.Description>
+    <Card.Description>Enter your email below to login to your account.</Card.Description>
   </Card.Header>
   <Card.Content>
     <form onsubmit={handleSubmit}>

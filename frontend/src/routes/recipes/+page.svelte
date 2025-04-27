@@ -1,8 +1,9 @@
 <script>
   import Recipetable from "$lib/components/recipetable/recipetable.svelte";
   import Recipeselect from "$lib/components/recipeselect/recipeselect.svelte";
+  import AddListDialog from "$lib/components/add-list-dialog/add-list-dialog.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { Plus } from "lucide-svelte";
+  import { Plus, ScrollText } from "lucide-svelte";
   import { onMount } from "svelte";
 
   // will need some kind of state management to store the selected recipelist
@@ -17,16 +18,17 @@
 
 <div class="grid grid-cols-8 p-10">
   <div class="col-span-2">
-    <h1 class="text-2xl font-bold">Your Recipes</h1>
+    <h1 class="text-2xl font-bold flex items-center"><ScrollText class="inline-block mr-2" /> Your Recipes</h1>
   </div>
-  <div class="col-span-6">
+  <div class="col-span-4 flex items-center gap-2">
     <Recipeselect />
-    <Button
+    <!-- <Button
       class="align-middle mb-1 ml-2"
       size="sm"
       variant="secondary"
       href="/recipes"
-    ><Plus />Add List</Button>
+    ><Plus />Add List</Button> -->
+    <AddListDialog />
   </div>
   <div class="">
     
