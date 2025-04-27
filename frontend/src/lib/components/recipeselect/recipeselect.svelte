@@ -2,32 +2,20 @@
   import * as Select from "$lib/components/ui/select/index.js";
   import { getRecipeListsByUserId } from "$lib/services/recipelists";
   import { Check } from "lucide-svelte";
-  import { onMount } from "svelte";
-  import { user } from "$lib/stores/authStore.js";
+  import { createEventDispatcher, onMount } from "svelte";
 
-  let userId = $user.id; // fetched from authStore
-
-  let recipeLists = $state([]);
-  // Bound value for the Select
-  let value = $state("");
-
-  onMount(async () => {
-    // Fetch the recipe lists when the component mounts
-    recipeLists = await getRecipeListsByUserId(userId);
-  });
-
+  let { user, recipeLists = $bindable(), selectedList = $bindable() } = $props();
+  let userId = user.id; 
+  
 </script>
 
 <Select.Root
-  bind:value={value}
-  on:change={e => {
-    console.log("Selected recipe list:", e.detail.value);
-  }}
+  bind:value={selectedList}
   name="recipeList"
   type="single"
 >
-  <Select.Trigger>
-    {value || "Select a recipe list"}
+  <Select.Trigger class="hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
+    {selectedList.name}
   </Select.Trigger>
     <Select.Content>
       <Select.ScrollUpButton>
@@ -35,12 +23,13 @@
         <Select.Group>
           {#each recipeLists as list, index (list.id || index)}
             <Select.Item
-              value={list.name}
+              class="hover:bg-slate-200 dark:hover:bg-gray-800 transition-all"
+              value={list}
+              selected={list._id === selectedList._id}
             >
               {list.name}
             </Select.Item>
           {/each}
         </Select.Group>
-
     </Select.Content>
 </Select.Root>

@@ -27,7 +27,7 @@ const validateUser = (token) => {
 
 export const handle = async ({ event, resolve }) => {
 
-  const protectedPaths = ['/dashboard', '/settings'];
+  const protectedPaths = ['/dashboard', '/settings', '/recipes'];
   const isProtectedPath = protectedPaths.some(path => event.url.pathname.startsWith(path));
 
     // Check if user is trying to access protected route
