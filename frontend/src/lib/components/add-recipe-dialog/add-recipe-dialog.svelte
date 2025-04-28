@@ -107,7 +107,7 @@
       {#snippet child({props})}
       <Button
         {...props}
-        variant="secondary"
+
       >Add Recipe
       </Button>
       {/snippet}

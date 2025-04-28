@@ -28,16 +28,17 @@
     } else {
       selectedList = null; // No lists available
     }
+    console.log("Fetched recipe lists:", $state.snapshot(recipeLists));
   });
 
   function logSelectedList() {
     console.log("Selected recipe list:", $state.snapshot(selectedList));
   }
 
-  function addRecipe() {
-    console.log("Add recipe clicked");
-    // Logic to add a recipe
-  }
+  // Watch for changes to recipeLists, and update state accordingly
+  
+
+  
 
 </script>
 
@@ -45,24 +46,21 @@
   <title>Recipes</title>
 </svelte:head>
 
-<Button
-  variant="outline"
-  size="icon"
-  class=""
-  onclick={logSelectedList}
->log selectedList</Button>
-
 <div class="grid grid-cols-8 p-10">
   <div class="col-span-2">
     <h1 class="text-2xl font-bold flex items-center"><ScrollText class="inline-block mr-2" /> Your Recipes</h1>
   </div>
   <div class="col-span-4 flex items-center gap-2">
     <RecipeListSelect {user} bind:recipeLists bind:selectedList />
-    <AddListDialog />
+    <AddListDialog bind:recipeLists />
   </div>
   <div class="col-span-8 mt-10">
     {#if selectedList}
-    <AddRecipeDialog {selectedList} />
+    
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">{selectedList.name}</h1>
+      <AddRecipeDialog {selectedList} />
+    </div>
     <RecipeTable {selectedList} />
     {:else}
     <div class="flex text-center flex-col items-center justify-center h-full">

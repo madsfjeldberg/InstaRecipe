@@ -30,7 +30,7 @@ router.post('/recipelists', async (req, res) => {
   }
   try {
     const recipeList = await addRecipeList(name, userId);
-    res.status(201).json(recipeList);
+    res.status(201).json({ status: 201, data: recipeList });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

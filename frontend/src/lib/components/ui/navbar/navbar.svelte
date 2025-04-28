@@ -80,15 +80,13 @@
       <DropdownMenu.Root>
         <DropdownMenu.Trigger let:props>
           {#snippet child({props})}
-          <Button
-            variant="secondary"
-            size="icon"
-            class="rounded-full"
+          <span
+            class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
             <CircleUser class="h-5 w-5" />
             <span class="sr-only">Toggle user menu</span>
-          </Button>
+          </span>
           {/snippet}
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end" class="w-56">

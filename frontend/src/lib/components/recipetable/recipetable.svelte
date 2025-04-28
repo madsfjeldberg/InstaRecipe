@@ -18,7 +18,7 @@
     try {
       console.log('Fetching recipes for listId:', listId);
       recipes = await getRecipeListsByListId(listId);
-      console.log('Recipes:', recipes);
+      console.log('Recipes:', $state.snapshot(recipes));
     } catch (error) {
       console.error('Failed to fetch recipes:', error);
     }
@@ -37,6 +37,13 @@
    </Table.Row>
   </Table.Header>
   <Table.Body>
+    {#if recipes.length === 0}
+      <Table.Row>
+        <Table.Cell colspan="4" class="text-center">
+          No recipes found in this list.
+        </Table.Cell>
+      </Table.Row>
+    {:else}
   {#each recipes as recipe (recipe._id)}
     <Table.Row key={recipe._id}>
     <Table.Cell class="font-medium overflow">{recipe.name}</Table.Cell>
@@ -45,5 +52,6 @@
     <Table.Cell class="text-right">{recipe.calories}kcal</Table.Cell>
     </Table.Row>
   {/each}
+  {/if}
   </Table.Body>
  </Table.Root>

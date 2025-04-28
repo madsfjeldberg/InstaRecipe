@@ -8,10 +8,11 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { Plus } from "lucide-svelte";
   import { z } from "zod";
-
   import { isAuthenticated, user } from "$lib/stores/authStore.js";
-
   import { addRecipeList } from "$lib/services/recipelistService.js";
+  import Recipetable from "../recipetable/recipetable.svelte";
+
+  let { recipeLists = $bindable() } = $props();
 
   let errors = $state({
    name: "",
@@ -37,14 +38,19 @@
       AddListRequest.parse({ name });
       response = await addRecipeList(name, userId); // Call the addRecipeList function
 
+      console.log("Response from addRecipeList:", response);
+
       if (response.status !== 201) {
         errors = { ...errors, form: response.message };
       } else {
         // Handle success, e.g., show a success message or close the dialog
         errors = { ...errors, form: "" };
         // Optionally, you can refresh the recipe lists or perform other actions
+        recipeLists = [...recipeLists, response.data]; // Update the recipeLists state
         // CLOSE DIALOG HERE
         isDialogOpen = false;
+
+        console.log(recipeLists);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -64,7 +70,7 @@
   
 
  <Dialog.Root bind:open={isDialogOpen}>
-  <Dialog.Trigger class={buttonVariants({ variant: "secondary", size: "sm" })}>
+  <Dialog.Trigger class={buttonVariants({ size: "sm" })}>
    <Plus />Add list</Dialog.Trigger
   >
   <Dialog.Content class="sm:max-w-[425px]">
@@ -89,6 +95,9 @@
    </div>
    <Dialog.Footer>
     <Button type="submit">Save</Button>
+    <Button type="button" variant="secondary" onclick={() => (console.log(isDialogOpen))}>
+     Log
+   </Button>
    </Dialog.Footer>
   </form>
   </Dialog.Content>
