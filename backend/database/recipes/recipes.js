@@ -69,4 +69,4 @@ const getCategories = async () => {
   }
 }
 
-export { getRecipes, getRecipe, addRecipe, getCategories };
+export { getRecipes, getRecipesByListId, getRecipe, addRecipe, getCategories };

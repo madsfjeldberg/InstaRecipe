@@ -69,6 +69,7 @@ const getCategories = async () => {
 }
 
 export {
+  getRecipeListsByListId,
   addRecipe,
   getCategories,
 };
