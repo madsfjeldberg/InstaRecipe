@@ -1,29 +1,9 @@
 <script>
   import * as Table from '$lib/components/ui/table';
   import { onMount } from 'svelte';
-  import { getRecipeListsByListId } from '$lib/services/recipeService.js';
   import Button from '../ui/button/button.svelte';
 
-  const { selectedList } = $props();
-  let recipes = $state([]);
-
-    // Watch for changes to selectedList and fetch recipes when it's set
-  $effect(() => {
-    if (selectedList && selectedList._id) {
-      fetchRecipes(selectedList._id);
-    }
-  });
-
-  async function fetchRecipes(listId) {
-    try {
-      console.log('Fetching recipes for listId:', listId);
-      recipes = await getRecipeListsByListId(listId);
-      console.log('Recipes:', $state.snapshot(recipes));
-    } catch (error) {
-      console.error('Failed to fetch recipes:', error);
-    }
-  }
-
+  const { selectedList, recipes } = $props();
 
 </script>
 

@@ -1,6 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL + '/recipes' || '/recipes';
 
-const getRecipeListsByListId = async (listId) => {
+const getRecipesByListId = async (listId) => {
   const response = await fetch(`${BASE_URL}/${listId}`, {
     method: 'GET',
     headers: {
@@ -69,7 +69,7 @@ const getCategories = async () => {
 }
 
 export {
-  getRecipeListsByListId,
+  getRecipesByListId,
   addRecipe,
   getCategories,
 };

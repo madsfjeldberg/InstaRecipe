@@ -60,13 +60,11 @@
         <nav class="grid gap-6 text-lg font-medium">
           <a href="##" class="flex items-center gap-2 text-lg font-semibold">
             <CookingPot class="h-6 w-6" />
-            <span class="sr-only">Acme Inc</span>
+            <span class="sr-only">InstaRecipe</span>
           </a>
-          <a href="##" class="text-muted-foreground hover:text-foreground"> Dashboard </a>
-          <a href="##" class="text-muted-foreground hover:text-foreground"> Orders </a>
-          <a href="##" class="text-muted-foreground hover:text-foreground"> Products </a>
-          <a href="##" class="text-muted-foreground hover:text-foreground"> Customers </a>
-          <a href="##" class="hover:text-foreground"> Settings </a>
+          <Navlink href="/dashboard" class="text-muted-foreground hover:text-foreground"> Dashboard </Navlink>
+          <Navlink href="/recipes" class="text-muted-foreground hover:text-foreground"> Recipes </Navlink>
+          <Navlink href="/settings" class="hover:text-foreground"> Settings </Navlink>
         </nav>
       </Sheet.Content>
     </Sheet.Root>
@@ -94,7 +92,7 @@
           <DropdownMenu.Separator class="my-1" />
           <DropdownMenu.Item onclick={() => goto('/settings')} class="cursor-pointer"><Cog />Settings</DropdownMenu.Item>
           <DropdownMenu.Separator class="my-1" />
-          <DropdownMenu.Item onclick={handleLogout} class="cursor-pointer"><LogOut />Logout</DropdownMenu.Item>
+          <DropdownMenu.Item onclick={handleLogout} class="cursor-pointer"><LogOut />Log out</DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       {/if}

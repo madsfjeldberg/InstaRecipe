@@ -58,7 +58,7 @@ router.post("/recipes", async (req, res) => {
     });
     const newRecipe = await addRecipe(name, description, ingredients, instructions, category, calories, recipeListId);
     console.log("New recipe added:", newRecipe);
-    res.status(201).json(newRecipe);
+    res.status(201).json({ status: 201, data: newRecipe });
   } catch (error) {
     console.error(error.message)
     res.status(500).json({ message: error.message });

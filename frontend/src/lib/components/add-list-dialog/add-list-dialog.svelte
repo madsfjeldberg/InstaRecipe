@@ -95,9 +95,6 @@
    </div>
    <Dialog.Footer>
     <Button type="submit">Save</Button>
-    <Button type="button" variant="secondary" onclick={() => (console.log(isDialogOpen))}>
-     Log
-   </Button>
    </Dialog.Footer>
   </form>
   </Dialog.Content>
