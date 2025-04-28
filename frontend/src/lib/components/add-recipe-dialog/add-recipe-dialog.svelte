@@ -4,8 +4,19 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import Textarea from "../ui/textarea/textarea.svelte";
+  import CategorySelect from "../category-select/category-select.svelte";
+  import { onMount } from "svelte";
+  import { addRecipe, getCategories } from "$lib/services/recipeService";
+  import { z } from "zod";
+  import { toast } from "svelte-sonner";
 
   let { selectedList } = $props();
+
+  let categories = $state([]);
+
+  onMount(async () => {
+    categories = await getCategories();
+  });
 
   let errors = $state({
     form: "",
@@ -17,6 +28,78 @@
     calories: "",
   });
 
+  const addRecipeRequest = z.object({
+    name: z.string().min(1, "Name is required"),
+    description: z.string().min(1, "Description is required"),
+    ingredients: z.string().min(1, "Ingredients are required"),
+    instructions: z.string().min(1, "Instructions are required"),
+    category: z.string().min(1, "Category is required"),
+    calories: z.number().positive("Calories must be a positive number"),
+    
+  });
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const name = formData.get('recipeName');
+    const description = formData.get('description');
+    const ingredients = formData.get('ingredients');
+    const instructions = formData.get('instructions');
+    const category = formData.get('category');
+    const calories = parseFloat(formData.get('calories'));
+    const recipeListId = selectedList._id;
+
+    try {
+      let response;
+      let success = addRecipeRequest.parse({
+        name,
+        description,
+        ingredients,
+        instructions,
+        category,
+        calories,
+      });
+      response = await addRecipe(
+        name,
+        description,
+        ingredients,
+        instructions,
+        category,
+        calories,
+        recipeListId
+      );
+      console.log(response);
+      if (response.status === 201) {
+        await toast.success("Recipe added successfully!");
+        selectedList.recipes.push(response.data);
+        selectedList = { ...selectedList };
+        errors = {
+          form: "",
+          name: "",
+          description: "",
+          ingredients: "",
+          instructions: "",
+          category: "",
+          calories: "",
+        };
+      } else {
+        errors = { ...errors, form: response.message };
+      }
+    } catch (error) {
+      console.log("inside catch, error: ", error);
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          if (err.path[0] in errors) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+      } else {
+        errors.form = error.message || "An unexpected error occurred";
+      }
+    }
+  };
+
  </script>
   
   <Sheet.Root>
@@ -24,9 +107,8 @@
       {#snippet child({props})}
       <Button
         {...props}
-        variant="outline"
+        variant="secondary"
       >Add Recipe
-        <span class="sr-only">Toggle navigation menu</span>
       </Button>
       {/snippet}
     </Sheet.Trigger>
@@ -39,10 +121,17 @@
         <form onsubmit={handleSubmit}>
           <div class="grid gap-4 py-4">
             <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="name" class="text-right">Name</Label>
-              <Input id="name" placeholder="Recipe Name" name="name" class="col-span-3" />
-              {#if errors.name}
-                <p class="text-red-500 col-span-4">{errors.name}</p>
+              <Label for="recipeName" class="text-right">Name</Label>
+              <Input id="recipeName" placeholder="Recipe Name" name="recipeName" class="col-span-3" />
+              {#if errors.recipeName}
+                <p class="text-red-500 col-span-4">{errors.recipeName}</p>
+              {/if}
+            </div>
+            <div class="grid grid-cols-4 items-center gap-4">
+              <Label for="description" class="text-right">Description</Label>
+              <Textarea id="description" placeholder="Recipe description" name="description" class="col-span-3" />
+              {#if errors.description}
+                <p class="text-red-500 col-span-4">{errors.description}</p>
               {/if}
             </div>
             <div class="grid grid-cols-4 items-center gap-4">
@@ -63,7 +152,9 @@
             </div>
             <div class="grid grid-cols-4 items-center gap-4">
               <Label for="category" class="text-right">Category</Label>
-              <Input id="category" placeholder="Recipe category" name="category" class="col-span-3" />
+              <div class="col-span-3">
+              <CategorySelect {categories} name="category" />
+            </div>
               {#if errors.category}
                 <p class="text-red-500 col-span-4">{errors.category}</p>
               {/if}
@@ -77,6 +168,7 @@
           <Sheet.Footer>
             <Button type="submit">Save</Button>
           </Sheet.Footer>
+        </form>
       </Sheet.Header>
     </Sheet.Content>
   </Sheet.Root>

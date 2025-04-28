@@ -5,7 +5,7 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { z } from 'zod';
   import { goto } from '$app/navigation';
-  import { auth } from '$lib/services/auth.js';
+  import { authService } from '$lib/services/authService.js'; // Updated import path
   import { toast } from 'svelte-sonner';
 
   let props = $props();
@@ -39,7 +39,7 @@
       let response;
      
       LoginRequest.parse({ username, password });
-      response = await auth.login(username, password);
+      response = await authService.login(username, password);
      
       if (response.status === 200) {
         await toast.success('Login successful!');

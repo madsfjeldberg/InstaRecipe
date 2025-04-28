@@ -38,7 +38,7 @@ const getRecipe = async (id) => {
   }
 }
 
-const addRecipe = async (name, description, ingredients, instructions, category, calories) => {
+const addRecipe = async (name, description, ingredients, instructions, category, calories, recipeListId) => {
   testConnection();
   try {
     const recipe = await Recipe.create({
@@ -47,7 +47,8 @@ const addRecipe = async (name, description, ingredients, instructions, category,
       ingredients: ingredients,
       instructions: instructions,
       category: category,
-      calories: calories
+      calories: calories,
+      recipeLists: [recipeListId]
     });
     return recipe;
   } catch (e) {

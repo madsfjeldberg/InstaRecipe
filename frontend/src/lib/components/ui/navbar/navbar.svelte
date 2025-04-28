@@ -11,7 +11,7 @@
   import Separator from "../separator/separator.svelte";
   import Navlink from "./navlink.svelte";
   import { goto } from "$app/navigation";
-  import { auth } from "$lib/services/auth.js";
+  import { authService } from "$lib/services/authService.js";
   import { toast } from "svelte-sonner";
 
   const handleLogout = async () => {

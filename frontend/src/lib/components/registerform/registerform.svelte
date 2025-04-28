@@ -1,7 +1,14 @@
 <script>
+  import { Button } from "$lib/components/ui/button/index.js";
+  import * as Card from "$lib/components/ui/card/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { z } from 'zod';
+  import { goto } from '$app/navigation';
+  import { authService } from '$lib/services/authService.js';
+  import { toast } from 'svelte-sonner';
 
-  let props = $props();
-  let { toggleAuthMode } = props;
+  let { toggleAuthMode } = $props();
 
   let errors = $state({
     username: '',
@@ -9,15 +16,6 @@
     email: '',
     form: ''
   });
-
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { z } from 'zod';
-  import { goto } from '$app/navigation';
-  import { auth } from '$lib/services/auth.js';
-  import { toast } from 'svelte-sonner';
 
   const RegisterRequest = z.object({
     username: z.string()
@@ -32,6 +30,7 @@
   });
 
   const handleSubmit = async (event) => {
+    console.log('handleSubmit');
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -43,7 +42,7 @@
       let response;
       
       RegisterRequest.parse({ username, email, password});
-      response = await auth.register(username, email, password);
+      response = await authService.register(username, email, password);
       console.log(response)
       
       if (response.status === 200) {

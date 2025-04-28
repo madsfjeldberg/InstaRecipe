@@ -4,30 +4,30 @@
   import { Check } from "lucide-svelte";
   import { createEventDispatcher, onMount } from "svelte";
 
-  let { user, recipeLists = $bindable(), selectedList = $bindable() } = $props();
-  let userId = user.id; 
-  
+  let { categories = $bindable() } = $props();
+  let selectedCategory = $state("");
+
 </script>
 
 <Select.Root
-  bind:value={selectedList}
-  name="recipeList"
+  bind:value={selectedCategory}
+  name="category"
   type="single"
 >
   <Select.Trigger class="hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
-    {selectedList.name}
+    {selectedCategory || "Select a category"}
   </Select.Trigger>
     <Select.Content>
       <Select.ScrollUpButton>
       </Select.ScrollUpButton>
         <Select.Group>
-          {#each recipeLists as list, index (list.id || index)}
+          {#each categories as cat, index (cat.id || index)}
             <Select.Item
               class="hover:bg-slate-200 dark:hover:bg-gray-800 transition-all"
-              value={list}
-              selected={list._id === selectedList._id}
+              value={cat}
+              selected={cat._id === selectedCategory._id}
             >
-              {list.name}
+              {cat}
             </Select.Item>
           {/each}
         </Select.Group>

@@ -5,7 +5,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Plus, ScrollText } from "lucide-svelte";
   import { onMount } from "svelte";
-  import { getRecipeListsByUserId } from "$lib/services/recipelists.js";
+  import { getRecipeListsByUserId } from "$lib/services/recipelistService.js";
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
 
   // will need some kind of state management to store the selected recipelist
@@ -23,12 +23,11 @@
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
-    console.log("Fetched recipe lists:", recipeLists);
     selectedList = recipeLists[0];
   });
 
   function logSelectedList() {
-    console.log("Selected recipe list:", selectedList);
+    console.log("Selected recipe list:", $state.snapshot(selectedList));
   }
 
   function addRecipe() {

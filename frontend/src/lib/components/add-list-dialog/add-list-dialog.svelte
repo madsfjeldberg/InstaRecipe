@@ -11,7 +11,7 @@
 
   import { isAuthenticated, user } from "$lib/stores/authStore.js";
 
-  import { addRecipeList } from "$lib/services/recipelists";
+  import { addRecipeList } from "$lib/services/recipelistService.js";
 
   let errors = $state({
    name: "",

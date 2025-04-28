@@ -69,7 +69,7 @@ const changeUsername = async (newUsername) => {
   return data;
 }
 
-export const auth = {
+export const authService = {
   login,
   register,
   logout
