@@ -1,5 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_URL + '/recipes' || '/recipes';
 
+const getRecipeListsByListId = async (listId) => {
+  const response = await fetch(`${BASE_URL}/${listId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch recipe lists');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 const addRecipe = async (
   name,
   description,

@@ -1,7 +1,17 @@
 import { Router } from "express";
-import { addRecipe, getCategories } from "../database/recipes/recipes.js";
+import { getRecipes, addRecipe, getCategories, getRecipesByListId } from "../database/recipes/recipes.js";
 
 const router = Router();
+
+router.get("/recipes", async (req, res) => {
+  try {
+    const recipes = await getRecipes();
+    res.status(200).json(recipes);
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.get("/recipes/categories", async (req, res) => {
   try {
