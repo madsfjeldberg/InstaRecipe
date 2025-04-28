@@ -14,13 +14,16 @@ const getRecipes = async () => {
   }
 }
 
-const getRecipesByList = async (list) => {
+const getRecipesByListId = async (listId) => {
   testConnection();
   try {
-    const recipes = await Recipe.find({ _id: { $in: list } }).lean();
+    const recipes = await Recipe.find({ recipeLists: listId }).lean(); // checks if the listId exists in the recipeLists array for each recipe
+    if (!recipes) {
+      throw new Error(`No recipes found for list id ${listId}`);
+    }
     return recipes;
   } catch (e) {
-    throw new Error(`Failed to get recipes by list: ${e.message}`);
+    throw new Error(`Failed to get recipes by list id: ${e.message}`);
   }
 }
 

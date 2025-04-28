@@ -12,6 +12,22 @@ router.get("/recipes/categories", async (req, res) => {
   }
 });
 
+router.get("/recipes/:listId", async (req, res) => {
+  const { listId } = req.params;
+
+  if (!listId) {
+    return res.status(400).json({ message: "List ID is required" });
+  }
+
+  try {
+    const recipes = await getRecipesByListId(listId);
+    res.status(200).json(recipes);
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post("/recipes", async (req, res) => {
   const { name, description, ingredients, instructions, category, calories, recipeListId } = req.body;
 
