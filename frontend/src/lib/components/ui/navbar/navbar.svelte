@@ -15,7 +15,7 @@
   import { toast } from "svelte-sonner";
 
   const handleLogout = async () => {
-    await auth.logout();
+    await authService.logout();
     toast.success("Logged out successfully");
     goto("/");
   };

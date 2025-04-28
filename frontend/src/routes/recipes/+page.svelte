@@ -1,6 +1,6 @@
 <script>
   import RecipeTable from "$lib/components/recipetable/recipetable.svelte";
-  import RecipeSelect from "$lib/components/recipeselect/recipeselect.svelte";
+  import RecipeListSelect from "$lib/components/recipe-list-select/recipe-list-select.svelte";
   import AddListDialog from "$lib/components/add-list-dialog/add-list-dialog.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Plus, ScrollText } from "lucide-svelte";
@@ -23,7 +23,11 @@
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
-    selectedList = recipeLists[0];
+    if (recipeLists.length > 0) {
+      selectedList = recipeLists[0];
+    } else {
+      selectedList = null; // No lists available
+    }
   });
 
   function logSelectedList() {
@@ -41,19 +45,30 @@
   <title>Recipes</title>
 </svelte:head>
 
+<Button
+  variant="outline"
+  size="icon"
+  class=""
+  onclick={logSelectedList}
+>log selectedList</Button>
+
 <div class="grid grid-cols-8 p-10">
   <div class="col-span-2">
     <h1 class="text-2xl font-bold flex items-center"><ScrollText class="inline-block mr-2" /> Your Recipes</h1>
   </div>
   <div class="col-span-4 flex items-center gap-2">
-    <RecipeSelect {user} bind:recipeLists bind:selectedList />
+    <RecipeListSelect {user} bind:recipeLists bind:selectedList />
     <AddListDialog />
   </div>
   <div class="col-span-8 mt-10">
+    {#if selectedList}
     <AddRecipeDialog {selectedList} />
     <RecipeTable {selectedList} />
-    <Button class="mt-4" variant="primary" size="sm" onclick={logSelectedList}>
-      Log Selected List
-    </Button>
+    {:else}
+    <div class="flex text-center flex-col items-center justify-center h-full">
+    <h1 class="text-2xl font-semibold">No recipe list selected.</h1>
+    <p class="text-muted-foreground">Please create a recipe list to get started.</p>
+  </div>
+    {/if}
   </div>
 </div>

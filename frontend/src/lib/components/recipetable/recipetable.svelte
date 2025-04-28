@@ -26,15 +26,6 @@
 
 
 </script>
-<Button
-  variant="primary"
-  size="sm"
-  class="mb-4"
-  onclick={() => {
-    console.log($state.snapshot(selectedList));
-    // Logic to add a recipe
-  }}
->table state </Button>
 
 <Table.Root>
   <Table.Header>
@@ -48,23 +39,11 @@
   <Table.Body>
   {#each recipes as recipe (recipe._id)}
     <Table.Row key={recipe._id}>
-    <Table.Cell class="font-medium">{recipe.name}</Table.Cell>
+    <Table.Cell class="font-medium overflow">{recipe.name}</Table.Cell>
     <Table.Cell>{recipe.description}</Table.Cell>
     <Table.Cell>{recipe.category}</Table.Cell>
     <Table.Cell class="text-right">{recipe.calories}kcal</Table.Cell>
     </Table.Row>
   {/each}
-   <Table.Row>
-    <Table.Cell class="font-medium">Recipe 1</Table.Cell>
-    <Table.Cell>Delicious recipe</Table.Cell>
-    <Table.Cell>Main Course</Table.Cell>
-    <Table.Cell class="text-right">350kcal</Table.Cell>
-   </Table.Row>
-   <Table.Row>
-    <Table.Cell class="font-medium">Recipe 2</Table.Cell>
-    <Table.Cell>Yummy dessert</Table.Cell>
-    <Table.Cell>Dessert</Table.Cell>
-    <Table.Cell class="text-right">280kcal</Table.Cell>
-   </Table.Row>
   </Table.Body>
  </Table.Root>
