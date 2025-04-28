@@ -2,6 +2,7 @@ import express from "express";
 
 import authRouter from "./routers/authRouter.js";
 import recipelistsRouter from "./routers/recipelistsRouter.js";
+import recipesRouter from "./routers/recipesRouter.js";
 
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -23,6 +24,7 @@ app.use('/auth', authLimiter);
 
 app.use(authRouter);
 app.use(recipelistsRouter);
+app.use(recipesRouter);
 
 async function start() {
   try {

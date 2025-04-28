@@ -1,7 +1,11 @@
 <script>
   import * as Table from '$lib/components/ui/table';
 
-  
+  const { selectedList } = $props();
+
+  let recipes = selectedList.recipes || [];
+
+
 </script>
 
 <Table.Root>
@@ -14,6 +18,14 @@
    </Table.Row>
   </Table.Header>
   <Table.Body>
+  {#each recipes as recipe (index)}
+    <Table.Row key={index}>
+    <Table.Cell class="font-medium">{recipe.name}</Table.Cell>
+    <Table.Cell>{recipe.description}</Table.Cell>
+    <Table.Cell>{recipe.category}</Table.Cell>
+    <Table.Cell class="text-right">{recipe.calories}kcal</Table.Cell>
+    </Table.Row>
+  {/each}
    <Table.Row>
     <Table.Cell class="font-medium">Recipe 1</Table.Cell>
     <Table.Cell>Delicious recipe</Table.Cell>

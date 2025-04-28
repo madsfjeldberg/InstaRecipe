@@ -6,6 +6,7 @@
   import { Plus, ScrollText } from "lucide-svelte";
   import { onMount } from "svelte";
   import { getRecipeListsByUserId } from "$lib/services/recipelists.js";
+  import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
 
   // will need some kind of state management to store the selected recipelist
   // also some onMount function to fetch the data from the server
@@ -30,6 +31,11 @@
     console.log("Selected recipe list:", selectedList);
   }
 
+  function addRecipe() {
+    console.log("Add recipe clicked");
+    // Logic to add a recipe
+  }
+
 </script>
 
 <svelte:head>
@@ -45,7 +51,8 @@
     <AddListDialog />
   </div>
   <div class="col-span-8 mt-10">
-    <RecipeTable bind:selectedList />
+    <AddRecipeDialog {selectedList} />
+    <RecipeTable {selectedList} />
     <Button class="mt-4" variant="primary" size="sm" onclick={logSelectedList}>
       Log Selected List
     </Button>

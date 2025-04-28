@@ -1,6 +1,7 @@
-import { testConnection } from "../db";
+import { testConnection } from "../db.js";
 import dotenv from 'dotenv';
 import Recipe from "../models/Recipe.js";
+import { recipeCategories } from "../../util/constants.js";
 dotenv.config();
 
 const getRecipes = async () => {
@@ -54,4 +55,14 @@ const addRecipe = async (name, description, ingredients, instructions, category,
   }
 }
 
-export { getRecipes, getRecipe, addRecipe };
+const getCategories = async () => {
+  testConnection();
+  try {
+    const categories = recipeCategories;
+    return categories;
+  } catch (e) {
+    throw new Error(`Failed to get categories: ${e.message}`);
+  }
+}
+
+export { getRecipes, getRecipe, addRecipe, getCategories };
