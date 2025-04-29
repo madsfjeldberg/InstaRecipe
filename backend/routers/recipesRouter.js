@@ -46,16 +46,6 @@ router.post("/recipes", async (req, res) => {
   }
 
   try {
-    // Assuming you have a function to add a recipe
-    console.log("Adding recipe:", {
-      name,
-      description,
-      ingredients,
-      instructions,
-      category,
-      calories,
-      recipeListId,
-    });
     const newRecipe = await addRecipe(name, description, ingredients, instructions, category, calories, recipeListId);
     console.log("New recipe added:", newRecipe);
     res.status(201).json({ status: 201, data: newRecipe });
@@ -65,8 +55,9 @@ router.post("/recipes", async (req, res) => {
   }
 });
 
-router.post("/recipes/:id", async (req, res) => {
+router.delete("/recipes/:id", async (req, res) => {
   const { id } = req.params;
+  console.log("ID:", id);
 
   if (!id) {
     return res.status(400).json({ message: "Recipe ID is required" });

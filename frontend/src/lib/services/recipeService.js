@@ -68,8 +68,26 @@ const getCategories = async () => {
   return data;
 }
 
+const deleteRecipe = async (recipeId) => {
+  const response = await fetch(`${BASE_URL}/${recipeId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete recipe: ', response.message);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 export {
   getRecipesByListId,
   addRecipe,
   getCategories,
+  deleteRecipe
 };
