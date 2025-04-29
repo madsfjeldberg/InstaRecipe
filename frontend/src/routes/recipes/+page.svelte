@@ -13,7 +13,7 @@
   const { user } = data;
 
   let userId = user.id;
-  let selectedList = $state({});
+  let selectedList = $state(null);
   let recipeLists = $state([]);
   let recipes = $state([]);
 
@@ -28,12 +28,7 @@
     } else {
       selectedList = null; // No lists available
     }
-    console.log("Fetched recipe lists:", $state.snapshot(recipeLists));
   });
-
-  function logSelectedList() {
-    console.log("Selected recipe list:", $state.snapshot(selectedList));
-  }
 
   // when a new recipe list is selected, fetch the recipes for that list
   // and pass to recipe table
@@ -62,7 +57,7 @@
       <h1 class="text-2xl font-bold">{selectedList.name}</h1>
       <AddRecipeDialog bind:selectedList />
     </div>
-    <RecipeTable {selectedList} {recipes} />
+    <RecipeTable bind:selectedList {recipes} />
     {:else}
     <div class="flex text-center flex-col items-center justify-center h-full">
     <h1 class="text-2xl font-semibold">No recipe list selected.</h1>

@@ -49,8 +49,6 @@
         recipeLists = [...recipeLists, response.data]; // Update the recipeLists state
         // CLOSE DIALOG HERE
         isDialogOpen = false;
-
-        console.log(recipeLists);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
