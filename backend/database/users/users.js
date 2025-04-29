@@ -23,6 +23,20 @@ const getUser = async (username) => {
   }
 }
 
+const getUserById = async (id) => {
+  testConnection();
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error(`User with ID ${id} not found.`);
+    }
+    return user;
+  }
+  catch (e) {
+    throw new Error(`Failed to get user by ID: ${e.message}`);
+  }
+}
+
 const getUserByEmail = async (email) => {
   testConnection();
   try {
@@ -103,4 +117,4 @@ const confirmUser = async (userId) => {
 //   }
 // }
 
-export { getUsers, getUser, getUserByEmail, addUser, editUser, confirmUser };
+export { getUsers, getUser, getUserById, getUserByEmail, addUser, editUser, confirmUser };

@@ -74,6 +74,7 @@ router.post("/auth/login", async (req, res) => {
         .status(200)
         .cookie("jwt", token, cookieOptions)
         .json({
+          id: dbUser._id,
           message: "Login successful.",
           status: 200,
         });

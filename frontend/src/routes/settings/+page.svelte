@@ -5,10 +5,22 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
+  import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
+  import { avatar } from "$lib/stores/avatar.js";
 
   const { data } = $props();
   let { user } = data;
   let username = user.username;
+
+  let avatarURL = $state(`http://localhost:9000/users/${user.id}/avatar`);
+
+  console.log($avatar);
+
+  $effect(() => {
+    if (user?.id) {
+      avatarURL = `http://localhost:9000/users/${user.id}/avatar`;
+    }
+  })
 </script>
 
 <div class="flex min-h-screen w-full flex-col">
@@ -73,7 +85,11 @@
             </Card.Description>
           </Card.Header>
           <Card.Content>
-            <Button>Upload image</Button>
+
+            <UploadAvatarButton {user} />
+            <img class="rounded-full w-24 h-24 object-cover" src={$avatar || avatarURL} loading=lazy alt="User Avatar">
+
+            
           </Card.Content>
         </Card.Root>
         <Card.Root class="col-span-4 col-end-9">

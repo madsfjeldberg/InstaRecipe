@@ -16,8 +16,8 @@ const login = async (username, password) => {
     isAuthenticated.set(true);
   }
   
-  const data = await response.json();
-  return data;
+  //const data = await response.json();
+  return response;
 }
 
 const register = async (username, email, password) => {

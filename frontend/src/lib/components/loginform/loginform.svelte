@@ -5,8 +5,9 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { z } from 'zod';
   import { goto } from '$app/navigation';
-  import { authService } from '$lib/services/authService.js'; // Updated import path
+  import { authService } from '$lib/services/authService.js';
   import { toast } from 'svelte-sonner';
+  import { avatar } from "$lib/stores/avatar";
 
   let props = $props();
   let { toggleAuthMode } = props;
@@ -43,6 +44,17 @@
      
       if (response.status === 200) {
         await toast.success('Login successful!');
+        // handle avatar
+        const data = await response.json(); // Await the JSON response
+        console.log('data', data);
+        const avatarResponse = await fetch(`http://localhost:9000/users/${data.id}/avatar`, {
+          credentials: 'include'
+        });
+        const avatarBlob = await avatarResponse.blob();
+        const reader = new FileReader();
+        reader.onload = () => avatar.set(reader.result); // This is the base64 image
+        reader.readAsDataURL(avatarBlob);
+        //redirect to dashboard
         await goto('/dashboard');
       } else {
         errors = { ...errors, form: response.message };
