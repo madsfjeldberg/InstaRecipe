@@ -5,14 +5,15 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import ThemeToggle from "../../theme-toggle/theme-toggle.svelte";
+  import ThemeToggle from "../theme-toggle/theme-toggle.svelte";
   import { page } from "$app/stores";
   import { isAuthenticated } from "$lib/stores/authStore";
-  import Separator from "../separator/separator.svelte";
+  import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./navlink.svelte";
   import { goto } from "$app/navigation";
   import { authService } from "$lib/services/authService.js";
   import { toast } from "svelte-sonner";
+  import { avatar } from "$lib/stores/avatar";
 
   const handleLogout = async () => {
     await authService.logout();
@@ -82,7 +83,15 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            <CircleUser class="h-5 w-5" />
+            {#if $avatar}
+              <img
+                src={$avatar}
+                alt="User Avatar"
+                class="h-8 w-8 rounded-full object-cover"
+              />
+            {:else}
+              <CircleUser class="h-8 w-8" />
+            {/if}
             <span class="sr-only">Toggle user menu</span>
           </span>
           {/snippet}

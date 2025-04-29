@@ -7,20 +7,12 @@
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
   import { avatar } from "$lib/stores/avatar.js";
+  import { onMount } from "svelte";
 
   const { data } = $props();
   let { user } = data;
   let username = user.username;
 
-  let avatarURL = $state(`http://localhost:9000/users/${user.id}/avatar`);
-
-  console.log($avatar);
-
-  $effect(() => {
-    if (user?.id) {
-      avatarURL = `http://localhost:9000/users/${user.id}/avatar`;
-    }
-  })
 </script>
 
 <div class="flex min-h-screen w-full flex-col">
@@ -77,19 +69,25 @@
             <Button>Save</Button>
           </Card.Footer>
         </Card.Root>
-        <Card.Root class="col-span-4">
+        <Card.Root class="col-span-4 relative">
           <Card.Header>
             <Card.Title>Avatar</Card.Title>
             <Card.Description>
               Change your avatar.
             </Card.Description>
+            {#if $avatar}
+            <img 
+              class="absolute top-8 right-8 rounded-full w-32 h-32 object-cover" 
+              src={$avatar}
+              loading="lazy" 
+              alt="User Avatar"
+            > 
+            {/if}
           </Card.Header>
           <Card.Content>
-
-            <UploadAvatarButton {user} />
-            <img class="rounded-full w-24 h-24 object-cover" src={$avatar || avatarURL} loading=lazy alt="User Avatar">
-
-            
+            <div class="flex gap-4">
+              <UploadAvatarButton {user} />
+            </div>
           </Card.Content>
         </Card.Root>
         <Card.Root class="col-span-4 col-end-9">
