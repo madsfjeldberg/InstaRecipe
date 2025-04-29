@@ -25,8 +25,8 @@
  </script>
   
  <AlertDialog.Root bind:open={isDialogOpen}>
-  <AlertDialog.Trigger class="hover:bg-slate-400 transition-all rounded-md">
-   <X class="h-5 w-5" />
+  <AlertDialog.Trigger class="opacity-0 group-hover:opacity-100 duration-200 m-1 transition-all rounded-md">
+  <X class="h-5 w-5 hover:text-destructive transition-colors" />
   </AlertDialog.Trigger>
   <AlertDialog.Content>
    <AlertDialog.Header>
