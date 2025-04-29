@@ -12,6 +12,8 @@
   const { data } = $props();
   const { user } = data;
 
+  let isInitialLoad = $state(true); // Flag to track if it's the initial load
+
   let userId = user.id;
   let selectedList = $state(null);
   let recipeLists = $state([]);
@@ -20,22 +22,19 @@
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
-    if (recipeLists.length > 0) {
-      // Set the first recipe list as the selected one
-      selectedList = recipeLists[0];
-      // Fetch recipes for the first list
-      recipes = await getRecipesByListId(selectedList._id);
-    } else {
-      selectedList = null; // No lists available
-    }
+    // Set the selected list to the first one if available
+    if (recipeLists.length > 0) selectedList = recipeLists[0];
+    // Set the flag to false after the initial load
+    isInitialLoad = false;
   });
 
   // when a new recipe list is selected, fetch the recipes for that list
   // and pass to recipe table
   $effect(async () => {
-    if (selectedList) {
-      recipes = await getRecipesByListId(selectedList._id);
-    }})
+  if (isInitialLoad || !selectedList) return;
+  recipes = await getRecipesByListId(selectedList._id);
+});
+  
   
 </script>
 

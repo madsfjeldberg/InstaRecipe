@@ -75,7 +75,7 @@
       console.log(response);
       if (response.status === 201) {
         await toast.success("Recipe added successfully!");
-        selectedList.recipes.push(response.data);
+        selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
         selectedList = { ...selectedList };
         errors = {
           form: "",
@@ -86,7 +86,6 @@
           category: "",
           calories: "",
         };
-        selectedList = { ...selectedList }; // trigger reactivity, updates the recipetable
         isDialogOpen = false; // Close the dialog
       } else {
         errors = { ...errors, form: response.message };

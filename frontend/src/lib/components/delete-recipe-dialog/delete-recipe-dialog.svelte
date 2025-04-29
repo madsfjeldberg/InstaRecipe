@@ -10,18 +10,18 @@
   let isDialogOpen = $state(false);
 
   const handleDelete = async () => {
-
-    try {
-      console.log("Deleting recipe with ID:", recipeId);
-      await deleteRecipe(recipeId);
-      selectedList = {...selectedList}; // Trigger reactivity
-      isDialogOpen = false; // Close the dialog after deletion
-      toast.success('Recipe deleted successfully!');
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to delete the recipe. Please try again.');
-    }
+  try {
+    await deleteRecipe(recipeId);
+    selectedList.updatedAt = new Date().toISOString(); // Update the selectedList
+    selectedList = {...selectedList}; // Trigger reactivity
+    toast.success('Recipe deleted successfully!');
+  } catch (error) {
+    console.error(error);
+    toast.error('Failed to delete the recipe. Please try again.');
   }
+}
+  
+
  </script>
   
  <AlertDialog.Root bind:open={isDialogOpen}>

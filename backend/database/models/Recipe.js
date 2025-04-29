@@ -11,7 +11,7 @@ const recipeSchema = new mongoose.Schema({
   description: { 
     type: String, 
     required: true,
-    minLength: 10,
+    minLength: 1,
     maxLength: 5000,
   },
   ingredients: { 
@@ -41,7 +41,7 @@ const recipeSchema = new mongoose.Schema({
     ref: 'User',
   },
   // foreign key to list
-  // this is an array of recipe ids
+  // this is an array of recipeList ids
   // many to many
   recipeLists: [{ 
     type: mongoose.Schema.Types.ObjectId, 

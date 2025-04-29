@@ -3,8 +3,14 @@
   import { onMount } from 'svelte';
   import Button from '../ui/button/button.svelte';
   import DeleteRecipeDialog from '../delete-recipe-dialog/delete-recipe-dialog.svelte';
+  import { toast } from 'svelte-sonner';
+  import { deleteRecipe } from '$lib/services/recipeService.js';
 
-  let { selectedList, recipes } = $props();
+  let { selectedList = $bindable(), recipes } = $props();
+
+  
+
+  
 
 </script>
 

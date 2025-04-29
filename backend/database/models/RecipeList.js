@@ -18,11 +18,12 @@ const recipeListSchema = new mongoose.Schema({
   // foreign key to recipe
   // this is an array of recipe ids
   // many to many
-  recipes: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Recipe', 
-    required: true,
-  }],
+  // currently not used, might set up in the future
+  // recipes: [{ 
+  //   type: mongoose.Schema.Types.ObjectId, 
+  //   ref: 'Recipe', 
+  //   required: true,
+  // }],
 }, { timestamps: true, collection: 'recipe_lists' });
 
 export default mongoose.model('RecipeList', recipeListSchema);
