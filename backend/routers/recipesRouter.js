@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getRecipes, addRecipe, getCategories, getRecipesByListId } from "../database/recipes/recipes.js";
+import { getRecipes, addRecipe, getCategories, getRecipesByListId, deleteRecipe } from "../database/recipes/recipes.js";
 
 const router = Router();
 
@@ -64,5 +64,20 @@ router.post("/recipes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.post("/recipes/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: "Recipe ID is required" });
+  }
+  try {
+    await deleteRecipe(id);
+    res.status(200).json({ status: 200, message: "Recipe deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+ });
 
 export default router;

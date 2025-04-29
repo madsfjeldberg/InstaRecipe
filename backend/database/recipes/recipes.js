@@ -69,4 +69,16 @@ const getCategories = async () => {
   }
 }
 
-export { getRecipes, getRecipesByListId, getRecipe, addRecipe, getCategories };
+const deleteRecipe = async (recipeId) => {
+  testConnection();
+  try {
+    const recipe = await Recipe.findByIdAndDelete(recipeId);
+    if (!recipe) {
+      throw new Error(`Recipe with id ${recipeId} not found.`);
+    }
+  } catch (e) {
+    throw new Error(`Failed to delete recipe: ${e.message}`);
+  }
+}
+
+export { getRecipes, getRecipesByListId, getRecipe, addRecipe, getCategories, deleteRecipe };
