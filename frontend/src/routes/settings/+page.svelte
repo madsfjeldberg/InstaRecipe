@@ -1,87 +1,95 @@
 <script>
-  // import { Section, Register } from 'flowbite-svelte-blocks';
-  // import { Button, Checkbox, Input, Label } from 'flowbite-svelte';
-  import { z } from 'zod';
+  import { Button } from "$lib/components/ui/button/index.js";
+  import * as Card from "$lib/components/ui/card/index.js";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import * as Sheet from "$lib/components/ui/sheet/index.js";
 
-  const ChangeUsernameRequest = z.object({
-    username: z.string()
-      .min(3, 'Username must be at least 3 characters long')
-      .max(20, 'Username must be at most 20 characters long'),
-  });
-  
-  const ChangePasswordRequest = z.object({
-    password: z.string()
-      .min(5, 'Password must be at least 5 characters long')
-      .max(100, 'Password must be at most 100 characters long'),
-    confirmPassword: z.string()
-      .min(5, 'Confirm password must be at least 5 characters long')
-      .max(100, 'Confirm password must be at most 100 characters long'),
-  });
-
-  const handleChangeUsername = async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const username = formData.get('username');
-
-    try {
-      ChangeUsernameRequest.parse({ username });
-      // Call the API to change the username
-      console.log('Username changed to:', username);
-      // Add API call here
-      
-    } catch (error) {
-      console.error('Error changing username:', error);
-    }
-  };
-
-  const handlePlaceholder = () => {
-    toast.error('Feature not implemented yet. Coming soon!');
-  }
-
-  export let data;
-
-  const { user } = data;
+  const { data } = $props();
+  let { user } = data;
   let username = user.username;
-
-  function updateUsername() {
-    // Logic to handle username update
-    console.log('Username updated to:', username);
-  }
 </script>
 
-<h1 class="font-bold text-3xl text-center dark:text-gray-200">Settings</h1>
-
-<div class="flex flex-row"> 
-
-<!-- <Register>
-	<div class="flex justify-center space-y-4 p-6 sm:p-8 md:space-y-6">
-		<form class="flex flex-col space-y-6" onsubmit={handlePlaceholder}>
-		  <h3 class="p-0 text-xl font-medium text-gray-900 dark:text-white">Change username</h3>
-			<Label class="space-y-2">
-				<span>New username</span>
-				<Input type="text" name="username" placeholder="Enter new username" required bind:value={username} />
-			</Label>
-			<Button type="submit" class="w-full cursor-pointer">Change username</Button>
-		</form>
-	</div>
-</Register>
-
-<Register>
-	<div class="flex justify-center space-y-4 p-6 sm:p-8 md:space-y-6">
-		<form class="flex flex-col space-y-6"onsubmit={handlePlaceholder}>
-		  <h3 class="p-0 text-xl font-medium text-gray-900 dark:text-white">Change password</h3>
-			<Label class="space-y-2">
-				<span>New password</span>
-				<Input type="password" name="password" placeholder="Enter new password" required />
-			</Label>
-      <Label class="space-y-2">
-        <span>Confirm new password</span>
-        <Input type="password" name="confirmPassword" placeholder="Confirm new password" required />
-      </Label>
-			<Button type="submit" class="w-full cursor-pointer">Change password</Button>
-		</form>
-	</div>
-</Register> -->
-
+<div class="flex min-h-screen w-full flex-col">
+  
+  <main
+    class="bg-muted flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10"
+  >
+    <div class="mx-auto grid w-full max-w-6xl gap-2">
+      <h1 class="text-3xl font-semibold">Settings</h1>
+    </div>
+    <div
+      class="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]"
+    >
+      <nav class="text-muted-foreground grid gap-4 text-sm"
+        data-x-chunk-container="chunk-container after:right-0">
+        <a href="##" class="text-primary font-semibold"> General </a>
+        <a href="##">Security</a>
+        <a href="##">Integrations</a>
+        <a href="##">Support</a>
+        <a href="##">Organizations</a>
+        <a href="##">Advanced</a>
+      </nav>
+      <div class="grid grid-cols-8 gap-6">
+        <Card.Root class="col-span-5">
+          <Card.Header>
+            <Card.Title>Username</Card.Title>
+            <Card.Description>
+              Change your username here.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <form>
+              <Input value={username} />
+            </form>
+          </Card.Content>
+          <Card.Footer class="border-t px-6 py-4">
+            <Button>Save</Button>
+          </Card.Footer>
+        </Card.Root>
+        <Card.Root class="col-span-3">
+          <Card.Header>
+            <Card.Title>Change password</Card.Title>
+            <Card.Description>
+              Change your password here.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <form class="flex flex-col gap-4">
+              <Input placeholder="New Password" />
+              <Input placeholder="Confirm Password" />
+            </form>
+          </Card.Content>
+          <Card.Footer class="border-t px-6 py-4">
+            <Button>Save</Button>
+          </Card.Footer>
+        </Card.Root>
+        <Card.Root class="col-span-4">
+          <Card.Header>
+            <Card.Title>Avatar</Card.Title>
+            <Card.Description>
+              Change your avatar.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <Button>Upload image</Button>
+          </Card.Content>
+        </Card.Root>
+        <Card.Root class="col-span-4 col-end-9">
+          <Card.Header>
+            <Card.Title>Delete account</Card.Title>
+          </Card.Header>
+          <Card.Content>
+            <p class="text-sm text-muted-foreground">
+              This action is irreversible. Please proceed with caution.
+            </p>
+          </Card.Content>
+          <Card.Footer class="border-t px-6 py-4">
+            <Button variant="destructive">Delete Account</Button>
+          </Card.Footer>
+        </Card.Root>
+      </div>
+    </div>
+  </main>
 </div>

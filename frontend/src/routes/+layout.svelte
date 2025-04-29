@@ -28,7 +28,7 @@
 <ModeWatcher/>
 <Toaster />
 
-<div class="bg-muted/40">
+<div class="bg-muted">
   <Navbar />
   <div class="container mx-auto">
     

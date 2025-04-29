@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     minLength: 5,
     maxLength: 100,
   },
+  avatar: {
+    data: Buffer,
+    contentType: String,
+  },
   isConfirmed: { 
     type: Boolean, 
     default: false,
