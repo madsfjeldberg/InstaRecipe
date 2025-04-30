@@ -8,12 +8,60 @@
   import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
   import { avatar } from "$lib/stores/avatar.js";
   import { onMount } from "svelte";
+  import { z } from "zod";
+  import { userService } from "$lib/services/userService.js";
 
   const { data } = $props();
   let { user } = data;
-  let username = user.username;
+  let username = $state("");
+  username = user.username;
+
+  let errors = $state({
+    username: "",
+    form: "",
+  });
+
+  const changeUsernameRequest = z.object({
+    username: z.string()
+      .min(3, "Username must be at least 3 characters long")
+      .max(20, "Username must be at most 20 characters long"),
+  });
+
+  const changeUsername = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const username = formData.get("username");
+
+    try {
+      let response;
+      changeUsernameRequest.parse({ username });
+      response = await userService.changeUsername(user.id, username);
+      if (response.status === 200) {
+        await toast.success("Username updated!");
+        await goto("/settings");
+      } else {
+        errors = { ...errors, form: response.message };
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Map Zod errors to form fields
+        error.errors.forEach((err) => {
+          if (err.path[0] in errors) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    }
+    
+  };
 
 </script>
+
+<svelte:head>
+  <title>Settings</title>
+</svelte:head>
 
 <div class="flex min-h-screen w-full flex-col">
   
@@ -43,14 +91,17 @@
               Change your username here.
             </Card.Description>
           </Card.Header>
+          <form onsubmit={changeUsername}>
           <Card.Content>
-            <form>
-              <Input value={username} />
-            </form>
+              <Input bind:value={username} name="username" />
+              {#if errors.username}
+          <span class="text-red-500 text-sm">{errors.username}</span>
+        {/if}
           </Card.Content>
-          <Card.Footer class="border-t px-6 py-4">
-            <Button>Save</Button>
+          <Card.Footer class="border-t px-6 pt-10">
+            <Button type="submit" class="mt-8">Save</Button>
           </Card.Footer>
+        </form>
         </Card.Root>
         <Card.Root class="col-span-3">
           <Card.Header>

@@ -1,6 +1,6 @@
 import { isAuthenticated } from "$lib/stores/authStore";
 
-const BASE_URL = import.meta.env.VITE_API_URL + '/auth' || '/auth';
+const BASE_URL = import.meta.env.VITE_BASE_URL + '/auth' || '/auth';
 
 const login = async (username, password) => {
   const response = await fetch(`${BASE_URL}/login`, {
@@ -49,24 +49,6 @@ const logout = async () => {
 
   isAuthenticated.set(false);
   return true;
-}
-
-const changeUsername = async (newUsername) => {
-  const response = await fetch(`${BASE_URL}/change-username`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ newUsername }),
-  });
-
-  if (response.status === 200) {
-    isAuthenticated.set(true);
-  }
-  
-  const data = await response.json();
-  return data;
 }
 
 export const authService = {

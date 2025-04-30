@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
-  const BASE_URL = import.meta.env.VITE_API_URL + '/auth' || '/auth';
+  const BASE_URL = import.meta.env.VITE_BASE_URL + '/auth' || '/auth';
 
   let status = 'verifying'; // 'verifying' | 'success' | 'error'
   let message = '';

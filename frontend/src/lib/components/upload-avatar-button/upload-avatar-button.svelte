@@ -1,5 +1,6 @@
 <script>
   import { avatar } from '$lib/stores/avatar'; // your localStorage-backed store
+  import { toast } from 'svelte-sonner';
   import Button from '../ui/button/button.svelte';
   import { LoaderCircle } from 'lucide-svelte';
 
@@ -18,6 +19,13 @@
   async function onFileChange() {
     if (files.length === 0) return;
     const file = files[0]; // only one file is allowed
+    // restrict size
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      toast.error('File size exceeds 2MB limit.');
+      console.error('File size exceeds 2MB limit');
+      return;
+    }
     const formData = new FormData();
     formData.append('avatar', file);
 
