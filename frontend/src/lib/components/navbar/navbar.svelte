@@ -18,6 +18,7 @@
   const handleLogout = async () => {
     await authService.logout();
     toast.success("Logged out successfully");
+    avatar.set(null); // Clear the avatar store
     goto("/");
   };
 

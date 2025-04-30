@@ -23,7 +23,7 @@ app.use(helmet({
 }));
 app.use(express.json());
 app.use(limiter);
-app.use('/auth', authLimiter);
+app.use(['/auth/login', '/auth/register'], authLimiter);
 
 app.use(authRouter);
 app.use(recipelistsRouter);

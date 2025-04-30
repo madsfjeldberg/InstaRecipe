@@ -25,7 +25,7 @@
   };
 
 </script>
-<ModeWatcher/>
+<ModeWatcher />
 <Toaster />
 
 <div class="bg-muted">
