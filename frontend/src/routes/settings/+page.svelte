@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import { z } from "zod";
   import { userService } from "$lib/services/userService.js";
+  import { toast } from "svelte-sonner";
 
   const { data } = $props();
   let { user } = data;
@@ -38,9 +39,10 @@
       response = await userService.changeUsername(user.id, username);
       if (response.status === 200) {
         await toast.success("Username updated!");
-        await goto("/settings");
+        
       } else {
-        errors = { ...errors, form: response.message };
+        await toast.error("Error updating username: " + response.message);
+        errors = { };
       }
     } catch (error) {
       if (error instanceof z.ZodError) {

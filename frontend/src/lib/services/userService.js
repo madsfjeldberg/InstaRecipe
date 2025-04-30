@@ -1,4 +1,4 @@
-
+import { isAuthenticated } from "../stores/authStore.js";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL + "/users" || "/users";
 
@@ -10,7 +10,7 @@ const changeUsername = async (userId, newUsername) => {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify({ newUsername }),
+    body: JSON.stringify({ userId, newUsername }),
   });
 
   if (response.status === 200) {
