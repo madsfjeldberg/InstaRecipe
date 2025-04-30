@@ -7,7 +7,7 @@
   import { goto } from '$app/navigation';
   import { authService } from '$lib/services/authService.js';
   import { toast } from 'svelte-sonner';
-  import { avatar } from "$lib/stores/avatar";
+  import { avatarStore } from "$lib/stores/avatarStore.js";
 
   let props = $props();
   let { toggleAuthMode } = props;
@@ -52,7 +52,7 @@
         });
         const avatarBlob = await avatarResponse.blob();
         const reader = new FileReader();
-        reader.onload = () => avatar.set(reader.result); // This is the base64 image
+        reader.onload = () => avatarStore.set(reader.result); // This is the base64 image
         reader.readAsDataURL(avatarBlob);
         //redirect to dashboard
         await goto('/dashboard');

@@ -6,7 +6,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
-  import { avatar } from "$lib/stores/avatar.js";
+  import { avatarStore } from "$lib/stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
   import { userService } from "$lib/services/userService.js";
@@ -126,10 +126,10 @@
             <Card.Description>
               Change your avatar.
             </Card.Description>
-            {#if $avatar}
+            {#if $avatarStore}
             <img 
               class="absolute top-8 right-8 rounded-full w-32 h-32 object-cover" 
-              src={$avatar}
+              src={$avatarStore}
               loading="lazy" 
               alt="User Avatar"
             > 

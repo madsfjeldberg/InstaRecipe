@@ -13,12 +13,12 @@
   import { goto } from "$app/navigation";
   import { authService } from "$lib/services/authService.js";
   import { toast } from "svelte-sonner";
-  import { avatar } from "$lib/stores/avatar";
+  import { avatarStore } from "$lib/stores/avatarStore.js";
 
   const handleLogout = async () => {
     await authService.logout();
     toast.success("Logged out successfully");
-    avatar.set(null); // Clear the avatar store
+    avatarStore.set(null); // Clear the avatar store
     goto("/");
   };
 
@@ -84,9 +84,9 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if $avatar}
+            {#if $avatarStore}
               <img
-                src={$avatar}
+                src={$avatarStore}
                 alt="User Avatar"
                 class="h-8 w-8 rounded-full object-cover"
               />

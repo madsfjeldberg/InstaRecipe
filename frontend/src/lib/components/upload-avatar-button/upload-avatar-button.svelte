@@ -1,5 +1,5 @@
 <script>
-  import { avatar } from '$lib/stores/avatar'; // your localStorage-backed store
+  import { avatarStore } from '$lib/stores/avatarStore.js'; // your localStorage-backed store
   import { toast } from 'svelte-sonner';
   import Button from '../ui/button/button.svelte';
   import { LoaderCircle } from 'lucide-svelte';
@@ -40,7 +40,7 @@
       
       const reader = new FileReader();
       reader.onload = () => {
-        avatar.set(reader.result);
+        avatarStore.set(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
