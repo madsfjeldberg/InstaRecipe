@@ -11,6 +11,7 @@ export const user = writable(null);
 export const updateAuthState = (userData) => {
   // Convert userData to boolean, true if userData is not null or undefined
   // can alse be written as: isAuthenticated.set(userData ? true : false);
+  
   isAuthenticated.set(!!userData); 
   user.set(userData);
 }
