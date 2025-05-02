@@ -1,4 +1,4 @@
-// src/lib/stores/avatar.js
+
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
