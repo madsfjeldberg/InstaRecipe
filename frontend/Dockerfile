@@ -19,7 +19,7 @@ RUN echo "node_modules" > .dockerignore
 COPY . .
 
 # Build the application
-RUN pnpm run build && test -d build
+RUN npm run build && test -d build
 
 # Production stage
 FROM node:23-alpine
