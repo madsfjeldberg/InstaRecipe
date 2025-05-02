@@ -3,8 +3,7 @@ import auth from "../util/auth.js";
 import emailService from "../util/email.js";
 import { addUser, getUser, getUserByEmail, editUser, confirmUser } from "../database/users/users.js";
 import tokens from "../database/tokens/tokens.js";
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 const router = Router();
 

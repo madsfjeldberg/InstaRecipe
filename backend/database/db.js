@@ -1,7 +1,5 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 // Connect once when starting the application
 async function connectDB(retryCount = 0) {

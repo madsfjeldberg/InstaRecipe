@@ -1,7 +1,6 @@
 import { testConnection } from "../db.js";
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import User from "../models/User.js";
-dotenv.config();
 
 
 const getUsers = async () => {

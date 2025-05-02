@@ -1,7 +1,6 @@
 import { testConnection } from '../db.js';
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import Token from '../models/Token.js';
-dotenv.config();
 
 const createToken = async (userId, token) => {
   testConnection();

@@ -1,8 +1,7 @@
 import { testConnection } from "../db.js";
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import Recipe from "../models/Recipe.js";
 import { recipeCategories } from "../../util/constants.js";
-dotenv.config();
 
 const getRecipes = async () => {
   testConnection();
