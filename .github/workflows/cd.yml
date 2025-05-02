@@ -71,7 +71,7 @@ jobs:
             cd ~/instarecipe
             rm .env
             touch .env
-            echo "${{ secrets.SERVER_ENV }}" >> .env
+            echo "${{ secrets.ENV_SERVER }}" >> .env
             '
 
       - name: Deploy to Server
