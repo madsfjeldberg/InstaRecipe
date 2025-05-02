@@ -1,6 +1,7 @@
 import { isAuthenticated } from "$lib/stores/authStore";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL + '/auth' || '/auth';
+// const BASE_URL = import.meta.env.VITE_API_URL || '/auth' || '/auth';
+const BASE_URL = '/auth';
 
 const login = async (username, password) => {
   const response = await fetch(`${BASE_URL}/login`, {
