@@ -31,6 +31,7 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@sveltejs/adapter-node": "^5.2.12",
 		"dotenv": "^16.5.0",
 		"jsonwebtoken": "^9.0.2",
 		"lucide-svelte": "^0.503.0",
