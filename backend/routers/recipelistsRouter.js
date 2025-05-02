@@ -3,7 +3,7 @@ import { getRecipeLists, getRecipeListsByUserId, getRecipeList, addRecipeList } 
 
 const router = Router();
 
-router.get('/recipelists', async (req, res) => {
+router.get('/api/recipelists', async (req, res) => {
   try {
     const recipeLists = await getRecipeLists();
     res.status(200).json(recipeLists);
@@ -12,7 +12,7 @@ router.get('/recipelists', async (req, res) => {
   }
 });
 
-router.get('/recipelists/user/:userId', async (req, res) => {
+router.get('/api/recipelists/user/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const recipeLists = await getRecipeListsByUserId(userId);
@@ -22,7 +22,7 @@ router.get('/recipelists/user/:userId', async (req, res) => {
   }
 });
 
-router.post('/recipelists', async (req, res) => {
+router.post('/api/recipelists', async (req, res) => {
   console.log('Received request to add recipe list:', req.body);
   const { name, userId } = req.body;
   if (!name || !userId) {

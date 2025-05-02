@@ -13,7 +13,7 @@ const cookieOptions = {
   maxAge: 3600000, // 1 hour
 }
 
-router.get('/users/:id/avatar', async (req, res) => {
+router.get('/api/users/:id/avatar', async (req, res) => {
   let userId = req.params.id;
   const user = await getUserById(userId);
   if (!user || !user.avatar) {
@@ -23,7 +23,7 @@ router.get('/users/:id/avatar', async (req, res) => {
   res.send(user.avatar.data);
 });
 
-router.post('/users/:id/avatar', upload.single('avatar'), async (req, res) => {
+router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
   let userId = req.params.id;
   const user = await getUserById(userId);
   user.avatar = {
@@ -35,7 +35,7 @@ router.post('/users/:id/avatar', upload.single('avatar'), async (req, res) => {
 });
 
 // PATCH route to update the username
-router.patch('/users', async (req, res) => {
+router.patch('/api/users', async (req, res) => {
   const { userId, newUsername } = req.body;
   console.log('Received request to update username:', req.body);
 

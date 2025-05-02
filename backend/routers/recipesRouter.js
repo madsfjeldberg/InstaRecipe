@@ -3,7 +3,7 @@ import { getRecipes, addRecipe, getCategories, getRecipesByListId, deleteRecipe 
 
 const router = Router();
 
-router.get("/recipes", async (req, res) => {
+router.get("/api/recipes", async (req, res) => {
   try {
     const recipes = await getRecipes();
     res.status(200).json(recipes);
@@ -13,7 +13,7 @@ router.get("/recipes", async (req, res) => {
   }
 });
 
-router.get("/recipes/categories", async (req, res) => {
+router.get("/api/recipes/categories", async (req, res) => {
   try {
     const categories = await getCategories();
     res.status(200).json(categories);
@@ -22,7 +22,7 @@ router.get("/recipes/categories", async (req, res) => {
   }
 });
 
-router.get("/recipes/:listId", async (req, res) => {
+router.get("/api/recipes/:listId", async (req, res) => {
   const { listId } = req.params;
 
   if (!listId) {
@@ -38,7 +38,7 @@ router.get("/recipes/:listId", async (req, res) => {
   }
 });
 
-router.post("/recipes", async (req, res) => {
+router.post("/api/recipes", async (req, res) => {
   const { name, description, ingredients, instructions, category, calories, recipeListId } = req.body;
 
   if (!name || !description || !ingredients || !instructions || !category || !calories) {
@@ -55,7 +55,7 @@ router.post("/recipes", async (req, res) => {
   }
 });
 
-router.delete("/recipes/:id", async (req, res) => {
+router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
   console.log("ID:", id);
 

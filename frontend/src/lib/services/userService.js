@@ -1,7 +1,7 @@
 import { isAuthenticated } from "../stores/authStore.js";
 
 // const BASE_URL = import.meta.env.VITE_BASE_URL + "/users" || "/users";
-const BASE_URL = '/users';
+const BASE_URL = '/api/users';
 
 
 const changeUsername = async (userId, newUsername) => {

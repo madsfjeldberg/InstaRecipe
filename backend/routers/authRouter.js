@@ -14,7 +14,7 @@ const cookieOptions = {
   maxAge: 3600000, // 1 hour
 }
 
-router.post("/auth/register", async (req, res) => {
+router.post("/api/auth/register", async (req, res) => {
   // extract user data from request body
   const { username, email, password } = req.body;
 
@@ -46,7 +46,7 @@ router.post("/auth/register", async (req, res) => {
     .json({ message: "User registered successfully.", status: 200 });
 });
 
-router.post("/auth/login", async (req, res) => {
+router.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -89,14 +89,14 @@ router.post("/auth/login", async (req, res) => {
 });
 
 
-router.get("/auth/logout", (req, res) => {
+router.get("/api/auth/logout", (req, res) => {
   res
     .clearCookie("jwt")
     .status(200)
     .send({ message: "Logout successful." });
 });
 
-router.post("/auth/change-password", async (req, res) => {
+router.post("/api/auth/change-password", async (req, res) => {
   const { newPassword } = req.body;
   
   if (!newPassword) {
@@ -116,7 +116,7 @@ router.post("/auth/change-password", async (req, res) => {
   }
 });
 
-router.get("/auth/verify/:token", async (req, res) => {
+router.get("/api/auth/verify/:token", async (req, res) => {
   try {
     const { token } = req.params;
     
