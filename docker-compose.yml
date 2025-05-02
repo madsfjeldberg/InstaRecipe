@@ -1,8 +1,6 @@
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: fjeldberg/instarecipe-backend:latest
     ports:
       - "9000:9000"
     env_file:
@@ -11,9 +9,7 @@ services:
       - PORT=9000
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: fjeldberg/instarecipe-frontend:latest
     ports:
       - "9001:9001"
     env_file:
