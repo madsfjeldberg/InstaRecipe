@@ -15,5 +15,4 @@ services:
     env_file:
       - .env
     environment:
-      - VITE_BASE_URL=http://localhost:9000
       - PORT=9001
