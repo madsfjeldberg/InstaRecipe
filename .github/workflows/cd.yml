@@ -65,13 +65,18 @@ jobs:
         run: |
           scp ./docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }}:~/instarecipe/
 
-      - name: Deploy to Server
+      - name: Copy .env to server
         run: |
           ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
             cd ~/instarecipe
             rm .env
             touch .env
             echo "${{ secrets.SERVER_ENV }}" >> .env
+
+      - name: Deploy to Server
+        run: |
+          ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
+            cd ~/instarecipe
             docker compose pull
             docker compose up -d
           '
