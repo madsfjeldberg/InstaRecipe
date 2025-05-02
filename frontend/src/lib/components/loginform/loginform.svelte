@@ -47,7 +47,7 @@
         // handle avatar
         const data = await response.json(); // Await the JSON response
         console.log('data', data);
-        const avatarResponse = await fetch(`http://localhost:9000/users/${data.id}/avatar`, {
+        const avatarResponse = await fetch(`api/users/${data.id}/avatar`, {
           credentials: 'include'
         });
         const avatarBlob = await avatarResponse.blob();
