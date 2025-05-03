@@ -2,6 +2,8 @@ import { testConnection } from '../db.js';
 import 'dotenv/config';
 import Token from '../models/Token.js';
 
+import prisma from "../prismaClient.js";
+
 const createToken = async (userId, token) => {
   testConnection();
   try {

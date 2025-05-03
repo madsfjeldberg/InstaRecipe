@@ -8,6 +8,7 @@
   import { authService } from '$lib/services/authService.js';
   import { toast } from 'svelte-sonner';
   import { avatarStore } from "$lib/stores/avatarStore.js";
+  import { user } from "$lib/stores/authStore.js";
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
@@ -45,20 +46,22 @@
       response = await authService.login(username, password);
      
       if (response.status === 200) {
-        await toast.success('Login successful!');
+        
         // handle avatar
         const data = await response.json(); // Await the JSON response
-        console.log('data', data);
         const avatarResponse = await fetch(`${BASE_URL}/users/${data.id}/avatar`, { // Use BASE_URL for the avatar fetch
           credentials: 'include'
         });
-        if (!avatarResponse.ok) {
-          throw new Error('Failed to fetch avatar');
-        }
-        const avatarBlob = await avatarResponse.blob(); // blob = binary large object
-        const reader = new FileReader(); // Create a FileReader to read the blob
-        reader.readAsDataURL(avatarBlob); // Read the blob as a base64 data URL
-        reader.onload = () => avatarStore.set(reader.result); // This is the base64 image
+        console.log('avatarResponse', avatarResponse);
+        if (avatarResponse.ok) {
+          const avatarBlob = await avatarResponse.blob(); // blob = binary large object
+          const reader = new FileReader(); // Create a FileReader to read the blob
+          reader.readAsDataURL(avatarBlob); // Read the blob as a base64 data URL
+          reader.onload = () => avatarStore.set(reader.result); // This is the base64 image
+        } 
+        // Set the user data in store
+        user.set(data); // Store the user data
+        await toast.success('Login successful!');
         //redirect to dashboard
         await goto('/dashboard');
       } else {

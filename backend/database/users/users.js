@@ -2,6 +2,8 @@ import { testConnection } from "../db.js";
 import 'dotenv/config';
 import User from "../models/User.js";
 
+import prisma from "../prismaClient.js";
+
 
 const getUsers = async () => {
   try {
@@ -88,10 +90,14 @@ const editUser = async (id, username, email, password) => {
 const confirmUser = async (userId) => {
   testConnection();
   try {
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      { isConfirmed: true },
-    );
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { isConfirmed: true }
+    });
+    // const updatedUser = await User.findOneAndUpdate(
+    //   { _id: userId },
+    //   { isConfirmed: true },
+    // );
     if (!updatedUser) {
       throw new Error(`User with ID ${userId} not found.`);
     }

@@ -32,7 +32,7 @@
   // and pass to recipe table
   $effect(async () => {
   if (isInitialLoad || !selectedList) return;
-  recipes = await getRecipesByListId(selectedList._id);
+  recipes = await getRecipesByListId(selectedList.id);
 });
   
   

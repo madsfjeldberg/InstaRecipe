@@ -66,6 +66,7 @@ const getCategories = async () => {
   }
 
   const data = await response.json();
+  console.log("Categories:", data);
   return data;
 }
 

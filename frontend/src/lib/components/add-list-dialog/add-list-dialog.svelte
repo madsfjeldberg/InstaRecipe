@@ -27,6 +27,7 @@
 
   async function handleSubmit(event) {
     event.preventDefault();
+    console.log("userid", $user?.id);
 
     const formData = new FormData(event.target);
     const name = formData.get("name");
