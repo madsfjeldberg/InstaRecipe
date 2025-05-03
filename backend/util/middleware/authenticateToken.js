@@ -1,7 +1,7 @@
 import verifyToken from '../auth.js';
 
 async function authenticateToken(req, res, next) {
-    const authHeader = req.headers["athorization"];
+    const authHeader = req.headers["authorization"];
     if(!authHeader) {
         return res.status(401).json({ errorMessage: "Missing authorization header" });
     }
