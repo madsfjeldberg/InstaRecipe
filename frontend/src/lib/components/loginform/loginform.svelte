@@ -9,7 +9,7 @@
   import { toast } from 'svelte-sonner';
   import { avatarStore } from "$lib/stores/avatarStore.js";
 
-  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : 'http://localhost:9000/api';
+  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let props = $props();
   let { toggleAuthMode } = props;
