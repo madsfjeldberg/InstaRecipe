@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import 'dotenv/config';
+import redis from '../database/redisClient.js';
+import { token } from 'morgan';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -24,7 +26,7 @@ const verifyPassword = async (password, hashedPassword) => {
   }
 }
 
-const generateToken = (user) => {
+const generateToken = async (user) => {
   const now = Math.floor(Date.now() / 1000); // Current time in seconds
   const exp = now + JWT_EXPIRATION; // Exactly JWT_EXPIRATION seconds from now
 
@@ -34,7 +36,28 @@ const generateToken = (user) => {
     iat: now,
     exp: exp
   }, JWT_SECRET);
+
+  // store token in redis
+  await redis.set(token, user.id.toString(), {EX: exp})
+
   return token;
+}
+
+async function verifyToken(token) {
+  try{
+    const exists = await redis.exists(token);
+    if(!exists){
+      return null;
+    }
+
+    // error thrown if varification fails
+    const verifiedToken = jwt.verify(token, JWT_SECRET);
+    return verifiedToken;
+
+  } catch(error) {
+    console.error(error);
+    return null;
+  }
 }
 
 const decodeToken = (token) => {
@@ -50,5 +73,6 @@ export default {
   hashPassword,
   verifyPassword,
   generateToken,
-  decodeToken
+  decodeToken,
+  verifyToken
 };
