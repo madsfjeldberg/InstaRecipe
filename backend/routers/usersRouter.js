@@ -3,6 +3,8 @@ import multer from 'multer';
 import { getUser, getUserById } from "../database/users/users.js";
 import auth from "../util/auth.js";
 
+import prisma from "../database/prismaClient.js";
+
 const router = Router();
 const upload = multer();
 
@@ -15,23 +17,36 @@ const cookieOptions = {
 
 router.get('/api/users/:id/avatar', async (req, res) => {
   let userId = req.params.id;
-  const user = await getUserById(userId);
+  const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || !user.avatar) {
     return res.status(404).json({ message: 'Avatar not found' });
   }
-  res.set('Content-Type', user.avatar.contentType);
-  res.send(user.avatar.data);
+  res.set('Content-Type', user.avatarMime || 'image/png');
+  res.send(user.avatar);
 });
 
 router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
   let userId = req.params.id;
-  const user = await getUserById(userId);
-  user.avatar = {
-    data: req.file.buffer,
-    contentType: req.file.mimetype
-  };
-  await user.save();
-  res.status(200).json({ message: 'Avatar uploaded successfully', user });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      avatar: req.file.buffer,
+      avatarMime: req.file.mimetype
+    }
+  });
+  res.status(200).json({ message: 'Avatar uploaded successfully' });
+});
+
+router.get('/api/users/', async (req, res) => { 
+  const users = await prisma.user.findMany();
+  if (!users) {
+    return res.status(404).json({ message: 'No users found' });
+  }
+  res.status(200).json(users);
 });
 
 // PATCH route to update the username
@@ -44,12 +59,12 @@ router.patch('/api/users', async (req, res) => {
   }
 
   try {
-    const user = await getUserById(userId);
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     // Check if the new username is already taken
-    const existingUser = await getUser(newUsername);
+    const existingUser = await prisma.user.findUnique({ where: { username: newUsername } });
     if (existingUser) {
       console.log('Username already exists:', newUsername);
       return res.status(400).json({ message: 'Username already exists' });

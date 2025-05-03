@@ -5,6 +5,8 @@ import { addUser, getUser, getUserByEmail, editUser, confirmUser } from "../data
 import tokens from "../database/tokens/tokens.js";
 import 'dotenv/config';
 
+import prisma from "../database/prismaClient.js";
+
 const router = Router();
 
 const cookieOptions = {
@@ -23,23 +25,35 @@ router.post("/api/auth/register", async (req, res) => {
     return res.status(400).send({ status: 400, message: "All fields are required" });
   }
   // check if user already exists
-  const existingUser = await getUser(username);
+  const existingUser = await prisma.user.findUnique({ where: { username } });
   if (existingUser) {
     return res.status(400).send({ status: 400, message: "Username already exists" });
   }
   // check if email already exists
-  const existingEmail = await getUserByEmail(email);
+  const existingEmail = await prisma.user.findUnique({ where: { email } });
   if (existingEmail) {
     return res.status(400).send({ status: 400, message: "Email already exists" });
   }
   
   const hashedPassword = await auth.hashPassword(password);
-  const newUser = await addUser(username, email, hashedPassword);
+  const newUser = await prisma.user.create({
+    data: {
+      username,
+      email,
+      password: hashedPassword,
+    },
+  });
   const token = auth.generateToken(newUser);
 
   // create a verification token and send a verification email
-  const verificationToken = await tokens.createToken(newUser._id, token);
-  await emailService.sendVerificationEmail(newUser.email, verificationToken);
+  // const verificationToken = await tokens.createToken(newUser._id, token);
+  const verificationToken = await prisma.token.create({
+    data: {
+      userId: newUser.id,
+      token: token,
+    },
+  });
+  await emailService.sendVerificationEmail(newUser.email, verificationToken.token);
 
   res
     .status(200)
@@ -54,7 +68,7 @@ router.post("/api/auth/login", async (req, res) => {
     return res.status(400).send({ message: "All fields are required" });
   }
 
-  const dbUser = await getUser(username);
+  const dbUser = await prisma.user.findUnique({ where: { username } });
 
   if (!dbUser) {
     console.log("User not found");
@@ -73,7 +87,7 @@ router.post("/api/auth/login", async (req, res) => {
         .status(200)
         .cookie("jwt", token, cookieOptions)
         .json({
-          id: dbUser._id,
+          id: dbUser.id,
           message: "Login successful.",
           status: 200,
         });
@@ -105,7 +119,10 @@ router.post("/api/auth/change-password", async (req, res) => {
 
   const token = req.cookies.jwt;  
   const decoded = auth.decodeToken(token);
-  const dbUser = await getUser(decoded.username);
+  const dbUser = await prisma.user.findUnique({ where: { id: decoded.id } });
+  if (!dbUser) {
+    return res.status(401).send({ message: "User not found" });
+  }
 
   try {
     const hashedPassword = await auth.hashPassword(newPassword);
@@ -121,8 +138,10 @@ router.get("/api/auth/verify/:token", async (req, res) => {
     const { token } = req.params;
     
     // Verify the token
-    const tokenDoc = await tokens.verifyToken(token);
-    if (!tokenDoc) {
+    const foundToken = await prisma.token.findUnique({
+      where: { token: token },
+    });
+    if (!foundToken) {
       return res.status(400).json({ 
         status: 400, 
         message: "Invalid or expired verification token" 
@@ -130,7 +149,7 @@ router.get("/api/auth/verify/:token", async (req, res) => {
     }
 
     // Update user
-    const user = await confirmUser(tokenDoc.userId);
+    const user = await confirmUser(foundToken.userId);
     if (!user) {
       return res.status(400).json({ 
         status: 400, 
@@ -139,7 +158,9 @@ router.get("/api/auth/verify/:token", async (req, res) => {
     }
 
     // Delete the used token
-    await tokens.deleteToken(token);
+    await prisma.token.delete({
+      where: { token: token },
+    });
 
     return res.status(200).json({ 
       status: 200, 

@@ -147,3 +147,6 @@ dist
 
 # DS_STORE
 .DS_Store
+
+# Prisma
+generated/
