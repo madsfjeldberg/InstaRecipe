@@ -14,6 +14,7 @@ import { JWT_SECRET, COOKIE_OPTIONS } from '$lib/config/env.server';
 
 const validateUser = (token) => {
   if (!token) {
+    console.log('No token found');
     throw redirect(303, '/login');
   }
   try {
@@ -28,7 +29,9 @@ const validateUser = (token) => {
 export const handle = async ({ event, resolve }) => {
 
   const protectedPaths = ['/dashboard', '/settings', '/recipes'];
-  const isProtectedPath = protectedPaths.some(path => event.url.pathname.startsWith(path));
+  const isProtectedPath = protectedPaths.some(path =>
+    event.url.pathname === path || event.url.pathname.startsWith(path + '/')
+  );
 
     // Check if user is trying to access protected route
   if (isProtectedPath) {

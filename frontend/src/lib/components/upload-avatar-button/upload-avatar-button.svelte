@@ -4,6 +4,8 @@
   import Button from '../ui/button/button.svelte';
   import { LoaderCircle } from 'lucide-svelte';
 
+  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : 'http://localhost:9000/api';
+
   let { user } = $props();
 
   let browseInput = $state(null);
@@ -30,7 +32,7 @@
     formData.append('avatar', file);
 
     uploading = true;
-    const res = await fetch(`http://localhost:9000/users/${user.id}/avatar`, {
+    const res = await fetch(`${BASE_URL}/users/${user.id}/avatar`, { // Add user ID to the URL
       method: 'POST',
       body: formData
     });

@@ -1,5 +1,5 @@
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipelists' || '/recipelists';
-const BASE_URL = '/api/recipelists';
+const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipelists` : '/api/recipelists';
 
 const addRecipeList = async (name, userId) => {
   const response = await fetch(`${BASE_URL}`, {
