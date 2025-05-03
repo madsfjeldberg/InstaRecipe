@@ -4,7 +4,7 @@
   import Button from '../ui/button/button.svelte';
   import { LoaderCircle } from 'lucide-svelte';
 
-  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : 'http://localhost:9000/api';
+  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let { user } = $props();
 
