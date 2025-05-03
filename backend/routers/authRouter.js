@@ -1,9 +1,10 @@
+import 'dotenv/config';
 import { Router } from "express";
 import auth from "../util/auth.js";
 import emailService from "../util/email.js";
 import { addUser, getUser, getUserByEmail, editUser, confirmUser } from "../database/users/users.js";
 import tokens from "../database/tokens/tokens.js";
-import 'dotenv/config';
+
 
 import prisma from "../database/prismaClient.js";
 
