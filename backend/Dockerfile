@@ -8,11 +8,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Install Prisma CLI globally
-RUN npx prisma generate
-
 # Bundle app source
 COPY . .
+
+# Install Prisma CLI globally
+RUN npx prisma generate
 
 # Expose the port the app runs on
 EXPOSE 9000
