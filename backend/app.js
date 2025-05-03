@@ -27,11 +27,12 @@ app.use(express.json());
 app.use(limiter);
 app.use(['/auth/login', '/auth/register'], authLimiter);
 
-// authentication jwt token for all routes
+app.use(authRouter);
+
+// authentication jwt token for all routes execpet authRouter
 import { authenticateToken } from "./util/middleware/authenticateToken.js";
 app.use(authenticateToken);
 
-app.use(authRouter);
 app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(usersRouter);
