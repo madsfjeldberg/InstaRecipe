@@ -1,7 +1,7 @@
 import { testConnection } from "../db.js";
-import 'dotenv/config';
+import "dotenv/config";
 import Recipe from "../models/Recipe.js";
-import { recipeCategories } from "../../util/constants.js";
+import { recipeCategories } from "../constants.js";
 
 const getRecipes = async () => {
   testConnection();
@@ -11,7 +11,7 @@ const getRecipes = async () => {
   } catch (e) {
     throw new Error(`Failed to get recipes: ${e.message}`);
   }
-}
+};
 
 const getRecipesByListId = async (listId) => {
   testConnection();
@@ -24,7 +24,7 @@ const getRecipesByListId = async (listId) => {
   } catch (e) {
     throw new Error(`Failed to get recipes by list id: ${e.message}`);
   }
-}
+};
 
 const getRecipe = async (id) => {
   testConnection();
@@ -34,13 +34,20 @@ const getRecipe = async (id) => {
       throw new Error(`Recipe with id ${id} not found.`);
     }
     return recipe;
-  }
-  catch (e) {
+  } catch (e) {
     throw new Error(`Failed to get recipe: ${e.message}`);
   }
-}
+};
 
-const addRecipe = async (name, description, ingredients, instructions, category, calories, recipeListId) => {
+const addRecipe = async (
+  name,
+  description,
+  ingredients,
+  instructions,
+  category,
+  calories,
+  recipeListId
+) => {
   testConnection();
   try {
     const recipe = await Recipe.create({
@@ -50,13 +57,13 @@ const addRecipe = async (name, description, ingredients, instructions, category,
       instructions: instructions,
       category: category,
       calories: calories,
-      recipeLists: [recipeListId]
+      recipeLists: [recipeListId],
     });
     return recipe;
   } catch (e) {
     throw new Error(`Failed to add recipe: ${e.message}`);
   }
-}
+};
 
 const getCategories = async () => {
   testConnection();
@@ -66,7 +73,7 @@ const getCategories = async () => {
   } catch (e) {
     throw new Error(`Failed to get categories: ${e.message}`);
   }
-}
+};
 
 const deleteRecipe = async (recipeId) => {
   testConnection();
@@ -78,6 +85,13 @@ const deleteRecipe = async (recipeId) => {
   } catch (e) {
     throw new Error(`Failed to delete recipe: ${e.message}`);
   }
-}
+};
 
-export { getRecipes, getRecipesByListId, getRecipe, addRecipe, getCategories, deleteRecipe };
+export {
+  getRecipes,
+  getRecipesByListId,
+  getRecipe,
+  addRecipe,
+  getCategories,
+  deleteRecipe,
+};
