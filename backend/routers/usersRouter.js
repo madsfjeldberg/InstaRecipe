@@ -20,8 +20,8 @@ router.get('/api/users/:id/avatar', async (req, res) => {
   if (!user || !user.avatar) {
     return res.status(404).json({ message: 'Avatar not found' });
   }
-  res.set('Content-Type', user.avatarMime || 'image/png');
-  res.send(user.avatar);
+
+  res.set('Content-Type', user.avatarMime ?? 'image/png').send(user.avatar);
 });
 
 router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {

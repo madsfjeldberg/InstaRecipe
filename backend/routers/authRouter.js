@@ -12,6 +12,7 @@ const cookieOptions = {
   secure: process.env.NODE_ENV === "production", // Set to true in production
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
   maxAge: 3600000, // 1 hour
+  path: "/"
 }
 
 router.post("/api/auth/register", async (req, res) => {
@@ -69,26 +70,27 @@ router.post("/api/auth/login", async (req, res) => {
     return res.status(400).send({ message: "All fields are required" });
   }
 
-  const dbUser = await prisma.user.findUnique({ where: { username } });
+  const user = await prisma.user.findUnique({ where: { username } });
 
-  if (!dbUser) {
+  if (!user) {
     console.log("User not found");
     return res.status(401).send({ message: "Wrong username or password." });
   }
-  if (!dbUser.isConfirmed) {
+  if (!user.isConfirmed) {
     console.log("User not confirmed");
     return res.status(401).send({ message: "Please confirm your email first." });
   }
-  const isValidPassword = await auth.verifyPassword(password, dbUser.password);
+  const isValidPassword = await auth.verifyPassword(password, user.password);
 
   try {
     if (isValidPassword) {
-      const token = auth.generateToken(dbUser);
+      const token = await auth.generateToken(user);
+
       res
         .status(200)
         .cookie("jwt", token, cookieOptions)
-        .json({
-          id: dbUser.id,
+        .send({
+          id: user.id,
           message: "Login successful.",
           status: 200,
         });
@@ -136,7 +138,7 @@ router.post("/api/auth/change-password", async (req, res) => {
 
 router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
   const user = req.user;
-  
+
   try {
 
     await prisma.user.update({
@@ -147,7 +149,7 @@ router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
         isConfirmed: true
       }
     });
-    
+
     return res.status(200).send({
       status: 200,
       message: "Account verified successfully."
@@ -155,7 +157,7 @@ router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: "Somehting went wrong conforming the email"})
+    res.status(500).send({ errorMessage: "Somehting went wrong conforming the email" })
   }
 
 });
