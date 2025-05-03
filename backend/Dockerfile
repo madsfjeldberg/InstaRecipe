@@ -8,6 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Install Prisma CLI globally
+RUN npx prisma generate
+
 # Bundle app source
 COPY . .
 
