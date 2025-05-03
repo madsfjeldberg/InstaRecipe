@@ -1,6 +1,5 @@
 import { Router } from "express";
 import multer from 'multer';
-import { getUser, getUserById } from "../database/users/users.js";
 import auth from "../util/auth.js";
 
 import prisma from "../database/prismaClient.js";
