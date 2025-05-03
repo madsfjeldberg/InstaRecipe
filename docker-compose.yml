@@ -16,3 +16,10 @@ services:
       - .env
     environment:
       - PORT=9001
+       
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
