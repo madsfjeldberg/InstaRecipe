@@ -3,13 +3,6 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
 
-  onMount(() => {
-    // Check if the user is authenticated
-    if (isAuthenticated) {
-      goto("/dashboard");
-    }
-  });
-
 </script>
 
 <svelte:head>

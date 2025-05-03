@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$lib/config/env.server';
+import { redirect } from '@sveltejs/kit';
+import { isAuthenticated } from '$lib/stores/authStore';
 
 export function load({ cookies }) {
   const token = cookies.get('jwt');
@@ -10,6 +12,7 @@ export function load({ cookies }) {
       // verify will throw if invalid / expired
       const payload = jwt.verify(token, JWT_SECRET);
       user = { id: payload.id, username: payload.username };
+      
     } catch {
       // invalid or expired token
       cookies.delete('jwt');

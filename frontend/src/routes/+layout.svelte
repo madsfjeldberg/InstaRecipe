@@ -16,7 +16,10 @@
   onMount(() => {
     // on mount, check if user already has a token
     updateAuthState(data.user);
-  })
+    if (isAuthenticated) {
+      goto('/dashboard');
+    }
+    });
 
   const handleLogout = async () => {
     await auth.logout();
