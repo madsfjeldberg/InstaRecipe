@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { getRecipeLists, getRecipeListsByUserId, getRecipeList, addRecipeList } from '../database/recipelists/recipelists.js';
 
 import prisma from '../database/prismaClient.js';
 

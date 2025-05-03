@@ -13,7 +13,7 @@
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let props = $props();
-  let { toggleAuthMode } = props;
+  let { onToggleAuthMode } = props;
 
   let errors = $state({
     username: '',
@@ -118,7 +118,7 @@
     </div>
     <div class="mt-4 text-center text-sm">
       Don&apos;t have an account?
-      <Button variant="link" onclick={toggleAuthMode}>Sign up</Button>
+      <Button variant="link" onclick={onToggleAuthMode}>Sign up</Button>
     </div>
   </form>
   </Card.Content>

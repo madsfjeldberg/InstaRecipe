@@ -38,9 +38,14 @@ const generateToken = async (user) => {
   }, JWT_SECRET);
 
   // store token in redis
-  await redis.set(token, user.id.toString(), {EX: exp})
+  try{
+    await redis.set(token, user.id.toString(), {EX: exp})
+    return token;
+    
+  } catch(error) {
+    console.error(error);
+  }
 
-  return token;
 }
 
 async function verifyToken(token) {
@@ -50,9 +55,10 @@ async function verifyToken(token) {
       return null;
     }
 
-    // error thrown if varification fails
-    const verifiedToken = jwt.verify(token, JWT_SECRET);
-    return verifiedToken;
+    // error thrown if varification fails 
+    // also checks exp by default
+    const decodedPayload = jwt.verify(token, JWT_SECRET);
+    return decodedPayload;
 
   } catch(error) {
     console.error(error);

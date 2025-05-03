@@ -8,7 +8,7 @@
   import { authService } from '$lib/services/authService.js';
   import { toast } from 'svelte-sonner';
 
-  let { toggleAuthMode } = $props();
+  let { onToggleAuthMode } = $props();
 
   let errors = $state({
     username: '',
@@ -41,9 +41,10 @@
     try {
       let response;
       
+      //TODO ADD A LOADING SPINNER
       RegisterRequest.parse({ username, email, password});
       response = await authService.register(username, email, password);
-      console.log(response)
+      console.log("REGISTER RESPONSE", response)
       
       if (response.status === 200) {
         await toast.success('Registration email sent!');
@@ -106,7 +107,7 @@
     </div>
     <div class="mt-4 text-center text-sm">
       Already have an account?
-      <Button variant="link" onclick={toggleAuthMode}> Sign in </Button>
+      <Button variant="link" onclick={onToggleAuthMode}> Sign in </Button>
     </div>
   </Card.Content>
 </Card.Root>

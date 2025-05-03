@@ -9,7 +9,7 @@
 
   let loginMode = true;
 
-  const toggleAuthMode = () => {
+  const handleToggleAuthMode = () => {
     loginMode = !loginMode;
     console.log("Toggled auth mode to: ", loginMode);
   };
@@ -24,8 +24,8 @@
 </svelte:head>
 
 {#if loginMode}
-  <LoginForm toggleAuthMode={toggleAuthMode} />
+  <LoginForm onToggleAuthMode={handleToggleAuthMode} />
 {:else}
-  <RegisterForm toggleAuthMode={toggleAuthMode} />
+  <RegisterForm onToggleAuthMode={handleToggleAuthMode} />
 {/if}
 

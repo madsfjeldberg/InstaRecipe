@@ -15,7 +15,7 @@ export function load({ cookies }) {
       
     } catch {
       // invalid or expired token
-      cookies.delete('jwt');
+      cookies.delete('jwt', {path: "/"});
     }
   }
   return { user }; // user === null if not logged in

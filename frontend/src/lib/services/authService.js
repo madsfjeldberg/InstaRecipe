@@ -16,8 +16,7 @@ const login = async (username, password) => {
   if (response.status === 200) {
     isAuthenticated.set(true);
   }
-  
-  //const data = await response.json();
+
   return response;
 }
 

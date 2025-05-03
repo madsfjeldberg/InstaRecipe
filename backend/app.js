@@ -10,7 +10,6 @@ import helmet from "helmet";
 import { limiter, authLimiter } from "./util/rateLimiter.js";
 import logger from "./util/logger.js";
 import cors from "./util/cors.js";
-import { connectDB } from "./database/db.js";
 
 
 const app = express();
@@ -37,16 +36,4 @@ app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(usersRouter);
 
-async function start() {
-  try {
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}.`);
-    });
-  } catch (error) {
-    console.error('Error starting the server:', error.message);
-    process.exit(1);
-  }
-}
-
-start();
+app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});
