@@ -12,6 +12,7 @@ import logger from "./util/logger.js";
 import cors from "./util/cors.js";
 import { connectDB } from "./database/db.js";
 
+
 const app = express();
 const PORT = process.env.PORT || 9000;
 
@@ -24,6 +25,10 @@ app.use(helmet({
 app.use(express.json());
 app.use(limiter);
 app.use(['/auth/login', '/auth/register'], authLimiter);
+
+// authentication jwt token for all routes
+import { authenticateToken } from "./util/middleware/authenticateToken.js";
+app.use(authenticateToken);
 
 app.use(authRouter);
 app.use(recipelistsRouter);
