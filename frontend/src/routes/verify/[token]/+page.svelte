@@ -14,6 +14,7 @@
     try {
       const response = await fetch(`${BASE_URL}/verify/${token}`, {
         method: 'GET',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
         },
