@@ -32,8 +32,9 @@
     formData.append('avatar', file);
 
     uploading = true;
-    const res = await fetch(`${BASE_URL}/users/${user.id}/avatar`, { // Add user ID to the URL
+    const res = await fetch(`${BASE_URL}/users/${user.id}/avatar`, {
       method: 'POST',
+      credentials: 'include',
       body: formData
     });
     uploading = false;
