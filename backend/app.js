@@ -4,6 +4,7 @@ import authRouter from "./routers/authRouter.js";
 import recipelistsRouter from "./routers/recipelistsRouter.js";
 import recipesRouter from "./routers/recipesRouter.js";
 import usersRouter from "./routers/usersRouter.js";
+import categoriesRouter from "./routers/categoriesRouter.js";
 
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -28,12 +29,13 @@ app.use(['/auth/login', '/auth/register'], authLimiter);
 
 app.use(authRouter);
 
-// authentication jwt token for all routes execpet authRouter
+// authentication jwt token for all routes except authRouter
 import { authenticateToken } from "./util/middleware/authenticateToken.js";
 app.use(authenticateToken);
 
 app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(usersRouter);
+app.use(categoriesRouter);
 
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});

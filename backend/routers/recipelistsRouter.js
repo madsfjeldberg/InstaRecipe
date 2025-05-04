@@ -18,6 +18,7 @@ router.get('/api/recipelists', async (req, res) => {
   }
 });
 
+// Get all recipe lists for a specific user
 router.get('/api/recipelists/user/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -28,8 +29,11 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
       },
       where: { userId: userId },
       include: {
-        recipes: true,
-        user: true,
+        recipes: {
+          include: {
+            category: true,
+          },
+        },
       },
     });
     res.status(200).json(recipeLists);
