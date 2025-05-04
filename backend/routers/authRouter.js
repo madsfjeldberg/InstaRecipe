@@ -104,7 +104,7 @@ router.get("/api/auth/logout", async (req, res) => {
 
   const isDestroyed = await auth.destroyToken(jwt);
   if(!isDestroyed) {
-    return res.status(404).send({ errorMessage: "error occoured during logout"})
+    return res.status(404).send({ errorMessage: "error occurred during logout"})
   }
 
   res
