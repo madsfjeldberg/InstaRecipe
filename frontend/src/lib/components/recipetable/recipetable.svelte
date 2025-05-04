@@ -31,15 +31,15 @@
         </Table.Cell>
       </Table.Row>
     {:else}
-  {#each recipes as recipe (recipe._id)}
-    <Table.Row class="group cursor-pointer" key={recipe._id}>
+  {#each recipes as recipe (recipe.id)}
+    <Table.Row class="group cursor-pointer" key={recipe.id}>
     <Table.Cell class="font-medium overflow">{recipe.name}</Table.Cell>
     <Table.Cell>{recipe.description}</Table.Cell>
-    <Table.Cell>{recipe.category}</Table.Cell>
+    <Table.Cell>{recipe.category.name}</Table.Cell>
     <Table.Cell class="text-right">{recipe.calories}kcal</Table.Cell>
     <Table.Cell class="flex items-center justify-center"><PopularityVoteButtons /></Table.Cell>
     <Table.Cell>
-      <DeleteRecipeDialog recipeId={recipe._id} bind:selectedList />
+      <DeleteRecipeDialog recipeId={recipe.id} bind:selectedList />
     </Table.Cell>
     </Table.Row>
   {/each}

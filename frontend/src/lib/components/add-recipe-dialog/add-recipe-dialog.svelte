@@ -50,7 +50,7 @@
     const instructions = formData.get('instructions');
     const category = formData.get('category');
     const calories = parseFloat(formData.get('calories'));
-    const recipeListId = selectedList._id;
+    const recipeListId = selectedList.id;
 
     try {
       let response;
