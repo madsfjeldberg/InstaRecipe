@@ -24,10 +24,10 @@
           {#each categories as cat, index (cat.id || index)}
             <Select.Item
               class="hover:bg-slate-200 dark:hover:bg-gray-800 transition-all"
-              value={cat}
+              value={cat.name}
               selected={cat._id === selectedCategory._id}
             >
-              {cat}
+              {cat.name}
             </Select.Item>
           {/each}
         </Select.Group>

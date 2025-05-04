@@ -25,7 +25,6 @@ router.get("/api/recipes/categories", async (req, res) => {
 
 router.get("/api/recipes/:listId", async (req, res) => {
   const { listId } = req.params;
-  console.log("List ID:", listId);
 
   if (!listId) {
     return res.status(400).json({ message: "List ID is required" });
