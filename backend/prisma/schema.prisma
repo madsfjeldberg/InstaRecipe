@@ -47,7 +47,7 @@ model RecipeList {
 
 model Category {
   id      String   @id @default(uuid())
-  name    String
+  name    String   @unique
   recipes Recipe[]
 }
 
@@ -55,13 +55,14 @@ model Recipe {
   id           String       @id @default(uuid())
   name         String
   description  String
-  ingredients  String[]
-  instructions String[]
-  categories   Category[]
+  ingredients  String
+  instructions String
+  category     Category     @relation(fields: [categoryId], references: [id])
   calories     Int?
   likes        String[] // store user IDs as UUID strings
   dislikes     String[] // store user IDs as UUID strings
   recipeLists  RecipeList[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  categoryId   String
 }

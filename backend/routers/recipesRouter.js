@@ -38,7 +38,7 @@ router.get("/api/recipes/:listId", async (req, res) => {
         }
       },
       include: {
-        categories: true,
+        category: true,
         recipeLists: true, // use recipeLists, not recipeList
       },
     });
@@ -63,12 +63,20 @@ router.post("/api/recipes", async (req, res) => {
         description,
         ingredients,
         instructions,
-        categories,
+        category: { connect: { name: category } },
         calories,
-        recipeListId,
+        recipeLists: { connect: { id: recipeListId } },
       },
     });
-    console.log("New recipe added:", newRecipe);
+    // add recipe to the recipe list
+    await prisma.recipeList.update({
+      where: { id: recipeListId },
+      data: {
+        recipes: {
+          connect: { id: newRecipe.id },
+        },
+      },
+    });
     res.status(201).json({ status: 201, data: newRecipe });
   } catch (error) {
     console.error(error.message)
