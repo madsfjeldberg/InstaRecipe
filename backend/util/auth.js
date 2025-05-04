@@ -65,6 +65,22 @@ async function verifyToken(token) {
   }
 }
 
+async function destroyToken(token) {
+
+  try{
+    const keysDeleted = await redis.del(token);
+    if(keysDeleted === 0) {
+      return false;
+    }
+
+    return true;
+
+  } catch(error) {
+    console.error(error);
+    return false;
+  }
+}
+
 const decodeToken = (token) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -79,5 +95,6 @@ export default {
   verifyPassword,
   generateToken,
   decodeToken,
-  verifyToken
+  verifyToken,
+  destroyToken
 };
