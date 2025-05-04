@@ -8,6 +8,7 @@
   import { getRecipeListsByUserId } from "$lib/services/recipelistService.js";
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
   import { getRecipesByListId, getCategories } from "$lib/services/recipeService.js";
+  import { LoaderCircle } from "lucide-svelte";
 
   const { data } = $props();
   const { user } = data;
@@ -30,16 +31,16 @@
     categories = await getCategories(userId);
     // Set the flag to false after the initial load
     isInitialLoad = false;
-    loading = false; // Update loading state after initial load
+    loading = false;
   });
 
   // when a new recipe list is selected, fetch the recipes for that list
   // and pass to recipe table
   $effect(async () => {
   if (isInitialLoad || !selectedList) return;
-  loading = true; // Set loading state to true while fetching
+  loading = true;
   recipes = await getRecipesByListId(selectedList.id);
-  loading = false; // Set loading state to false after fetching
+  loading = false;
 });
   
   
@@ -60,7 +61,7 @@
   <div class="col-span-8 mt-10">
     {#if loading}
       <div class="flex text-center flex-col items-center justify-center h-full">
-        <h1 class="text-2xl font-semibold">Loading...</h1>
+        <h1 class="flex text-2xl font-semibold items-center mt-72"><LoaderCircle class="mr-2 h-10 w-10  animate-spin inline-block" /> Loading...</h1>
       </div>
     {:else if selectedList}
       <div class="flex items-center justify-between mb-4">
