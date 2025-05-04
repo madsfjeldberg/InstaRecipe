@@ -94,7 +94,19 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
 });
 
 
-router.get("/api/auth/logout", (req, res) => {
+router.get("/api/auth/logout", async (req, res) => {
+  
+  const jwt = req.cookies.jwt;
+  if(!jwt) {
+    return res.status(404).send({ errorMessage: "no tokens found on request"})
+  }
+
+
+  const isDestroyed = await auth.destroyToken(jwt);
+  if(!isDestroyed) {
+    return res.status(404).send({ errorMessage: "error occoured during logout"})
+  }
+
   res
     .clearCookie("jwt")
     .status(200)
