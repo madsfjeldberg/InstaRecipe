@@ -39,13 +39,12 @@ const generateToken = async (user) => {
 
   // store token in redis
   try{
-    await redis.set(token, user.id.toString(), {EX: exp})
+    await redis.setEx(token, JWT_EXPIRATION, user.id.toString())
     return token;
     
   } catch(error) {
     console.error(error);
   }
-
 }
 
 async function verifyToken(token) {
