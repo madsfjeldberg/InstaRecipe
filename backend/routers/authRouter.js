@@ -3,7 +3,7 @@ import { Router } from "express";
 import auth from "../util/auth.js";
 import emailService from "../util/email.js";
 import prisma from "../database/prismaClient.js";
-import { authenticateToken } from '../util/middleware/authenticateToken.js';
+import { authenticateToken, isAuthenticated } from '../util/middleware/authenticateToken.js';
 
 const router = Router();
 
@@ -45,24 +45,12 @@ router.post("/api/auth/register", async (req, res) => {
 
   //this generates the token and stroes userId as value and token as key
   const jwt = await auth.generateToken(newUser);
-
-  // create a verification token and send a verification email
-  // const verificationToken = await tokens.createToken(newUser._id, token);
-
-  // Token should be stored in redis
-  // const verificationToken = await prisma.token.create({
-  //   data: {
-  //     userId: newUser.id,
-  //     token: token,
-  //   },
-  // });
-
   await emailService.sendVerificationEmail(newUser.email, jwt);
 
   res.cookie("jwt", jwt, cookieOptions).send({ message: "User registered successfully.", status: 200 });
 });
 
-router.post("/api/auth/login", async (req, res) => {
+router.post("/api/auth/login", isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -113,6 +101,7 @@ router.get("/api/auth/logout", (req, res) => {
     .send({ message: "Logout successful." });
 });
 
+//TODO
 router.post("/api/auth/change-password", async (req, res) => {
   const { newPassword } = req.body;
 
