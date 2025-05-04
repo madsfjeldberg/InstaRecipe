@@ -12,15 +12,14 @@
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
-  let { selectedList = $bindable() } = $props();
+  let { selectedList = $bindable(), categories } = $props();
 
-  let categories = $state([]);
   let isDialogOpen = $state(false); // control state of the dialog/sheet
 
   // Fetch categories once when the component mounts
-  onMount(async () => {
-    categories = await getCategories();
-  });
+  // onMount(async () => {
+  //   categories = await getCategories();
+  // });
 
   let errors = $state({
     form: "",

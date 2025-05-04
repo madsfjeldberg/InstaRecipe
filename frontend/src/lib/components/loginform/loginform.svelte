@@ -52,7 +52,6 @@
         const avatarResponse = await fetch(`${BASE_URL}/users/${data.id}/avatar`, { // Use BASE_URL for the avatar fetch
           credentials: 'include'
         });
-        console.log('avatarResponse', avatarResponse);
         if (avatarResponse.ok) {
           const avatarBlob = await avatarResponse.blob(); // blob = binary large object
           const reader = new FileReader(); // Create a FileReader to read the blob
