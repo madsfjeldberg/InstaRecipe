@@ -7,7 +7,8 @@
   import { onMount } from "svelte";
   import { getRecipeListsByUserId } from "$lib/services/recipelistService.js";
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
-  import { getRecipesByListId, getCategories } from "$lib/services/recipeService.js";
+  import { getRecipesByListId } from "$lib/services/recipeService.js";
+  import { getCategories } from "$lib/services/categoryService.js";
   import { LoaderCircle } from "lucide-svelte";
 
   const { data } = $props();
@@ -25,10 +26,10 @@
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
+    categories = await getCategories(userId);
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) selectedList = recipeLists[0];
-    // Fetch categories after loading recipe lists
-    categories = await getCategories(userId);
+    recipes = selectedList.recipes;
     // Set the flag to false after the initial load
     isInitialLoad = false;
     loading = false;
@@ -39,7 +40,7 @@
   $effect(async () => {
   if (isInitialLoad || !selectedList) return;
   loading = true;
-  recipes = await getRecipesByListId(selectedList.id);
+  recipes = selectedList.recipes;
   loading = false;
 });
   
