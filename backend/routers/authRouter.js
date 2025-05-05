@@ -208,7 +208,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
 
     const isDeleted = await redis.del(resetToken);
     if(!isDeleted) {
-      return res.status(500).send({ errorMessage: "Error occoured when deleting reset token"});
+      return res.status(500).send({ errorMessage: "Error occurred when deleting reset token"});
     }
 
     const newHashedPassword = await auth.hashPassword(newPassword);
