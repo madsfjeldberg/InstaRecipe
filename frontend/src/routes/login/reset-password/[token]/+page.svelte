@@ -8,16 +8,19 @@
     import { toast } from "svelte-sonner";
     import { goto } from "$app/navigation";
     import { z } from "zod";
+    import { Stretch } from 'svelte-loading-spinners'; 
 
     let newPassword = $state("");
     let confirmPassword = $state("");
     let success = $state(false);
+    let isLoading = $state(false);
 
     let isNewPasswordTooShort = $state(false);
     let passwordTooShortErrorMessage = $state("");
 
     let isConfirmPasswordMatch = $state(true);
     let confirmPasswordErrorMessage = $state("");
+
 
     const resetPasswordSchema = z
         .object({
@@ -31,6 +34,8 @@
             path: ["confirmPassword"],
         });
 
+
+
     async function handleResetPassword(event) {
         event.preventDefault();
 
@@ -39,41 +44,21 @@
             confirmPassword,
         });
 
-        console.log(result);
-
-        if (!result.success) {
-            if (result.error.issues.length === 2) {
-                isNewPasswordTooShort = true;
-                passwordTooShortErrorMessage = result.error.issues[0].message;
-
-                isConfirmPasswordMatch = false;
-                confirmPasswordErrorMessage = result.error.issues[1].message;
-                return;
-            }
-
-            if (
-                result.error.issues[0].message ===
-                "Password must be at least 8 characters"
-            ) {
-                isNewPasswordTooShort = true;
-                passwordTooShortErrorMessage = result.error.issues[0].message;
-                return;
-            } else {
-                isConfirmPasswordMatch = false;
-                confirmPasswordErrorMessage = result.error.issues[0].message;
-                return;
-            }
-        } else {
-            isNewPasswordTooShort = false;
-            isConfirmPasswordMatch = true;
+        const isValid = validateFormInput(result);
+        if(!isValid) {
+            return;
         }
 
+        await resetPassword();
+    }
+
+
+
+    async function resetPassword() {
         try {
+            isLoading = true;
             const resetToken = getResetTokenFromHref();
-            const response = await authService.resetPassword(
-                newPassword,
-                resetToken,
-            );
+            const response = await authService.resetPassword(newPassword, resetToken);
 
             if (response.status !== 200) {
                 console.log("Reset failed:", response.errorMessage);
@@ -85,13 +70,51 @@
             success = true;
             newPassword = "";
             confirmPassword = "";
+            setTimeout(async () => await goto("/login"), 5000); //5 seconds
 
-            setTimeout(async () => await goto("/login"), 5000);
         } catch (error) {
             console.error("Unexpected error:", error);
             toast.error("An error occurred while resetting password");
+
+        } finally {
+            isLoading = false;
         }
     }
+
+
+
+    function validateFormInput(result) {
+
+        if (!result.success) {
+            if (result.error.issues.length === 2) {
+                isNewPasswordTooShort = true;
+                passwordTooShortErrorMessage = result.error.issues[0].message;
+
+                isConfirmPasswordMatch = false;
+                confirmPasswordErrorMessage = result.error.issues[1].message;
+                return false;
+            }
+
+            if (result.error.issues[0].message === "Password must be at least 8 characters") {
+                isNewPasswordTooShort = true;
+                isConfirmPasswordMatch = true;
+                passwordTooShortErrorMessage = result.error.issues[0].message;
+                return false;
+
+            } else {
+                isNewPasswordTooShort = false;
+                isConfirmPasswordMatch = false;
+                confirmPasswordErrorMessage = result.error.issues[0].message;
+                return false;
+            }
+
+        } 
+        
+        isNewPasswordTooShort = false;
+        isConfirmPasswordMatch = true;
+        return true;
+    }
+
 
     function getResetTokenFromHref() {
         const pathSegments = location.href.split("/");
@@ -151,7 +174,14 @@
                     />
                 </div>
 
-                <Button type="submit">Reset</Button>
+                <Button type="submit">
+                    {#if isLoading}
+                        <Stretch size=20 color=#105e7f/>
+
+                        {:else}
+                            Reset
+                    {/if}
+                </Button>
             </form>
         </Card.Content>
     </Card.Root>
