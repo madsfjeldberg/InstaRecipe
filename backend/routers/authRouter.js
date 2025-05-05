@@ -169,8 +169,8 @@ router.post("/api/auth/forgot-password", async (req, res) => {
     }
 
     const resetToken = crypto.randomUUID();
-    const FIFTEN_MINUTES = 900;
-    const isSet = await redis.setEx(resetToken, FIFTEN_MINUTES, email);
+    const FIFTEEN_MINUTES = 900;
+    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
     if(!isSet) {
       return res.status(500).send({ errorMessage: "Something went wrong generating reset password token"});
     }
