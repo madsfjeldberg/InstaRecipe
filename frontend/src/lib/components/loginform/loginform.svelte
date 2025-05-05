@@ -109,7 +109,7 @@
         {#if errors.password}
           <span class="text-red-500 text-sm">{errors.password}</span>
         {/if}
-        <a href="##" class="ml-auto inline-block text-sm underline">
+        <a href="/login/forgot-password" class="ml-auto inline-block text-sm underline">
           Forgot your password?
         </a>
       </div>
