@@ -13,5 +13,4 @@ router.get('/api/categories', async (req, res) => {
   }
 });
 
-
 export default router;

@@ -48,7 +48,7 @@
       if (response.status === 200) {
         
         // handle avatar
-        const data = await response.json(); // Await the JSON response
+        const data = await response; // Await the JSON response
         const avatarResponse = await fetch(`${BASE_URL}/users/${data.id}/avatar`, { // Use BASE_URL for the avatar fetch
           credentials: 'include'
         });
