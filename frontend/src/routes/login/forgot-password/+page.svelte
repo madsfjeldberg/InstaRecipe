@@ -77,6 +77,7 @@
 
                 <Button type="submit">
                     {#if isLoading}
+                    <!-- TODO make loading spinners dynamicaly change color based on darkmode or not -->
                         <Stretch size=20 color=#105e7f/>
                     {:else}
                         Submit
