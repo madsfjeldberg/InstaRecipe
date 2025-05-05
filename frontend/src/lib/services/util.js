@@ -2,7 +2,7 @@ function makeOption(httpMethod, body) {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     if(!methods.includes(httpMethod)) {
-        throw Error(httpMethod + " is not a vallid http method / verb")
+        throw Error(httpMethod + " is not a valid http method / verb")
     }
 
     const option = {
