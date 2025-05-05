@@ -225,7 +225,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
 
 
   } catch (error) {
-    res.status(500).send({ errorMessage: "Unexpected error occoured during password reset"})
+    res.status(500).send({ errorMessage: "Unexpected error occurred during password reset"})
     console.error(error);
   }
 
