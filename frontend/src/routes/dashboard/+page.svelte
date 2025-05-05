@@ -3,8 +3,11 @@
   import { goto } from "$app/navigation";
   import Button from "$lib/components/ui/button/button.svelte";
 
-  export let data;
+  // export let data;
+  const { data } = $props();
   const { user } = data;
+  let recipeData = $state({});
+  let url = $state("");
 
   let username = user.username;
 
@@ -15,7 +18,7 @@
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ url: "https://www.instagram.com/p/C3TIKgKvAXo/" }),
+      body: JSON.stringify({ url }),
     });
 
     if (!response.ok) {
@@ -23,9 +26,9 @@
     }
 
     const result = await response.json();
-    console.log(result); // Log the result to the console
+    console.log(result.name); // Log the result to the console
+    recipeData = result; // Update the recipeData with the result
     return result;
-
   }
 
 </script>
@@ -37,4 +40,11 @@
 
 <h1 class="font-bold text-3xl text-center dark:text-gray-200">Welcome to the Dashboard, {username}!</h1>
 <h2 class="font-bold text-xl text-center dark:text-gray-200">This means you're logged in :)</h2>
-<Button onclick={scrapeSite}>Scrape insta link</Button>
+  <input type="text" placeholder="Feed me seymour..." bind:value={url} />
+  <Button onclick={scrapeSite}>Scrape</Button>
+<p>{recipeData}</p>
+<p>{recipeData.name}</p>
+<p>{recipeData.ingredients}</p>
+<p>{recipeData.instructions}</p>
+<p>{recipeData.category}</p>
+<p>{recipeData.calories}</p>

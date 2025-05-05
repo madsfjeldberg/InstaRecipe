@@ -45,9 +45,16 @@ router.post('/api/scrape', async (req, res) => {
       return text;
     })
   );
+  console.log("input: ", h1Texts);
   const aiResponse = await ai.generateRecipe(h1Texts.join('\n'));
   console.log("ai output: ", aiResponse.output_text);
-  return res.status(200).json(aiResponse.output_text);  
+  try {
+    const jsonData = JSON.parse(aiResponse.output_text);
+    return res.status(200).json(jsonData);
+  } catch(err) {
+    console.error("Error parsing AI response JSON", err);
+    return res.status(500).json({ message: "Invalid JSON format from AI output" });
+  }
 });
 
 
