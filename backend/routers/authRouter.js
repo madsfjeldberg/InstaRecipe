@@ -3,6 +3,7 @@ import { Router } from "express";
 import auth from "../util/auth.js";
 import emailService from "../util/email.js";
 import prisma from "../database/prismaClient.js";
+import redis from '../database/redisClient.js';
 import { authenticateToken, isAuthenticated } from '../util/middleware/authenticateToken.js';
 
 const router = Router();
@@ -136,6 +137,101 @@ router.post("/api/auth/change-password", async (req, res) => {
     res.status(500).send({ message: `An error occurred during password change.` });
   }
 });
+
+
+
+router.post("/api/auth/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  
+  if(!email) {
+    return res.status(401).send({ errorMessage: "Email must be included in the request"});
+  }
+
+  try{
+
+    const isValidEmail = await prisma.user.findUnique({ 
+      where: {
+        email: email
+      }
+    });
+    if(!isValidEmail) {
+      return res.status(401).send({ errorMessage: "Invalid email"});
+    }
+    
+    const foundToken = await redis.exists(email);
+    if(foundToken) {
+      try{
+        await redis.del(email);
+      }catch(error) {
+        console.error(error);
+        return res.status(500).send({ errorMessage: "Error occoured during token reset password token deletion"})
+      }
+    }
+
+    const resetToken = crypto.randomUUID();
+    const FIFTEN_MINUTES = 900;
+    const isSet = await redis.setEx(resetToken, FIFTEN_MINUTES, email);
+    if(!isSet) {
+      return res.status(500).send({ errorMessage: "Something went wrong generating reset password token"});
+    }
+
+    await emailService.sendPasswordResetEmail(email, resetToken);
+    res.send({ status: 200, message: "Forgot password request processed successfully"});
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request"})
+  }
+})
+
+
+
+router.patch("/api/auth/reset-password/:token", async (req, res) => {
+  const resetToken = req.params.token;
+  if(!resetToken) {
+    return res.status(401).send({ errorMessage: "Reset token must be included in the request"});
+  }
+
+  
+  const { newPassword } = req.body;
+  if(!newPassword) {
+    return res.status(401).send({ errorMessage: "must included a new password"});
+  }
+
+  try{
+    const doesExists = await redis.exists(resetToken);
+    if(!doesExists) {
+      return res.status(401).send({ errorMessage: "No reset token found, send a new forgot password request"})
+    }
+
+    const email = await redis.get(resetToken);
+
+    const isDeleted = await redis.del(resetToken);
+    if(!isDeleted) {
+      return res.status(500).send({ errorMessage: "Error occoured when deleting reset token"});
+    }
+
+    const newHashedPassword = await auth.hashPassword(newPassword);
+    await prisma.user.update({ 
+      where: {
+        email: email
+      },
+      data: {
+        password: newHashedPassword
+      }
+    });
+
+    res.send({ status: 200, message: "Password has been reset"});
+
+
+  } catch (error) {
+    res.status(500).send({ errorMessage: "Unexpected error occoured during password reset"})
+    console.error(error);
+  }
+
+})
+
+
 
 router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
   const user = req.user;
