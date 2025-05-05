@@ -195,7 +195,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
   
   const { newPassword } = req.body;
   if(!newPassword) {
-    return res.status(401).send({ errorMessage: "must included a new password"});
+    return res.status(401).send({ errorMessage: "must include a new password"});
   }
 
   try{
