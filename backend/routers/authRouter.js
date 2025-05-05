@@ -164,7 +164,7 @@ router.post("/api/auth/forgot-password", async (req, res) => {
         await redis.del(email);
       }catch(error) {
         console.error(error);
-        return res.status(500).send({ errorMessage: "Error occoured during token reset password token deletion"})
+        return res.status(500).send({ errorMessage: "Error occurred during token reset password token deletion"})
       }
     }
 
