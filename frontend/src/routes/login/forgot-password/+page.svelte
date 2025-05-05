@@ -6,14 +6,17 @@
     import { authService } from "$lib/services/authService";
     import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
-
+    import { Stretch } from 'svelte-loading-spinners'; 
+    
     let email = $state("");
+    let isLoading = $state(false);
     let success = $state(false);
 
     async function handleSendResetPasswordRequest(event) {
         event.preventDefault();
 
         try {
+            isLoading = true;
             const response = await authService.sendRestPasswordRequest(email);
             if (response.status !== 200) {
                 toast.error(response.errorMessage);
@@ -26,6 +29,9 @@
             console.log("called");
         } catch (error) {
             console.error(error);
+
+        } finally {
+            isLoading = false;
         }
     }
 </script>
@@ -69,7 +75,13 @@
                     />
                 </div>
 
-                <Button type="submit">Submit</Button>
+                <Button type="submit">
+                    {#if isLoading}
+                        <Stretch size=20 color=#105e7f/>
+                    {:else}
+                        Submit
+                    {/if}
+                </Button>
             </form>
         </Card.Content>
     </Card.Root>
