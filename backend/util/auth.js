@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import redis from '../database/redisClient.js';
 import { token } from 'morgan';
+import email from './email.js';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -33,6 +34,7 @@ const generateToken = async (user) => {
   const token = jwt.sign({
     id: user.id,
     username: user.username,
+    email: user.email,
     iat: now,
     exp: exp
   }, JWT_SECRET);
