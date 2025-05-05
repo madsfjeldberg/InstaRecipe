@@ -31,7 +31,7 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
       include: {
         recipes: {
           include: {
-            category: true,
+            categories: true,
           },
         },
       },
