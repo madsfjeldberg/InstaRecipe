@@ -28,13 +28,6 @@ model User {
   recipeLists RecipeList[]
 }
 
-model Token {
-  userId    String   @id @default(uuid())
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model RecipeList {
   id        String   @id @default(uuid())
   name      String
