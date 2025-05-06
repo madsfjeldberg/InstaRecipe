@@ -14,37 +14,34 @@ router.get("/api/recipes", async (req, res) => {
   }
 });
 
+
+
+router.get("/api/recipes/:id", async (req, res) => {
+  const id = req.params.id;
+  if(!id) {
+    return res.status(400).send({ errorMessage: "Recipe id missing in request"})
+  }
+
+  try{
+    const recipe = await prisma.recipe.findUnique({
+      where: {
+        id
+      }
+    })
+    res.send({ data: recipe});
+
+  }catch(error) {
+    res.status(500).send({errorMessage: "Something went wrong fetching the recipe"})
+  }
+})
+
+
+
 router.get("/api/recipes/categories", async (req, res) => {
   try {
     const categories = await prisma.category.findMany();
     res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.get("/api/recipes/:listId", async (req, res) => {
-  const { listId } = req.params;
-
-  if (!listId) {
-    return res.status(400).json({ message: "List ID is required" });
-  }
-
-  try {
-    const recipes = await prisma.recipe.findMany({
-      where: {
-        recipeLists: {
-          some: { id: listId }
-        }
-      },
-      include: {
-        category: true,
-        recipeLists: true, // use recipeLists, not recipeList
-      },
-    });
-    res.status(200).json(recipes);
-  } catch (error) {
-    console.error(error.message)
     res.status(500).json({ message: error.message });
   }
 });
