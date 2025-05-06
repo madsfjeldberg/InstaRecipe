@@ -1,23 +1,25 @@
+import { makeOption } from "./util";
+
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipes' || '/recipes';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipes` : '/api/recipes';
 
-const getRecipesByListId = async (listId) => {
-  const response = await fetch(`${BASE_URL}/${listId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch recipe lists');
+
+
+
+async function getRecipeById(id) {
+  try{
+    const getOption = makeOption("GET");
+    const response = await fetch(BASE_URL + "/" + id, getOption);
+    return await response.json();
+
+  }catch(error) {
+    console.error(error);
   }
-
-  const data = await response.json();
-  return data;
 }
 
+
+//TODO before adding calling the post retrieve the macros first and then add these to the body of the post request.
 const addRecipe = async (
   name,
   description,
@@ -88,7 +90,7 @@ const deleteRecipe = async (recipeId) => {
 }
 
 export {
-  getRecipesByListId,
+  getRecipeById,
   addRecipe,
   getCategories,
   deleteRecipe
