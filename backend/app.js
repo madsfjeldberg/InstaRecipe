@@ -38,4 +38,7 @@ app.use(recipesRouter);
 app.use(usersRouter);
 app.use(categoriesRouter);
 
+import macroRouter from './routers/macroRouter.js';
+app.use(macroRouter);
+
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});
