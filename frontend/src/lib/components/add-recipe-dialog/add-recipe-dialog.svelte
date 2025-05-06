@@ -75,7 +75,7 @@
       if (response.status === 201) {
         await toast.success("Recipe added successfully!");
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList };
+        selectedList = { ...selectedList }; // why spread / copy the selectedList into a variable called the same with the same value
         errors = {
           form: "",
           name: "",
