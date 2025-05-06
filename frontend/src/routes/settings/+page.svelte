@@ -9,7 +9,7 @@
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { userService } from "$lib/services/userService.js";
+  import { userService } from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();

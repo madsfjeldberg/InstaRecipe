@@ -3,7 +3,7 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import { authService } from "$lib/services/authService";
+    import { authService } from "$lib/api/authApi";
     import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
     import { Stretch } from 'svelte-loading-spinners'; 

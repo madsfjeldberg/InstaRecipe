@@ -4,7 +4,7 @@
   import Button from '../ui/button/button.svelte';
   import DeleteRecipeDialog from '../delete-recipe-dialog/delete-recipe-dialog.svelte';
   import { toast } from 'svelte-sonner';
-  import { deleteRecipe } from '$lib/services/recipeService.js';
+  import { deleteRecipe } from '$lib/api/recipeApi.js';
   import PopularityVoteButtons from '../popularity-vote-buttons/popularity-vote-buttons.svelte';
 
   let { selectedList = $bindable(), recipes } = $props();

@@ -5,7 +5,7 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { z } from 'zod';
   import { goto } from '$app/navigation';
-  import { authService } from '$lib/services/authService.js';
+  import { authService } from '$lib/api/authApi.js';
   import { toast } from 'svelte-sonner';
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { user } from "$lib/stores/authStore.js";

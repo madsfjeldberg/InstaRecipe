@@ -6,7 +6,7 @@
   import Textarea from "../ui/textarea/textarea.svelte";
   import CategorySelect from "../category-select/category-select.svelte";
   import { onMount } from "svelte";
-  import { addRecipe, getCategories } from "$lib/services/recipeService";
+  import { addRecipe, getCategories } from "$lib/api/recipeApi";
   import { z } from "zod";
   import { toast } from "svelte-sonner";
 

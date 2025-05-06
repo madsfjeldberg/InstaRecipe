@@ -11,7 +11,7 @@
   import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./navlink.svelte";
   import { goto } from "$app/navigation";
-  import { authService } from "$lib/services/authService.js";
+  import { authService } from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";
   import { avatarStore } from "$lib/stores/avatarStore.js";
 

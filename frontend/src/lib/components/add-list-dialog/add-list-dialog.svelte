@@ -9,7 +9,7 @@
   import { Plus } from "lucide-svelte";
   import { z } from "zod";
   import { isAuthenticated, user } from "$lib/stores/authStore.js";
-  import { addRecipeList } from "$lib/services/recipelistService.js";
+  import { addRecipeList } from "$lib/api/recipelistApi.js";
   import Recipetable from "../recipetable/recipetable.svelte";
 
   let { recipeLists = $bindable() } = $props();

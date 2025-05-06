@@ -5,10 +5,10 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Plus, ScrollText, ExternalLink } from "lucide-svelte";
   import { onMount } from "svelte";
-  import { getRecipeListsByUserId } from "$lib/services/recipelistService.js";
+  import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
-  import { getRecipesByListId } from "$lib/services/recipeService.js";
-  import { getCategories } from "$lib/services/categoryService.js";
+  import { getRecipesByListId } from "$lib/api/recipeApi.js";
+  import { getCategories } from "$lib/api/categoryApi.js";
   import { LoaderCircle } from "lucide-svelte";
 
   const { data } = $props();
