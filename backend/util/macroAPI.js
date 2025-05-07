@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
-const apiKey = process.env.CALNINJA_API_KEY;
+//TODO blev enig om variable navn for cal ninja api key
+const apiKey = process.env.CALNINJA_API_KEY || process.env.CALORIE_NINJAS_API_KEY;
 const apiUrl = 'https://api.calorieninjas.com/v1/nutrition?query=';
 
 const getMacros = async (ingredients) => {

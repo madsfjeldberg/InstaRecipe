@@ -63,22 +63,24 @@
           <p class="text-center text-gray-700 dark:text-gray-300 mx-auto max-w-2xl">{recipe.description}</p>
         </section>
   
+        <div class="border-t-2 dark:border-gray-700 mt-8 mb-8"></div>
+
         <!-- Diagrams -->
         <div class="grid sm:grid-cols-2 gap-60 mb-8 ">
 
           <div class="flex flex-col items-center">
-            <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
+            <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient (kcal)</p>
             <DoughnutChart labels={recipe.ingredientsList.map((ingredient) => {return ingredient.name})} data={recipe.ingredientsList.map((ingredient) => {return ingredient.calories})}/>
           </div>
 
           <div class="flex flex-col items-center">
-            <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
+            <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient (g)</p>
              <BarChart ingredients={recipe.ingredientsList}/>
           </div>
 
         </div>
 
-        <div class="border-t-2 dark:border-gray-700 mb-8"></div>
+        <div class="border-t-2 dark:border-gray-700 mt-8 mb-8"></div>
   
         <!-- Totals -->
         <div class="mb-8 text-center">

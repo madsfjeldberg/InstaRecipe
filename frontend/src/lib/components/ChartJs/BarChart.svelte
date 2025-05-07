@@ -30,17 +30,17 @@
         labels: ingredients.map((i) => i.name),
         datasets: [
           {
-            label: "Protein (g)",
+            label: "Protein",
             data: ingredients.map((i) => i.protein),
             backgroundColor: "#4ade80", // Green
           },
           {
-            label: "Fat (g)",
+            label: "Fat",
             data: ingredients.map((i) => i.fat),
             backgroundColor: "#facc15", // Yellow
           },
           {
-            label: "Carbs (g)",
+            label: "Carbs",
             data: ingredients.map((i) => i.carbs),
             backgroundColor: "#60a5fa", // Blue
           },

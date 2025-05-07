@@ -9,9 +9,9 @@ import scrapeRouter from "./routers/scrapeRouter.js";
 
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import { limiter, authLimiter } from "./util/rateLimiter.js";
-import logger from "./util/logger.js";
-import cors from "./util/cors.js";
+import { limiter, authLimiter } from "./middleware/rateLimiter.js";
+import logger from "./middleware/logger.js";
+import cors from "./middleware/cors.js";
 
 
 const app = express();
@@ -31,7 +31,7 @@ app.use(['/auth/login', '/auth/register'], authLimiter);
 app.use(authRouter);
 
 // authentication jwt token for all routes except authRouter
-import { authenticateToken } from "./util/middleware/authenticateToken.js";
+import { authenticateToken } from "./middleware/authenticateToken.js";
 app.use(authenticateToken);
 
 app.use(recipelistsRouter);
@@ -40,7 +40,7 @@ app.use(usersRouter);
 app.use(categoriesRouter);
 app.use(scrapeRouter);
 
-import macroRouter from './routers/macroRouter.js';
-app.use(macroRouter);
+import ingredientsRouter from './routers/macroRouter.js';
+app.use(ingredientsRouter);
 
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});

@@ -1,6 +1,6 @@
 import { Router } from "express";
-
 import prisma from "../database/prismaClient.js";
+import macroService from "../service/macroService.js";
 
 const router = Router();
 
@@ -58,7 +58,7 @@ router.post("/api/recipes", async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const ingredientsWithMacros = await getMacros(ingredients);
+  const ingredientsWithMacros = await macroService.getMacros(ingredients);
   if(!ingredientsWithMacros.items) {
     ingredientsWithMacros.items = [];
   } 
@@ -114,20 +114,6 @@ router.post("/api/recipes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-async function getMacros(ingredients) {
-  try {
-    const response = await fetch("https://api.calorieninjas.com/v1/nutrition?query=" + ingredients, {
-      headers: {
-        "X-Api-Key": process.env.CALORIE_NINJAS_API_KEY
-      }
-    });
-    return await response.json();
-
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
