@@ -52,11 +52,32 @@ router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) =
 
 // PATCH route to update the username
 router.patch('/api/users', async (req, res) => {
-  const { userId, newUsername } = req.body;
+  const { userId, newUsername, newPassword } = req.body;
   console.log('Received request to update username:', req.body);
 
-  if (!userId || !newUsername) {
-    return res.status(400).json({ message: 'User ID and new username are required' });
+  if (!userId && !newUsername && !newPassword) {
+    console.log('Missing userId or newUsername or newPassword');
+    return res.status(400).json({ message: 'No values provided.' });
+  }
+
+  if (newPassword) {
+    // Update the password
+    try {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      let hashedPassword = await auth.hashPassword(newPassword);
+      user.password = hashedPassword;
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword }
+      });
+      return res.status(200).json({ status: 200, message: 'Password updated successfully' });
+    } catch (error) {
+      console.error('Error updating password:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   }
 
   try {
