@@ -26,7 +26,7 @@ const addRecipe = async (
   ingredients,
   instructions,
   category,
-  calories,
+  // calories,
   recipeListId,
 ) => {
   const response = await fetch(`${BASE_URL}`, {
@@ -41,7 +41,7 @@ const addRecipe = async (
       ingredients,
       instructions,
       category,
-      calories,
+      // calories,
       recipeListId
     }),
   });

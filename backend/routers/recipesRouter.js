@@ -18,20 +18,20 @@ router.get("/api/recipes", async (req, res) => {
 
 router.get("/api/recipes/:id", async (req, res) => {
   const id = req.params.id;
-  if(!id) {
-    return res.status(400).send({ errorMessage: "Recipe id missing in request"})
+  if (!id) {
+    return res.status(400).send({ errorMessage: "Recipe id missing in request" })
   }
 
-  try{
+  try {
     const recipe = await prisma.recipe.findUnique({
       where: {
         id
       }
     })
-    res.send({ data: recipe});
+    res.send({ data: recipe });
 
-  }catch(error) {
-    res.status(500).send({errorMessage: "Something went wrong fetching the recipe"})
+  } catch (error) {
+    res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" })
   }
 })
 
@@ -47,39 +47,86 @@ router.get("/api/recipes/categories", async (req, res) => {
 });
 
 router.post("/api/recipes", async (req, res) => {
-  const { name, description, ingredients, instructions, category, calories, recipeListId } = req.body;
+  const { name, description, ingredients, instructions, category, recipeListId } = req.body;
 
-  if (!name || !description || !ingredients || !instructions || !category || !calories) {
+  if (!name || !description || !ingredients || !instructions || !category) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  const ingredientsWithMacros = await getMacros(ingredients);
+  
+ 
   try {
-    const newRecipe = await prisma.recipe.create({
-      data: {
-        name,
-        description,
-        ingredients,
-        instructions,
-        category: { connect: { name: category } },
-        calories,
-        recipeLists: { connect: { id: recipeListId } },
-      },
-    });
-    // add recipe to the recipe list
-    await prisma.recipeList.update({
-      where: { id: recipeListId },
-      data: {
-        recipes: {
-          connect: { id: newRecipe.id },
+    const result = await prisma.$transaction( async (transaction) => {
+      
+      const newRecipe = await transaction.recipe.create({
+        data: {
+          name,
+          description,
+          instructions,
+          category: { connect: { name: category } },
+          recipeLists: { connect: { id: recipeListId } },
         },
-      },
-    });
-    res.status(201).json({ status: 201, data: newRecipe });
+      });
+  
+      const createdIngredients = await Promise.all(
+        
+        ingredientsWithMacros.items.map( async (ingredient) => {
+          return await transaction.ingredient.create({
+            data: {
+              name: ingredient.name,
+              amount: ingredient.serving_size_g.toString(),
+              calories: ingredient.calories,
+              protein: ingredient.protein_g,
+              fat: ingredient.fat_total_g,
+              saturatedFat: ingredient.fat_saturated_g,
+              carbs: ingredient.carbohydrates_total_g,
+              fiber: ingredient.fiber_g,
+              sugar: ingredient.sugar_g,
+              recipeId: newRecipe.id
+            }
+          })
+        })
+      );
+  
+      await transaction.recipeList.update({
+        where: { id: recipeListId },
+        data: {
+          recipes: {
+            connect: { id: newRecipe.id },
+          },
+        },
+      });
+
+      return {recipe: newRecipe, ingredients: createdIngredients};
+
+    })
+    
+    console.log("RECIPE", result.recipe)
+    console.log("INGREDIENTS", result.ingredients)
+
+
+    res.status(201).json({ status: 201, data: {recipe: result.recipe, ingredients: result.ingredients } });
   } catch (error) {
     console.error(error.message)
+    console.error(error)
     res.status(500).json({ message: error.message });
   }
 });
+
+async function getMacros(ingredients) {
+  try {
+    const response = await fetch("https://api.calorieninjas.com/v1/nutrition?query=" + ingredients, {
+      headers: {
+        "X-Api-Key": process.env.CALORIE_NINJAS_API_KEY
+      }
+    });
+    return await response.json();
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
@@ -97,6 +144,6 @@ router.delete("/api/recipes/:id", async (req, res) => {
     console.error(error.message);
     res.status(500).json({ message: error.message });
   }
- });
+});
 
 export default router;
