@@ -5,6 +5,7 @@ import recipelistsRouter from "./routers/recipelistsRouter.js";
 import recipesRouter from "./routers/recipesRouter.js";
 import usersRouter from "./routers/usersRouter.js";
 import categoriesRouter from "./routers/categoriesRouter.js";
+import scrapeRouter from "./routers/scrapeRouter.js";
 
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -37,5 +38,6 @@ app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(usersRouter);
 app.use(categoriesRouter);
+app.use(scrapeRouter);
 
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});

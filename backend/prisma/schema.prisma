@@ -28,13 +28,6 @@ model User {
   recipeLists RecipeList[]
 }
 
-model Token {
-  userId    String   @id @default(uuid())
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model RecipeList {
   id        String   @id @default(uuid())
   name      String
@@ -52,17 +45,29 @@ model Category {
 }
 
 model Recipe {
-  id           String       @id @default(uuid())
-  name         String
-  description  String
-  ingredients  String
-  instructions String
-  category     Category     @relation(fields: [categoryId], references: [id])
-  calories     Int?
-  likes        String[] // store user IDs as UUID strings
-  dislikes     String[] // store user IDs as UUID strings
-  recipeLists  RecipeList[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  categoryId   String
+  id              String       @id @default(uuid())
+  name            String
+  description     String
+  ingredients     String
+  ingredientsList Ingredient[]
+  instructions    String
+  category        Category     @relation(fields: [categoryId], references: [id])
+  likes           String[] // store user IDs as UUID strings (maybe refs to user?)
+  dislikes        String[] // store user IDs as UUID strings (maybe refs to user?)
+  recipeLists     RecipeList[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  categoryId      String
+}
+
+model Ingredient {
+  id          String @id @default(uuid())
+  name        String // e.g. "chicken breast"
+  servingSize Int // amount in grams
+  recipe      Recipe @relation(fields: [recipeId], references: [id])
+  recipeId    String
+  calories    Float
+  protein     Float
+  fat         Float
+  carbs       Float
 }
