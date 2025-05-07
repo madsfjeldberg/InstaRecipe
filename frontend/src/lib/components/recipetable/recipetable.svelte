@@ -43,7 +43,7 @@
           <Table.Cell onclick={() => navigateToRecipe(recipe)} class="font-medium overflow">{recipe.name}</Table.Cell>
           <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.description}</Table.Cell>
           <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.category.name}</Table.Cell>
-          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="text-right">{recipe.calories} kcal</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="text-right">{recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0)}</Table.Cell>
 
           <Table.Cell class="flex items-center justify-center">
             <PopularityVoteButtons />

@@ -76,19 +76,22 @@
   const handleChangePassword = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const password = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
+    let passwordData = formData.get("password");
+    let confirmPasswordData = formData.get("confirmPassword");
 
     try {
       let response;
-      changePasswordRequest.parse({ password, confirmPassword });
-      if (password !== confirmPassword) {
+      changePasswordRequest.parse({ password: passwordData, confirmPassword: confirmPasswordData });
+      if (passwordData !== confirmPasswordData) {
         errors.confirmPassword = "Passwords do not match";
         return;
       }
-      response = await changePassword(user.id, password);
+      response = await changePassword(user.id, passwordData);
       if (response.status === 200) {
         await toast.success("Password updated!");
+        // reset password fields
+        password = "";
+        confirmPassword = "";
         
       } else {
         await toast.error("Error updating password: " + response.message);

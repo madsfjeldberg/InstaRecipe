@@ -32,6 +32,7 @@
       selectedList = recipeLists[0];
       recipes = selectedList.recipes;
     } 
+    console.log($state.snapshot(recipeLists));
     
     // Set the flag to false after the initial load
     isInitialLoad = false;

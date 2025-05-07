@@ -3,9 +3,9 @@
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
   import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipe } from "$lib/services/recipeService";
+  import { deleteRecipe } from "$lib/api/recipeApi";
   import { toast } from "svelte-sonner";
-  import { deleteUser } from "$lib/services/userService";
+  import { deleteUser } from "$lib/api/userApi";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   
