@@ -29,12 +29,13 @@ router.get("/api/recipes/:id", async (req, res) => {
       },
       include: {
         category: true,
-        ingredients: true
+        ingredientsList: true
       }
     })
     res.send({ data: recipe });
 
   } catch (error) {
+    console.error(error)
     res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" })
   }
 })
@@ -60,7 +61,7 @@ router.post("/api/recipes", async (req, res) => {
   const ingredientsWithMacros = await getMacros(ingredients);
   if(!ingredientsWithMacros.items) {
     ingredientsWithMacros.items = [];
-  }
+  } 
  
   try {
     const result = await prisma.$transaction( async (transaction) => {
@@ -82,14 +83,11 @@ router.post("/api/recipes", async (req, res) => {
           return await transaction.ingredient.create({
             data: {
               name: ingredient.name,
-              amount: ingredient.serving_size_g.toString(),
+              servingSize: ingredient.serving_size_g,
               calories: ingredient.calories,
               protein: ingredient.protein_g,
               fat: ingredient.fat_total_g,
-              saturatedFat: ingredient.fat_saturated_g,
               carbs: ingredient.carbohydrates_total_g,
-              fiber: ingredient.fiber_g,
-              sugar: ingredient.sugar_g,
               recipeId: newRecipe.id
             }
           })
