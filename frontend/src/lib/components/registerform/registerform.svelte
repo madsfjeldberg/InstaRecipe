@@ -9,7 +9,7 @@
   import { toast } from 'svelte-sonner';
 
   let { onToggleAuthMode } = $props();
-
+  let loading = $state(false);
   let errors = $state({
     username: '',
     password: '',
@@ -41,6 +41,7 @@
     try {
       let response;
       
+      loading = true; // Set loading to true when the request starts
       //TODO ADD A LOADING SPINNER
       RegisterRequest.parse({ username, email, password});
       response = await authService.register(username, email, password);
@@ -48,6 +49,7 @@
       
       if (response.status === 200) {
         await toast.success('Registration email sent!');
+        loading = false;
         await goto('/verify');
       } else {
         errors = { ...errors, form: response.message };
@@ -61,8 +63,10 @@
             errors[err.path[0]] = err.message;
           }
         });
+        loading = false;
       } else {
         errors.form = error.message || 'An unexpected error occurred';
+        loading = false;
       }
     }
   };
@@ -103,7 +107,11 @@
           <span class="text-red-500 text-sm">{errors.password}</span>
         {/if}
       </div>
-      <Button type="submit" class="w-full">Create an account</Button>
+      {#if loading}
+        <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
+      {:else}
+        <Button type="submit" class="w-full">Sign Up</Button>
+      {/if}
     </div>
     <div class="mt-4 text-center text-sm">
       Already have an account?

@@ -9,17 +9,22 @@
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { changeUsername } from "$lib/api/userApi.js";
+  import { changeUsername, changePassword } from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
+  import { passive } from "svelte/legacy";
 
   const { data } = $props();
   let { user } = data;
   let username = $state("");
+  let password = $state("");
+  let confirmPassword = $state("");
   username = user.username;
 
   let errors = $state({
     username: "",
+    password: "",
+    confirmPassword: "",
     form: "",
   });
 
@@ -27,6 +32,15 @@
     username: z.string()
       .min(3, "Username must be at least 3 characters long")
       .max(20, "Username must be at most 20 characters long"),
+  });
+
+  const changePasswordRequest = z.object({
+    password: z.string()
+      .min(5, "Password must be at least 5 characters long")
+      .max(100, "Password must be at most 100 characters long"),
+    confirmPassword: z.string()
+      .min(5, "Confirm Password must be at least 5 characters long")
+      .max(100, "Confirm Password must be at most 100 characters long"),
   });
 
   const handleChangeUsername = async (event) => {
@@ -57,7 +71,41 @@
         console.error("Unexpected error:", error);
       }
     }
-    
+  };
+
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const password = formData.get("password");
+    const confirmPassword = formData.get("confirmPassword");
+
+    try {
+      let response;
+      changePasswordRequest.parse({ password, confirmPassword });
+      if (password !== confirmPassword) {
+        errors.confirmPassword = "Passwords do not match";
+        return;
+      }
+      response = await changePassword(user.id, password);
+      if (response.status === 200) {
+        await toast.success("Password updated!");
+        
+      } else {
+        await toast.error("Error updating password: " + response.message);
+        errors = { };
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Map Zod errors to form fields
+        error.errors.forEach((err) => {
+          if (err.path[0] in errors) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    }
   };
 
 </script>
@@ -113,15 +161,21 @@
               Change your password here.
             </Card.Description>
           </Card.Header>
-          <Card.Content>
-            <form class="flex flex-col gap-4">
-              <Input placeholder="New Password" />
-              <Input placeholder="Confirm Password" />
-            </form>
+          <form onsubmit={handleChangePassword}>
+          <Card.Content class="flex flex-col gap-4">
+              <Input bind:value={password} type="password" name="password" placeholder="New Password" />
+              {#if errors.password}
+          <span class="text-red-500 text-sm">{errors.password}</span>
+        {/if}
+              <Input bind:value={confirmPassword} type="password" name="confirmPassword" placeholder="Confirm Password" />
+              {#if errors.confirmPassword}
+          <span class="text-red-500 text-sm">{errors.confirmPassword}</span>
+        {/if}
           </Card.Content>
           <Card.Footer class="border-t px-6 py-4">
-            <Button>Save</Button>
+            <Button type="submit">Save</Button>
           </Card.Footer>
+          </form>
         </Card.Root>
         <Card.Root class="col-span-4 relative">
           <Card.Header>
