@@ -22,6 +22,26 @@ const changeUsername = async (userId, newUsername) => {
   return data;
 }
 
-export const userService = {
+const deleteUser = async (userId) => {
+  const response = await fetch(`${BASE_URL}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ userId }),
+  });
+
+  if (response.status === 200) {
+    isAuthenticated.set(false);
+
+  }
+  
+  const data = await response.json();
+  return data;
+}
+
+export {
   changeUsername,
+  deleteUser,
 };

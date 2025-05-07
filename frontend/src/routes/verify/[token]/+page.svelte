@@ -27,7 +27,7 @@
         message = data.message;
         // Redirect to login after 3 seconds
         setTimeout(() => {
-          goto('/login');
+          goto('/dashboard');
         }, 3000);
       } else {
         status = 'error';
@@ -46,7 +46,7 @@
   {:else if status === 'success'}
     <h1 class="font-bold text-3xl text-center text-green-600">Email verified successfully!</h1>
     <p class="mt-4 text-center dark:text-gray-200">{message}</p>
-    <p class="mt-2 text-center dark:text-gray-200">Redirecting to login page...</p>
+    <p class="mt-2 text-center dark:text-gray-200">Redirecting to dashboard...</p>
   {:else}
     <h1 class="font-bold text-3xl text-center text-red-600">Verification failed</h1>
     <p class="mt-4 text-center dark:text-gray-200">{message}</p>
