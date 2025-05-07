@@ -4,6 +4,9 @@
     import { getRecipeById } from "$lib/api/recipeApi.js";
     import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
     import BarChart from "$lib/components/ChartJs/BarChart.svelte";
+    import { Toaster } from "$lib/components/ui/sonner";
+    import { toast } from "svelte-sonner";
+    
 
 
     let recipe = $state(null);
@@ -11,13 +14,24 @@
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
-        recipe = await getRecipeById(recipeId);
-        recipe = recipe.data;
+        const response = await getRecipeById(recipeId);
+        let result;
+        if(!response.ok) {
+          result = await response.json();
+          isLoading = false;
+          toast.error(result.errorMessage)
+          return;
+        }
+
+        result = await response.json();
+        recipe = result.data;
         console.log(recipe);
 
         isLoading = false;
     });
 </script>
+
+<Toaster/>
 
 <div class="min-h-screen p-4 flex flex-col items-center">
     {#if isLoading}
@@ -59,7 +73,7 @@
 
           <div class="flex flex-col items-center">
             <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
-             <BarChart ingredientsList={recipe.ingredientsList}/>
+             <BarChart ingredients={recipe.ingredientsList}/>
           </div>
 
         </div>
