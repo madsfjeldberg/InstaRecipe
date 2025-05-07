@@ -37,14 +37,13 @@
     {:else}
       {#each recipes as recipe (recipe.id)}
         <Table.Row
-          onclick={() => navigateToRecipe(recipe)}
           class="group cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700"
           key={recipe.id}
         >
-          <Table.Cell class="font-medium overflow">{recipe.name}</Table.Cell>
-          <Table.Cell>{recipe.description}</Table.Cell>
-          <Table.Cell>{recipe.category.name}</Table.Cell>
-          <Table.Cell class="text-right">{recipe.calories} kcal</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="font-medium overflow">{recipe.name}</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.description}</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.category.name}</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="text-right">{recipe.calories} kcal</Table.Cell>
 
           <Table.Cell class="flex items-center justify-center">
             <PopularityVoteButtons />

@@ -26,6 +26,10 @@ router.get("/api/recipes/:id", async (req, res) => {
     const recipe = await prisma.recipe.findUnique({
       where: {
         id
+      },
+      include: {
+        category: true,
+        ingredients: true
       }
     })
     res.send({ data: recipe });
@@ -54,7 +58,9 @@ router.post("/api/recipes", async (req, res) => {
   }
 
   const ingredientsWithMacros = await getMacros(ingredients);
-  
+  if(!ingredientsWithMacros.items) {
+    ingredientsWithMacros.items = [];
+  }
  
   try {
     const result = await prisma.$transaction( async (transaction) => {
@@ -102,10 +108,6 @@ router.post("/api/recipes", async (req, res) => {
       return {recipe: newRecipe, ingredients: createdIngredients};
 
     })
-    
-    console.log("RECIPE", result.recipe)
-    console.log("INGREDIENTS", result.ingredients)
-
 
     res.status(201).json({ status: 201, data: {recipe: result.recipe, ingredients: result.ingredients } });
   } catch (error) {
