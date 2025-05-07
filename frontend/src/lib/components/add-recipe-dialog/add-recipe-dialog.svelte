@@ -73,9 +73,13 @@
       );
       console.log(response);
       if (response.status === 201) {
-        await toast.success("Recipe added successfully!");
+        const newRecipe = response.data.recipe;
+        newRecipe.ingredients = response.data.ingredients;
+
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList }; // why spread / copy the selectedList into a variable called the same with the same value
+        selectedList = { ...selectedList};
+        selectedList.recipes.push(newRecipe)
+
         errors = {
           form: "",
           name: "",
@@ -86,6 +90,8 @@
           calories: "",
         };
         isDialogOpen = false; // Close the dialog
+        await toast.success("Recipe added successfully!");
+        
       } else {
         errors = { ...errors, form: response.message };
       }

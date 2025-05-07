@@ -67,6 +67,7 @@ router.post("/api/recipes", async (req, res) => {
           category: { connect: { name: category } },
           recipeLists: { connect: { id: recipeListId } },
         },
+        include: {category: true}
       });
   
       const createdIngredients = await Promise.all(
