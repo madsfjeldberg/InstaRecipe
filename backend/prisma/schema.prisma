@@ -45,31 +45,29 @@ model Category {
 }
 
 model Recipe {
-  id           String       @id @default(uuid())
-  name         String
-  description  String
-  category     Category     @relation(fields: [categoryId], references: [id])
-  categoryId   String
-  ingredients  Ingredient[] // One-to-many: a recipe has many ingredients
-  instructions String
-  recipeLists  RecipeList[]
-  likes        String[] // store user IDs as UUID strings
-  dislikes     String[] // store user IDs as UUID strings
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id              String       @id @default(uuid())
+  name            String
+  description     String
+  ingredients     String
+  ingredientsList Ingredient[]
+  instructions    String
+  category        Category     @relation(fields: [categoryId], references: [id])
+  likes           String[] // store user IDs as UUID strings (maybe refs to user?)
+  dislikes        String[] // store user IDs as UUID strings (maybe refs to user?)
+  recipeLists     RecipeList[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  categoryId      String
 }
 
 model Ingredient {
-  id        String   @id @default(uuid())
-  name      String
-  amount    String
-  calories     Float
-  protein      Float
-  fat          Float
-  saturatedFat Float
-  carbs        Float
-  fiber        Float
-  sugar        Float 
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String
+  id          String @id @default(uuid())
+  name        String // e.g. "chicken breast"
+  servingSize Int // amount in grams
+  recipe      Recipe @relation(fields: [recipeId], references: [id])
+  recipeId    String
+  calories    Float
+  protein     Float
+  fat         Float
+  carbs       Float
 }
