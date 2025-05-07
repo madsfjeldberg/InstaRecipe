@@ -48,7 +48,7 @@ model Recipe {
   id              String       @id @default(uuid())
   name            String
   description     String
-  ingredients     String
+  ingredients     String?
   ingredientsList Ingredient[]
   instructions    String
   category        Category     @relation(fields: [categoryId], references: [id])

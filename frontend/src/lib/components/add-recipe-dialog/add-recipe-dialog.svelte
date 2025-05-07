@@ -6,7 +6,7 @@
   import Textarea from "../ui/textarea/textarea.svelte";
   import CategorySelect from "../category-select/category-select.svelte";
   import { onMount } from "svelte";
-  import { addRecipe, getCategories } from "$lib/services/recipeService";
+  import { addRecipe, getCategories } from "$lib/api/recipeApi";
   import { z } from "zod";
   import { toast } from "svelte-sonner";
 
@@ -28,7 +28,7 @@
     ingredients: "",
     instructions: "",
     category: "",
-    calories: "",
+    // calories: "",
   });
 
   const addRecipeRequest = z.object({
@@ -37,7 +37,7 @@
     ingredients: z.string().min(1, "Ingredients are required"),
     instructions: z.string().min(1, "Instructions are required"),
     category: z.string().min(1, "Category is required"),
-    calories: z.number().positive("Calories must be a positive number"),
+    // calories: z.number().positive("Calories must be a positive number"),
   });
 
   const handleSubmit = async (event) => {
@@ -49,7 +49,7 @@
     const ingredients = formData.get('ingredients');
     const instructions = formData.get('instructions');
     const category = formData.get('category');
-    const calories = parseFloat(formData.get('calories'));
+    // const calories = parseFloat(formData.get('calories'));
     const recipeListId = selectedList.id;
 
     try {
@@ -60,7 +60,7 @@
         ingredients,
         instructions,
         category,
-        calories,
+        // calories,
       });
       response = await addRecipe(
         name,
@@ -68,24 +68,30 @@
         ingredients,
         instructions,
         category,
-        calories,
+        // calories,
         recipeListId
       );
       console.log(response);
       if (response.status === 201) {
-        await toast.success("Recipe added successfully!");
+        const newRecipe = response.data.recipe;
+        newRecipe.ingredients = response.data.ingredients;
+
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList };
+        selectedList = { ...selectedList};
+        selectedList.recipes.push(newRecipe)
+
         errors = {
           form: "",
           name: "",
           description: "",
           ingredients: "",
           instructions: "",
-          category: "",
+          // category: "",
           calories: "",
         };
         isDialogOpen = false; // Close the dialog
+        await toast.success("Recipe added successfully!");
+        
       } else {
         errors = { ...errors, form: response.message };
       }
@@ -155,18 +161,19 @@
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="category" class="text-right">Category</Label>
             <div class="col-span-3">
-            <CategorySelect {categories} name="category" />
-          </div>
+              <CategorySelect {categories} name="category" />
+            </div>
             {#if errors.category}
               <p class="text-red-500 col-span-4">{errors.category}</p>
             {/if}
           </div>
-          <div class="grid grid-cols-4 items-center gap-4">
+          <!-- <div class="grid grid-cols-4 items-center gap-4">
             <Label for="calories" class="text-right">Calories</Label>
             <Input id="calories" placeholder="Calories per serving" name="calories" class="col-span-3" />
             {#if errors.calories}
               <p class="text-red-500 col-span-4">{errors.calories}</p>
             {/if}
+          </div> -->
         <Sheet.Footer>
           <Button type="submit">Save</Button>
         </Sheet.Footer>

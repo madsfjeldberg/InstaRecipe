@@ -9,7 +9,7 @@
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { changeUsername, changePassword } from "$lib/services/userService.js";
+  import { changeUsername, changePassword } from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
   import { passive } from "svelte/legacy";

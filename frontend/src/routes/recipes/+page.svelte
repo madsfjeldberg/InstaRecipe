@@ -5,10 +5,9 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Plus, ScrollText, ExternalLink } from "lucide-svelte";
   import { onMount } from "svelte";
-  import { getRecipeListsByUserId } from "$lib/services/recipelistService.js";
+  import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
-  import { getRecipesByListId } from "$lib/services/recipeService.js";
-  import { getCategories } from "$lib/services/categoryService.js";
+  import { getCategories } from "$lib/api/categoryApi.js";
   import { LoaderCircle } from "lucide-svelte";
 
   const { data } = $props();
@@ -26,10 +25,14 @@
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
-    categories = await getCategories(userId);
+    categories = await getCategories();
+
     // Set the selected list to the first one if available
-    if (recipeLists.length > 0) selectedList = recipeLists[0];
-    recipes = selectedList.recipes;
+    if (recipeLists.length > 0) {
+      selectedList = recipeLists[0];
+      recipes = selectedList.recipes;
+    } 
+    
     // Set the flag to false after the initial load
     isInitialLoad = false;
     loading = false;
@@ -55,26 +58,32 @@
   <div class="col-span-2">
     <h1 class="text-2xl font-bold flex items-center"><ScrollText class="inline-block mr-2" /> Your Recipes</h1>
   </div>
+
   <div class="col-span-4 flex items-center gap-2">
     <RecipeListSelect {user} bind:recipeLists bind:selectedList />
-    <AddListDialog bind:recipeLists />
+    <AddListDialog bind:recipeLists bind:selectedList/>
   </div>
+
   <div class="col-span-8 mt-10">
     {#if loading}
       <div class="flex text-center flex-col items-center justify-center h-full">
         <h1 class="flex text-2xl font-semibold items-center mt-72"><LoaderCircle class="mr-2 h-10 w-10  animate-spin inline-block" /> Loading...</h1>
       </div>
+
     {:else if selectedList}
       <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">{selectedList.name}</h1>
         <AddRecipeDialog bind:selectedList {categories} />
       </div>
+
       <RecipeTable bind:selectedList {recipes} />
+
     {:else}
       <div class="flex text-center flex-col items-center justify-center h-full">
-        <h1 class="text-2xl font-semibold">No recipe list selected.</h1>
+        <h1 class="text-2xl font-semibold">You have no recipe lists.</h1>
         <p class="text-muted-foreground">Please create a recipe list to get started.</p>
       </div>
     {/if}
   </div>
+
 </div>

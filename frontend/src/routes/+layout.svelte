@@ -2,7 +2,7 @@
 	import '../app.css';
   import { ModeWatcher } from 'mode-watcher';
   import { isAuthenticated, updateAuthState } from '$lib/stores/authStore';
-  import { authService } from '$lib/services/authService.js';
+  import { authService } from '$lib/api/authApi.js';
   import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
   import Navbar from '$lib/components/navbar/navbar.svelte';

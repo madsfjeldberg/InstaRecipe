@@ -14,6 +14,34 @@ router.get("/api/recipes", async (req, res) => {
   }
 });
 
+
+
+router.get("/api/recipes/:id", async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(400).send({ errorMessage: "Recipe id missing in request" })
+  }
+
+  try {
+    const recipe = await prisma.recipe.findUnique({
+      where: {
+        id
+      },
+      include: {
+        category: true,
+        ingredientsList: true
+      }
+    })
+    res.send({ data: recipe });
+
+  } catch (error) {
+    console.error(error)
+    res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" })
+  }
+})
+
+
+
 router.get("/api/recipes/categories", async (req, res) => {
   try {
     const categories = await prisma.category.findMany();
@@ -23,66 +51,83 @@ router.get("/api/recipes/categories", async (req, res) => {
   }
 });
 
-router.get("/api/recipes/:listId", async (req, res) => {
-  const { listId } = req.params;
-
-  if (!listId) {
-    return res.status(400).json({ message: "List ID is required" });
-  }
-
-  try {
-    const recipes = await prisma.recipe.findMany({
-      where: {
-        recipeLists: {
-          some: { id: listId }
-        }
-      },
-      include: {
-        category: true,
-        recipeLists: true, // use recipeLists, not recipeList
-      },
-    });
-    res.status(200).json(recipes);
-  } catch (error) {
-    console.error(error.message)
-    res.status(500).json({ message: error.message });
-  }
-});
-
 router.post("/api/recipes", async (req, res) => {
-  const { name, description, ingredients, instructions, category, calories, recipeListId } = req.body;
+  const { name, description, ingredients, instructions, category, recipeListId } = req.body;
 
-  if (!name || !description || !ingredients || !instructions || !category || !calories) {
+  if (!name || !description || !ingredients || !instructions || !category) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  const ingredientsWithMacros = await getMacros(ingredients);
+  if(!ingredientsWithMacros.items) {
+    ingredientsWithMacros.items = [];
+  } 
+ 
   try {
-    const newRecipe = await prisma.recipe.create({
-      data: {
-        name,
-        description,
-        ingredients,
-        instructions,
-        category: { connect: { name: category } },
-        calories,
-        recipeLists: { connect: { id: recipeListId } },
-      },
-    });
-    // add recipe to the recipe list
-    await prisma.recipeList.update({
-      where: { id: recipeListId },
-      data: {
-        recipes: {
-          connect: { id: newRecipe.id },
+    const result = await prisma.$transaction( async (transaction) => {
+      
+      const newRecipe = await transaction.recipe.create({
+        data: {
+          name,
+          description,
+          instructions,
+          category: { connect: { name: category } },
+          recipeLists: { connect: { id: recipeListId } },
         },
-      },
-    });
-    res.status(201).json({ status: 201, data: newRecipe });
+        include: {category: true}
+      });
+  
+      const createdIngredients = await Promise.all(
+        
+        ingredientsWithMacros.items.map( async (ingredient) => {
+          return await transaction.ingredient.create({
+            data: {
+              name: ingredient.name,
+              servingSize: ingredient.serving_size_g,
+              calories: ingredient.calories,
+              protein: ingredient.protein_g,
+              fat: ingredient.fat_total_g,
+              carbs: ingredient.carbohydrates_total_g,
+              recipeId: newRecipe.id
+            }
+          })
+        })
+      );
+  
+      await transaction.recipeList.update({
+        where: { id: recipeListId },
+        data: {
+          recipes: {
+            connect: { id: newRecipe.id },
+          },
+        },
+      });
+
+      return {recipe: newRecipe, ingredients: createdIngredients};
+
+    })
+
+    res.status(201).json({ status: 201, data: {recipe: result.recipe, ingredients: result.ingredients } });
   } catch (error) {
     console.error(error.message)
+    console.error(error)
     res.status(500).json({ message: error.message });
   }
 });
+
+async function getMacros(ingredients) {
+  try {
+    const response = await fetch("https://api.calorieninjas.com/v1/nutrition?query=" + ingredients, {
+      headers: {
+        "X-Api-Key": process.env.CALORIE_NINJAS_API_KEY
+      }
+    });
+    return await response.json();
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
@@ -100,6 +145,6 @@ router.delete("/api/recipes/:id", async (req, res) => {
     console.error(error.message);
     res.status(500).json({ message: error.message });
   }
- });
+});
 
 export default router;
