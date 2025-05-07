@@ -9,11 +9,13 @@
   import { toast } from 'svelte-sonner';
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { user } from "$lib/stores/authStore.js";
+  import { LoaderCircle } from "lucide-svelte";
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let props = $props();
   let { onToggleAuthMode } = props;
+  let loading = $state(false);
 
   let errors = $state({
     username: '',
@@ -41,6 +43,7 @@
 
     try {
       let response;
+      loading = true;
      
       LoginRequest.parse({ username, password });
       response = await authService.login(username, password);
@@ -61,10 +64,12 @@
         // Set the user data in store
         user.set(data); // Store the user data
         await toast.success('Login successful!');
+        loading = false;
         //redirect to dashboard
         await goto('/dashboard');
       } else {
         errors = { ...errors, form: response.message };
+        loading = false;
       }
       
     } catch (error) {
@@ -113,7 +118,11 @@
           Forgot your password?
         </a>
       </div>
+      {#if loading}
+      <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
+      {:else}
       <Button type="submit" class="w-full">Login</Button>
+      {/if}
     </div>
     <div class="mt-4 text-center text-sm">
       Don&apos;t have an account?

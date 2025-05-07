@@ -22,6 +22,24 @@ const changeUsername = async (userId, newUsername) => {
   return data;
 }
 
+const changePassword = async (userId, newPassword) => {
+  const response = await fetch(`${BASE_URL}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ userId, newPassword }),
+  });
+
+  if (response.status === 200) {
+    isAuthenticated.set(true);
+  }
+  
+  const data = await response.json();
+  return data;
+}
+
 const deleteUser = async (userId) => {
   const response = await fetch(`${BASE_URL}`, {
     method: 'DELETE',
@@ -43,5 +61,6 @@ const deleteUser = async (userId) => {
 
 export {
   changeUsername,
+  changePassword,
   deleteUser,
 };
