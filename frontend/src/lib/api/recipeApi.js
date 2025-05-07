@@ -11,7 +11,6 @@ async function getRecipeById(id) {
   try{
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + id, getOption);
-    console.log(response);
     
     return response;
 
