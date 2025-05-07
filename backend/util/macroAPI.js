@@ -23,7 +23,7 @@ const getMacros = async (ingredients) => {
 const stripItems = (items) => {
   return items.map(item => ({
     name: item.name,
-    serving_size: item.serving_size_g,
+    servingSize: item.serving_size_g,
     calories: item.calories,
     protein: item.protein_g,
     fat: item.fat_total_g,

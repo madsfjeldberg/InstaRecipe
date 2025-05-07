@@ -7,7 +7,7 @@
   // export let data;
   const { data } = $props();
   const { user } = data;
-  let recipeData = $state({});
+  let recipeData = $state({ ingredientsWithMacros: [], macros: {} });
   let url = $state("");
   let loading = $state(false);
 
@@ -60,4 +60,24 @@
 <br>
 <p>{recipeData.category}</p>
 <br>
-<p>{recipeData.calories}</p>
+<br>
+{#each recipeData.ingredientsWithMacros as ingredient}
+  <div>
+    <p>{ingredient.name}</p>
+    <p>{ingredient.servingSize} g</p>
+    <p>{ingredient.calories} calories</p>
+    <p>{ingredient.protein} protein</p>
+    <p>{ingredient.fat} fat</p>
+    <p>{ingredient.carbs} carbs</p>
+  </div>
+{/each}
+<!-- <p>{recipeData.ingredientsWithMacros}</p> -->
+<br>
+
+<p>TOTAL:</p>
+  <div>
+    <p>{recipeData.macros.calories} calories</p>
+    <p>{recipeData.macros.protein} protein</p>
+    <p>{recipeData.macros.fat} fat</p>
+    <p>{recipeData.macros.carbs} carbs</p>
+  </div>

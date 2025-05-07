@@ -45,35 +45,29 @@ model Category {
 }
 
 model Recipe {
-  id           String       @id @default(uuid())
-  name         String
-  description  String
-  ingredients  Ingredient[] // 1-to-many; a recipe has many ingredients 
-  instructions String
-  category     Category     @relation(fields: [categoryId], references: [id])
-  likes        String[] // store user IDs as UUID strings
-  dislikes     String[] // store user IDs as UUID strings
-  recipeLists  RecipeList[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  categoryId   String
+  id              String       @id @default(uuid())
+  name            String
+  description     String
+  ingredients     String
+  ingredientsList Ingredient[]
+  instructions    String
+  category        Category     @relation(fields: [categoryId], references: [id])
+  likes           String[] // store user IDs as UUID strings (maybe refs to user?)
+  dislikes        String[] // store user IDs as UUID strings (maybe refs to user?)
+  recipeLists     RecipeList[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  categoryId      String
 }
 
 model Ingredient {
-  id        String   @id @default(uuid())
-  name      String   // e.g. "chicken breast"
-  amount    String   // e.g. "200g"
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String
-  macros    Macro?   // optional 1-to-1 relation with a macro row
-}
-
-model Macro {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
+  name        String // e.g. "chicken breast"
+  servingSize Int // amount in grams
+  recipe      Recipe @relation(fields: [recipeId], references: [id])
+  recipeId    String
   calories    Float
   protein     Float
   fat         Float
   carbs       Float
-  ingredient  Ingredient @relation(fields: [ingredientId], references: [id])
-  ingredientId String @unique // one macro per ingredient
 }

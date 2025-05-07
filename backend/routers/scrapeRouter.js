@@ -41,7 +41,7 @@ router.post('/api/scrape', async (req, res) => {
 
   // take screenshot
   // for debugging
-  await page.screenshot({ path: 'screenshot.png' });
+  // await page.screenshot({ path: 'screenshot.png' });
 
   // find h1 elements
   const h1Elements = await page.$$('h1');
@@ -66,6 +66,7 @@ router.post('/api/scrape', async (req, res) => {
     console.log("total macros: ", totalMacros);
     // add macros to jsonData
     jsonData.macros = totalMacros;
+    jsonData.ingredientsWithMacros = ingredientsWithMacros;
     return res.status(200).json(jsonData);
   } catch(err) {
     console.error("Error parsing AI response JSON", err);
