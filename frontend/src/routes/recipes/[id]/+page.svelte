@@ -54,12 +54,12 @@
 
           <div class="flex flex-col items-center">
             <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
-            <DoughnutChart labels={recipe.ingredients.map((ingredient) => {return ingredient.name})} data={recipe.ingredients.map((ingredient) => {return ingredient.calories})}/>
+            <DoughnutChart labels={recipe.ingredientsList.map((ingredient) => {return ingredient.name})} data={recipe.ingredientsList.map((ingredient) => {return ingredient.calories})}/>
           </div>
 
           <div class="flex flex-col items-center">
             <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
-             <BarChart ingredients={recipe.ingredients}/>
+             <BarChart ingredientsList={recipe.ingredientsList}/>
           </div>
 
         </div>
@@ -68,8 +68,8 @@
   
         <!-- Totals -->
         <div class="mb-8 text-center">
-          <p class="text-gray-800 dark:text-gray-200">Total Calories: {recipe.ingredients.reduce((sum, ingredient) => sum + ingredient.calories, 0)}kcal</p>
-          <p class="text-gray-800 dark:text-gray-200">Total Macros: Protein {recipe.ingredients.reduce((sum, i) => sum + i.protein, 0).toFixed(2)}g | Fat {recipe.ingredients.reduce((sum, i) => sum + i.fat, 0).toFixed(2)}g | Carbs {recipe.ingredients.reduce((sum, i) => sum + i.carbs, 0).toFixed(2)}g</p>
+          <p class="text-gray-800 dark:text-gray-200">Total Calories: {recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0)}kcal</p>
+          <p class="text-gray-800 dark:text-gray-200">Total Macros: Protein {recipe.ingredientsList.reduce((sum, i) => sum + i.protein, 0).toFixed(2)}g | Fat {recipe.ingredientsList.reduce((sum, i) => sum + i.fat, 0).toFixed(2)}g | Carbs {recipe.ingredientsList.reduce((sum, i) => sum + i.carbs, 0).toFixed(2)}g</p>
         </div>
   
         <!-- TODO add est time and servings -->
@@ -90,14 +90,14 @@
           {/if}
         </div>
   
-        <!-- Ingredients & Instructions -->
+        <!-- ingredientsList & Instructions -->
         <div class="grid sm:grid-cols-2 gap-8">
           <section>
-            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ingredients</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">ingredientsList</h2>
             <ul class="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-              {#each recipe.ingredients as ingredient}
+              {#each recipe.ingredientsList as ingredient}
                 <li>
-                  <span class="font-medium">{ingredient.name}</span>: {ingredient.amount}g
+                  <span class="font-medium">{ingredient.name}</span>: {ingredient.servingSize}g
                 </li>
               {/each}
             </ul>
