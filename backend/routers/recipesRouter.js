@@ -57,6 +57,7 @@ router.post("/api/recipes", async (req, res) => {
   if (!name || !description || !ingredients || !instructions || !category) {
     return res.status(400).json({ message: "All fields are required" });
   }
+  console.log(ingredients);
 
   const ingredientsWithMacros = await getMacros(ingredients);
   if(!ingredientsWithMacros.items) {

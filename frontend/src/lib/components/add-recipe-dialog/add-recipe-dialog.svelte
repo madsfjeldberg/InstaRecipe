@@ -60,7 +60,6 @@
         ingredients,
         instructions,
         category,
-        // calories,
       });
       response = await addRecipe(
         name,
@@ -68,13 +67,13 @@
         ingredients,
         instructions,
         category,
-        // calories,
         recipeListId
       );
       console.log(response);
       if (response.status === 201) {
         const newRecipe = response.data.recipe;
-        newRecipe.ingredients = response.data.ingredients;
+        newRecipe.ingredientsList = response.data.ingredients;
+        console.log("newRecipe: ", newRecipe);
 
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
         selectedList = { ...selectedList};
@@ -87,7 +86,6 @@
           ingredients: "",
           instructions: "",
           // category: "",
-          calories: "",
         };
         isDialogOpen = false; // Close the dialog
         await toast.success("Recipe added successfully!");

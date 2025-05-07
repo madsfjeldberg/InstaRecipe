@@ -68,11 +68,11 @@
   
         <div class="mb-8 text-left">
           <br>
-          <p class="text-gray-800 dark:text-gray-200">Calories: {recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0)}kcal</p>
+          <p class="text-gray-800 dark:text-gray-200">Calories: {recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0).toFixed()}kcal</p>
           <br>
-          <p class="text-gray-800 dark:text-gray-200">Protein {recipe.ingredientsList.reduce((sum, i) => sum + i.protein, 0).toFixed(2)}g</p>
-          <p> Fat {recipe.ingredientsList.reduce((sum, i) => sum + i.fat, 0).toFixed(2)}g</p> 
-          <p> Carbs {recipe.ingredientsList.reduce((sum, i) => sum + i.carbs, 0).toFixed(2)}g</p>
+          <p class="text-gray-800 dark:text-gray-200">Protein {recipe.ingredientsList.reduce((sum, i) => sum + i.protein, 0).toFixed()}g</p>
+          <p> Fat {recipe.ingredientsList.reduce((sum, i) => sum + i.fat, 0).toFixed()}g</p> 
+          <p> Carbs {recipe.ingredientsList.reduce((sum, i) => sum + i.carbs, 0).toFixed()}g</p>
         </div>
         
   
