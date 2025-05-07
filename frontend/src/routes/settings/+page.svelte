@@ -9,8 +9,9 @@
   import { avatarStore } from "$lib/stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { userService } from "$lib/services/userService.js";
+  import { changeUsername } from "$lib/services/userService.js";
   import { toast } from "svelte-sonner";
+  import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
 
   const { data } = $props();
   let { user } = data;
@@ -28,7 +29,7 @@
       .max(20, "Username must be at most 20 characters long"),
   });
 
-  const changeUsername = async (event) => {
+  const handleChangeUsername = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const username = formData.get("username");
@@ -36,7 +37,7 @@
     try {
       let response;
       changeUsernameRequest.parse({ username });
-      response = await userService.changeUsername(user.id, username);
+      response = await changeUsername(user.id, username);
       if (response.status === 200) {
         await toast.success("Username updated!");
         
@@ -93,7 +94,7 @@
               Change your username here.
             </Card.Description>
           </Card.Header>
-          <form onsubmit={changeUsername}>
+          <form onsubmit={handleChangeUsername}>
           <Card.Content>
               <Input bind:value={username} name="username" />
               {#if errors.username}
@@ -153,7 +154,7 @@
             </p>
           </Card.Content>
           <Card.Footer class="border-t px-6 py-4">
-            <Button variant="destructive">Delete Account</Button>
+            <DeleteAccountDialog {user} />
           </Card.Footer>
         </Card.Root>
       </div>
