@@ -5,7 +5,14 @@ async function getMacros(ingredients) {
                 "X-Api-Key": process.env.CALORIE_NINJAS_API_KEY
             }
         });
-        return await response.json();
+        const data = await response.json();
+
+        let macros;
+        if(!data.items) {
+            macros = [];
+        }
+        macros = data.items;
+        return stripItems(macros)
 
     } catch (error) {
         console.error(error)

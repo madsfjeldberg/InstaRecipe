@@ -60,9 +60,6 @@ router.post("/api/recipes", async (req, res) => {
   console.log(ingredients);
 
   const ingredientsWithMacros = await macroService.getMacros(ingredients);
-  if(!ingredientsWithMacros.items) {
-    ingredientsWithMacros.items = [];
-  } 
  
   try {
     const result = await prisma.$transaction( async (transaction) => {
@@ -80,15 +77,15 @@ router.post("/api/recipes", async (req, res) => {
   
       const createdIngredients = await Promise.all(
         
-        ingredientsWithMacros.items.map( async (ingredient) => {
+        ingredientsWithMacros.map( async (ingredient) => {
           return await transaction.ingredient.create({
             data: {
               name: ingredient.name,
-              servingSize: ingredient.serving_size_g,
+              servingSize: ingredient.servingSize,
               calories: ingredient.calories,
-              protein: ingredient.protein_g,
-              fat: ingredient.fat_total_g,
-              carbs: ingredient.carbohydrates_total_g,
+              protein: ingredient.protein,
+              fat: ingredient.fat,
+              carbs: ingredient.carbs,
               recipeId: newRecipe.id
             }
           })
