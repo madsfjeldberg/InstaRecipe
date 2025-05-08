@@ -13,6 +13,13 @@
   function navigateToRecipe(recipe) {
     goto("/recipes/" + recipe.id);
   }
+
+  const showCalories = (recipe) => {
+    if (!recipe || !recipe.ingredientsList) {
+      return 0;
+    }
+    return recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0).toFixed();
+  };
 </script>
 
 <Table.Root>
@@ -43,7 +50,7 @@
           <Table.Cell onclick={() => navigateToRecipe(recipe)} class="font-medium overflow">{recipe.name}</Table.Cell>
           <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.description}</Table.Cell>
           <Table.Cell onclick={() => navigateToRecipe(recipe)}>{recipe.category.name}</Table.Cell>
-          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="text-right">{recipe.calories} kcal</Table.Cell>
+          <Table.Cell onclick={() => navigateToRecipe(recipe)} class="text-right">{showCalories(recipe)}</Table.Cell>
 
           <Table.Cell class="flex items-center justify-center">
             <PopularityVoteButtons />

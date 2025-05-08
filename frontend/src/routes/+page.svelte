@@ -6,7 +6,7 @@
 
   onMount(() => {
     // Check if the user is authenticated
-    if (isAuthenticated) {
+    if ($isAuthenticated) {
       // If so, redirect to the dashboard page
       goto("/dashboard");
     }
