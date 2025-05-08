@@ -52,9 +52,27 @@ const getRecipelistByListId = async (listId) => {
   return data;
 }
 
+const deleteRecipeList = async (listId) => {
+  const response = await fetch(`${BASE_URL}/${listId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete recipe list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 export {
   addRecipeList,
   getRecipeListsByUserId,
-  getRecipelistByListId
+  getRecipelistByListId,
+  deleteRecipeList,
 };
 
