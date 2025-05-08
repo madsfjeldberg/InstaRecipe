@@ -12,9 +12,10 @@
   const handleDelete = async () => {
   try {
     await deleteRecipe(recipeId);
-    selectedList.updatedAt = new Date().toISOString(); // Update the selectedList
-    selectedList = {...selectedList}; // Trigger reactivity
+    // Remove the recipe from the selected list
+    selectedList.recipes = selectedList.recipes.filter(recipe => recipe.id !== recipeId);
     toast.success('Recipe deleted successfully!');
+    isDialogOpen = false;
   } catch (error) {
     console.error(error);
     toast.error('Failed to delete the recipe. Please try again.');

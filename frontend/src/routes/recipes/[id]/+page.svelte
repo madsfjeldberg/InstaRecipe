@@ -57,7 +57,7 @@
             {/each}
           </div> -->
         <h1 class="text-5xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-        <h2 class="text-left text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
+        <h2 class="text-left italic text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
         
         <p class="text-right">IMAGE GOES HERE</p>
         {#if recipe.imageUrl}

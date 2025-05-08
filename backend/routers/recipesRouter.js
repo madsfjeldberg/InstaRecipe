@@ -138,6 +138,12 @@ router.delete("/api/recipes/:id", async (req, res) => {
     return res.status(400).json({ message: "Recipe ID is required" });
   }
   try {
+    await prisma.ingredient.deleteMany({
+      where: {
+        recipeId: id,
+      },
+    });
+
     await prisma.recipe.delete({
       where: { id: id },
     });

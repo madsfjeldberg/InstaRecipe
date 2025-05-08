@@ -12,7 +12,7 @@ import helmet from "helmet";
 import { limiter, authLimiter } from "./util/rateLimiter.js";
 import logger from "./util/logger.js";
 import cors from "./util/cors.js";
-
+import { authenticateToken } from "./util/middleware/authenticateToken.js";
 
 const app = express();
 const PORT = process.env.PORT || 9000;
@@ -31,7 +31,6 @@ app.use(['/auth/login', '/auth/register'], authLimiter);
 app.use(authRouter);
 
 // authentication jwt token for all routes except authRouter
-import { authenticateToken } from "./util/middleware/authenticateToken.js";
 app.use(authenticateToken);
 
 app.use(recipelistsRouter);
