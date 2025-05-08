@@ -75,13 +75,20 @@
         </Button>
       </div>
       <div class="w-full">
-        <Badge class="mb-4">{recipe.category.name}</Badge>
-        <!-- Tags -->
-          <!-- <div class="flex space-x-2">
-            {#each recipe.tags ?? [] as tag}
-              <span class="px-3 py-1 bg-indigo-200 text-indigo-800 rounded-full text-sm">{tag}</span>
-            {/each}
-          </div> -->
+        <div>
+          <div>
+            <Badge>{recipe.category.name}</Badge>
+          </div>
+          <div>
+            {#if recipe.tags}
+              {#each recipe.tags as tag}
+                <Badge class="mt-2 mb-4 mr-2 bg-cyan-800">{tag.name}</Badge>
+              {/each}
+            {/if}
+          </div>
+        </div>
+        
+
         <h1 class="text-5xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
         <h2 class="text-left text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
         
