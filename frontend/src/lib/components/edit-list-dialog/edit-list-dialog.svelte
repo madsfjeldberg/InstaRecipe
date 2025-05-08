@@ -34,17 +34,6 @@
       .min(3, "Name must be at least 3 characters long")
       .max(50, "Name must be at most 50 characters long"),
   });
-
-//   const handleEdit = async () => {
-//   try {
-//     await updateRecipeList(selectedList.id, selectedList.name, isPrivate);
-//     toast.success('List updated successfully!'); // Update success message
-//     isSheetDialogOpen = false;
-//   } catch (error) {
-//     console.error(error);
-//     toast.error('Failed to delete the recipe. Please try again.');
-//   }
-// }
   
   const handleSubmit = async (event) => {
     event.preventDefault();
