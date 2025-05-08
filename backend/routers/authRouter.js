@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import { Router } from "express";
-import auth from "../util/auth.js";
-import emailService from "../util/email.js";
+import auth from "../service/authService.js";
+import emailService from "../service/emailService.js";
 import prisma from "../database/prismaClient.js";
 import redis from '../database/redisClient.js';
-import { authenticateToken, isAuthenticated } from '../util/middleware/authenticateToken.js';
+import { authenticateToken, isAuthenticated } from '../middleware/authenticateToken.js';
 
 const router = Router();
 

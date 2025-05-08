@@ -1,4 +1,4 @@
-import auth from '../auth.js';
+import auth from '../service/authService.js';
 
 async function authenticateToken(req, res, next) {
 
