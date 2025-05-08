@@ -32,6 +32,7 @@ model RecipeList {
   id        String   @id @default(uuid())
   name      String
   user      User     @relation(fields: [userId], references: [id])
+  isPrivate Boolean  @default(false)
   userId    String
   recipes   Recipe[]
   createdAt DateTime @default(now())

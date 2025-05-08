@@ -91,6 +91,26 @@ router.post('/api/recipelists', async (req, res) => {
   }
 });
 
+router.put('/api/recipelists/:listId', async (req, res) => {
+  const { listId } = req.params;
+  const { name, isPrivate } = req.body;
+
+  if (!listId || !name || isPrivate === undefined) {
+    return res.status(400).send({ errorMessage: 'List ID, name, and visibility are required' });
+  }
+
+  try {
+    const updatedRecipeList = await prisma.recipeList.update({
+      where: { id: listId },
+      data: { name, isPrivate },
+    });
+    res.status(200).send({ status: 200, data: updatedRecipeList });
+  } catch (error) {
+    console.error('Error updating recipe list:', error);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 router.delete('/api/recipelists/:listId', async (req, res) => {
   const { listId } = req.params;
   if (!listId) {

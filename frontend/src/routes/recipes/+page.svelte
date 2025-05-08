@@ -10,6 +10,7 @@
   import { getCategories } from "$lib/api/categoryApi.js";
   import { LoaderCircle } from "lucide-svelte";
   import DeleteListDialog from "$lib/components/delete-list-dialog/delete-list-dialog.svelte";
+  import EditListDialog from "$lib/components/edit-list-dialog/edit-list-dialog.svelte";
 
   const { data } = $props();
   const { user } = data;
@@ -33,7 +34,6 @@
       selectedList = recipeLists[0];
       recipes = selectedList.recipes;
     } 
-    console.log($state.snapshot(recipeLists));
     
     // Set the flag to false after the initial load
     isInitialLoad = false;
@@ -47,6 +47,7 @@
   loading = true;
   recipes = selectedList.recipes;
   loading = false;
+  console.log("Selected List:", $state.snapshot(selectedList));
 });
   
   
@@ -74,12 +75,7 @@
 
     {:else if selectedList}
       <div class="group flex items-center justify-between mb-4">
-        <div class="relative">
-          <h1 class="text-2xl font-bold">{selectedList.name}</h1>
-          <div class="absolute -top-1 -right-7">
-        <DeleteListDialog bind:selectedList bind:recipeLists />
-          </div>
-        </div>
+          <EditListDialog bind:selectedList bind:recipeLists />
         <AddRecipeDialog bind:selectedList {categories} />
       </div>
 
