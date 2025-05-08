@@ -128,21 +128,21 @@
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="recipeName" class="text-right">Name</Label>
-            <Input id="recipeName" placeholder="Recipe Name" name="recipeName" class="col-span-3" />
+            <Input id="recipeName" placeholder="Grandma's lasagna" name="recipeName" class="col-span-3" />
             {#if errors.recipeName}
               <p class="text-red-500 col-span-4">{errors.recipeName}</p>
             {/if}
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="description" class="text-right">Description</Label>
-            <Textarea id="description" placeholder="Recipe description" name="description" class="col-span-3" />
+            <Textarea id="description" placeholder="The best recipe to ever do it." name="description" class="col-span-3" />
             {#if errors.description}
               <p class="text-red-500 col-span-4">{errors.description}</p>
             {/if}
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="ingredients" class="text-right">Ingredients</Label>
-            <Textarea id="ingredients" placeholder="List of ingredients" name="ingredients" class="col-span-3" />
+            <Textarea id="ingredients" placeholder="200g minced beef, 100g carrots, 50g butter" name="ingredients" class="col-span-3" />
             {#if errors.ingredients}
               <p class="text-red-500 col-span-4">{errors.ingredients}</p>
             {/if}
@@ -151,7 +151,7 @@
         <div class="grid gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="instructions" class="text-right">Instructions</Label>
-            <Textarea id="instructions" placeholder="Cooking instructions" name="instructions" class="col-span-3" />
+            <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" />
             {#if errors.instructions}
               <p class="text-red-500 col-span-4">{errors.instructions}</p>
             {/if}
