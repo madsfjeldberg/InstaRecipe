@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
-import { isAuthenticated } from '$lib/stores/authStore';
+import { isAuthenticated } from './stores/authStore';
 import { JWT_SECRET, COOKIE_OPTIONS } from '$lib/config/env.server';
 
 // This is a SvelteKit hook that runs on every request

@@ -1,7 +1,7 @@
 <script>
 	import '../app.css';
   import { ModeWatcher } from 'mode-watcher';
-  import { isAuthenticated, updateAuthState } from '$lib/stores/authStore';
+  import { isAuthenticated, updateAuthState } from '../stores/authStore';
   import { authService } from '$lib/api/authApi.js';
   import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$lib/config/env.server';
 import { redirect } from '@sveltejs/kit';
-import { isAuthenticated } from '$lib/stores/authStore';
+import { isAuthenticated } from '../stores/authStore';
 
 export function load({ cookies }) {
   const token = cookies.get('jwt');

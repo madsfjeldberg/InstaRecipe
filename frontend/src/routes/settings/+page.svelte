@@ -6,7 +6,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
-  import { avatarStore } from "$lib/stores/avatarStore.js";
+  import { avatarStore } from "../../stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
   import { changeUsername, changePassword } from "$lib/api/userApi.js";
