@@ -8,10 +8,11 @@ async function getMacros(ingredients) {
         const data = await response.json();
 
         let macros;
-        if(!data.items) {
+        if (!data.items) {
             macros = [];
+        } else {
+            macros = data.items;
         }
-        macros = data.items;
         return stripItems(macros)
 
     } catch (error) {
