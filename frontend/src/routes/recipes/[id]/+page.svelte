@@ -1,7 +1,6 @@
 <script>
     import { onMount } from "svelte";
     import { Stretch } from "svelte-loading-spinners";
-    import { getRecipeById } from "$lib/api/recipeApi.js";
     import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
     import BarChart from "$lib/components/ChartJs/BarChart.svelte";
     import { Toaster } from "$lib/components/ui/sonner";
@@ -12,27 +11,54 @@
     import { ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
+    import { LoaderCircle } from "lucide-svelte";
+    import { getRecipeById } from "$lib/api/recipeApi.js";
+    import groceryListApi from "$lib/api/groceryListApi";
     
     let recipe = $state(null);
     let isLoading = $state(true);
+    let isGroceryListGenerating = $state(false)
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
-        const response = await getRecipeById(recipeId);
-        let result;
-        if(!response.ok) {
-          result = await response.json();
+
+        try{
+          recipe = await getRecipeById(recipeId);
+
+        } catch(error) {
+          toast.error("Could not load recipe, try again later")
+        
+        } finally {
           isLoading = false;
-          toast.error(result.errorMessage)
+        }
+    });
+
+
+
+    async function generateShoppingList() {
+      const groceryList = recipe.ingredientsList.map( (ingredient) => {
+        return {name: ingredient.name, measurements: ingredient.servingSize};
+      });
+
+      try{
+        isGroceryListGenerating = true;
+
+        // const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
+        const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
+        if(response.errorMessage) {
+          toast.error(response.errorMessage)
           return;
         }
 
-        result = await response.json();
-        recipe = result.data;
-        console.log($state.snapshot(recipe));
+        toast.success("Grocery list has been generated and sent to your email");
 
-        isLoading = false;
-    });
+      }catch(error) {
+        toast.error(error.message);
+
+      }finally {
+        isGroceryListGenerating = false;
+      }
+    }
 </script>
 
 <div class="p-4 flex flex-col items-center">
@@ -57,7 +83,7 @@
             {/each}
           </div> -->
         <h1 class="text-5xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-        <h2 class="text-left italic text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
+        <h2 class="text-left text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
         
         <p class="text-right">IMAGE GOES HERE</p>
         {#if recipe.imageUrl}
@@ -110,6 +136,14 @@
             </Card.Content>
           </div>
         </Card.Root>
+
+        
+          {#if isGroceryListGenerating}
+            <Button disabled> <LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Generating...</Button>
+            {:else}
+            <Button onclick={generateShoppingList}>Generate shopping list</Button>
+          {/if}
+        
   
 
         <!-- Diagrams & Comment Grid -->

@@ -9,6 +9,7 @@
   import AddRecipeDialog from "$lib/components/add-recipe-dialog/add-recipe-dialog.svelte";
   import { getCategories } from "$lib/api/categoryApi.js";
   import { LoaderCircle } from "lucide-svelte";
+  import DeleteListDialog from "$lib/components/delete-list-dialog/delete-list-dialog.svelte";
 
   const { data } = $props();
   const { user } = data;
@@ -72,8 +73,13 @@
       </div>
 
     {:else if selectedList}
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold">{selectedList.name}</h1>
+      <div class="group flex items-center justify-between mb-4">
+        <div class="relative">
+          <h1 class="text-2xl font-bold">{selectedList.name}</h1>
+          <div class="absolute -top-1 -right-7">
+        <DeleteListDialog bind:selectedList bind:recipeLists />
+          </div>
+        </div>
         <AddRecipeDialog bind:selectedList {categories} />
       </div>
 
