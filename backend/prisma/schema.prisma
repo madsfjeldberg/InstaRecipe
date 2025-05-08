@@ -64,7 +64,7 @@ model Ingredient {
   id          String @id @default(uuid())
   name        String // e.g. "chicken breast"
   servingSize Int // amount in grams
-  recipe      Recipe @relation(fields: [recipeId], references: [id])
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId    String
   calories    Float
   protein     Float
