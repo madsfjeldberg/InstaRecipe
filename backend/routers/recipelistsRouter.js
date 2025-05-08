@@ -51,7 +51,7 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
     const recipeLists = await prisma.recipeList.findMany({
       cacheStrategy: {
         ttl: 30,
-        swr: 60
+        swr: 30
       },
       where: { userId: userId },
       include: {
