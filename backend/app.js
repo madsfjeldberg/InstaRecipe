@@ -6,6 +6,7 @@ import groceryListRouter from './routers/groceryListRouter.js';
 import recipelistsRouter from "./routers/recipelistsRouter.js";
 import recipesRouter from "./routers/recipesRouter.js";
 import scrapeRouter from "./routers/scrapeRouter.js";
+import tagsRouter from "./routers/tagsRouter.js";
 import usersRouter from "./routers/usersRouter.js";
 
 import cookieParser from "cookie-parser";
@@ -40,7 +41,9 @@ app.use(groceryListRouter);
 app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(scrapeRouter);
+app.use(tagsRouter);
 app.use(usersRouter);
+
 
 
 
