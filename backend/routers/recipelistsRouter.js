@@ -49,10 +49,6 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const recipeLists = await prisma.recipeList.findMany({
-      cacheStrategy: {
-        ttl: 30,
-        swr: 60
-      },
       where: { userId: userId },
       include: {
         recipes: {
@@ -91,6 +87,30 @@ router.post('/api/recipelists', async (req, res) => {
     res.status(201).send({ status: 201, data: recipeList });
   } catch (error) {
     console.error('Error adding recipe list:', error);
+    res.status(500).send({ message: error.message });
+  }
+});
+
+router.delete('/api/recipelists/:listId', async (req, res) => {
+  const { listId } = req.params;
+  if (!listId) {
+    return res.status(400).send({ errorMessage: 'List ID is required' });
+  }
+  try {
+    await prisma.recipe.deleteMany({
+      where: {
+        recipeLists: {
+          some: { id: listId }
+        }
+      }
+    });
+
+    const deletedRecipeList = await prisma.recipeList.delete({
+      where: { id: listId },
+    });
+    res.status(200).send({ status: 200, data: deletedRecipeList });
+  } catch (error) {
+    console.error('Error deleting recipe list:', error);
     res.status(500).send({ message: error.message });
   }
 });
