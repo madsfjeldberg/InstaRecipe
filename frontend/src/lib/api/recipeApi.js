@@ -11,11 +11,12 @@ async function getRecipeById(id) {
   try{
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + id, getOption);
-    
-    return response;
+    const result = await response.json();
+    return result.data;
 
   }catch(error) {
     console.error(error);
+    throw new Error('Failed to add recipe: ', error.message);
   }
 }
 

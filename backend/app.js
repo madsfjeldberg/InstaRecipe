@@ -42,4 +42,7 @@ app.use(scrapeRouter);
 import macroRouter from './routers/macroRouter.js';
 app.use(macroRouter);
 
+import groceryListRouter from './routers/groceryListRouter.js';
+app.use(groceryListRouter);
+
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}.`)});

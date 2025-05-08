@@ -40,9 +40,30 @@ const sendPasswordResetEmail = async (to, token) => {
   return sendEmail(to, subject, html);
 }
 
+
+
+async function sendGroceryListEmail(to, groceryList) {
+  const subject = "Grocery list - " + groceryList.name;
+
+  let groceries = groceryList.items.map( (item) => {
+    return `<li>${item.measurements}g ${item.name}</li>`
+  } )
+  groceries = groceries.join("");
+
+  const html = `
+    <h1>${groceryList.name}</h1>
+    <ul>${groceries}</ul>
+  `
+
+  return sendEmail(to, subject, html);
+}
+
+
+
 export default {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendGroceryListEmail,
 };
 
