@@ -16,11 +16,12 @@
   bind:value={selectedItems}
   name="tags"
   type="multiple"
->
-  <Select.Trigger class="flex flex-wrap gap-1 p-2 border rounded">
+>                                                                            
+<!--                                                                  Hvis du har en god dynamisk måde at resize select box på må du gerne lave det her om :) -->
+  <Select.Trigger class={`flex flex-wrap gap-1 p-2 border rounded ${items.filter( (item) => selectedItems.find( (selectedItemId) => item.id === selectedItemId)).map((obj) => {return obj.name}).join("").length > 25 ? 'min-h-[6rem]' : ''}`}>
     {#if selectedItems.length}
       {#each selectedItems as selectedItemId (selectedItemId)}
-        <span class="px-2 py-1 bg-gray-200 rounded text-sm">
+        <span class="px-2 py-1 bg-slate-200 dark:bg-slate-900 rounded text-sm">
           {items.find((item) => item.id === selectedItemId).name}
         </span>
       {/each}
@@ -29,13 +30,13 @@
     {/if}
   </Select.Trigger>
 
-  <Select.Content class="bg-white border rounded shadow-lg">
+  <Select.Content class="bg-slate-200 dark:bg-slate-900 border rounded shadow-lg">
     <Select.ScrollUpButton />
     <Select.Group>
       {#each items as item (item.id)}
         <Select.Item
           value={item.id}
-          class="flex justify-between px-3 py-2 hover:bg-gray-100"
+          class="transition-all hover:bg-slate-200 dark:hover:bg-gray-800"
         >
           {item.name}
         </Select.Item>

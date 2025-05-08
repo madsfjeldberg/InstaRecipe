@@ -90,6 +90,7 @@
           instructions: "",
           // category: "",
         };
+        selectedTags = [];
         isDialogOpen = false; // Close the dialog
         await toast.success("Recipe added successfully!");
         
