@@ -8,6 +8,7 @@
   import Navbar from '$lib/components/navbar/navbar.svelte';
   import Footer from '$lib/components/ui/footer/footer.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
+  import { startTokenRefresh } from '$lib/util/tokenRefresh';
 
   let { data, children } = $props();
 
@@ -23,6 +24,8 @@
     toast.success('Logged out successfully');
     goto('/');
   };
+
+  startTokenRefresh();
 
 </script>
 <ModeWatcher />

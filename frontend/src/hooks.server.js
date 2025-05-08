@@ -22,6 +22,8 @@ const validateUser = (token) => {
     return { id: decoded.id, username: decoded.username };
   } catch (err) {
     console.error('JWT verification failed:', err);
+    // remove cookies
+    
     throw redirect(303, '/login');
   }
 }

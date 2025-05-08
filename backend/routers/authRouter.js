@@ -73,11 +73,17 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
 
   try {
     if (isValidPassword) {
-      const token = await auth.generateToken(user);
+      const accessToken = await auth.generateToken(user);
+      const refreshToken = await auth.generateRefreshToken(user);
+      await redis.setEx(`refresh:${refreshToken}`, 604800, user.id.toString());
 
       res
         .status(200)
-        .cookie("jwt", token, cookieOptions)
+        .cookie("jwt", accessToken, cookieOptions)
+        .cookie("refreshToken", refreshToken, {
+          ...cookieOptions,
+          maxAge: 604800000, // 7 days
+        })
         .send({
           id: user.id,
           message: "Login successful.",
@@ -108,13 +114,15 @@ router.get("/api/auth/logout", async (req, res) => {
     return res.status(404).send({ errorMessage: "error occurred during logout"})
   }
 
+  await redis.del(`refresh:${req.cookies.refreshToken}`);
   res
+    .clearCookie("refreshToken")
     .clearCookie("jwt")
     .status(200)
     .send({ message: "Logout successful." });
 });
 
-//TODO
+
 router.post("/api/auth/change-password", async (req, res) => {
   const { newPassword } = req.body;
 
@@ -257,6 +265,48 @@ router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
     res.status(500).send({ errorMessage: "Somehting went wrong conforming the email" })
   }
 
+});
+
+router.post("/api/auth/refresh", async (req, res) => {
+  const oldRefreshToken = req.cookies.refreshToken;
+  if (!oldRefreshToken) {
+    return res.status(401).send({ errorMessage: "Refresh token missing" });
+  }
+
+  try {
+    const userId = await redis.get(`refresh:${oldRefreshToken}`);
+    if (!userId) {
+      return res.status(403).send({ errorMessage: "Invalid refresh token" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
+    if (!user) {
+      return res.status(404).send({ errorMessage: "User not found" });
+    }
+
+    // Generate new tokens
+    const newAccessToken = await auth.generateToken(user, "15m");
+    const newRefreshToken = await auth.generateRefreshToken(user);
+
+    // Store new refresh token, and delete the old one
+    await redis.multi()
+      .del(`refresh:${oldRefreshToken}`)
+      .setEx(`refresh:${newRefreshToken}`, 7 * 24 * 60 * 60, user.id.toString()) // 7 days
+      .exec();
+
+    // Send new tokens back
+    res
+      .cookie("jwt", newAccessToken, cookieOptions)
+      .cookie("refreshToken", newRefreshToken, {
+        ...cookieOptions,
+        maxAge: 604800000, // 7 days
+      })
+      .send({ status: 200 });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Failed to refresh token" });
+  }
 });
 
 export default router;

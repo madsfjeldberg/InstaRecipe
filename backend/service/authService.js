@@ -5,7 +5,8 @@ import redis from '../database/redisClient.js';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRATION = 3600; // 1 hour
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const JWT_EXPIRATION = 900; // 15 minutes
 
 const hashPassword = async (password) => {
   try {
@@ -47,6 +48,23 @@ const generateToken = async (user) => {
   }
 }
 
+const generateRefreshToken = async (user) => {
+  const refreshToken = jwt.sign({
+    id: user.id,
+    username: user.username,
+    email: user.email
+  }, JWT_REFRESH_SECRET);
+
+  // store token in redis
+  try{
+    await redis.setEx(refreshToken, 604800, user.id.toString())
+    return refreshToken;
+    
+  } catch(error) {
+    console.error(error);
+  }
+}
+
 async function verifyToken(token) {
   try{
     const exists = await redis.exists(token);
@@ -67,7 +85,7 @@ async function verifyToken(token) {
 
 async function destroyToken(token) {
 
-  try{
+  try {
     const keysDeleted = await redis.del(token);
     if(keysDeleted === 0) {
       return false;
@@ -94,6 +112,7 @@ export default {
   hashPassword,
   verifyPassword,
   generateToken,
+  generateRefreshToken,
   decodeToken,
   verifyToken,
   destroyToken
