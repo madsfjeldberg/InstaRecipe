@@ -5,7 +5,7 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { Plus } from "lucide-svelte";
   import { z } from "zod";
-  import { isAuthenticated, user } from "$lib/stores/authStore.js";
+  import { isAuthenticated, user } from "../../../stores/authStore.js";
   import { addRecipeList } from "$lib/api/recipelistApi.js";
   import Recipetable from "../recipetable/recipetable.svelte";
 

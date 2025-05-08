@@ -7,13 +7,13 @@
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import ThemeToggle from "../theme-toggle/theme-toggle.svelte";
   import { page } from "$app/stores";
-  import { isAuthenticated } from "$lib/stores/authStore";
+  import { isAuthenticated } from "../../../stores/authStore";
   import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./navlink.svelte";
   import { goto } from "$app/navigation";
   import { authService } from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";
-  import { avatarStore } from "$lib/stores/avatarStore.js";
+  import { avatarStore } from "../../../stores/avatarStore.js";
 
   const handleLogout = async () => {
     await authService.logout();

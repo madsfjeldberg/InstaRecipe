@@ -7,8 +7,8 @@
   import { goto } from '$app/navigation';
   import { authService } from '$lib/api/authApi.js';
   import { toast } from 'svelte-sonner';
-  import { avatarStore } from "$lib/stores/avatarStore.js";
-  import { user } from "$lib/stores/authStore.js";
+  import { avatarStore } from "../../../stores/avatarStore.js";
+  import { user } from "../../../stores/authStore.js";
   import { LoaderCircle } from "lucide-svelte";
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';

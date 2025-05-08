@@ -1,4 +1,4 @@
-import { isAuthenticated } from "$lib/stores/authStore";
+import { isAuthenticated } from "../../stores/authStore.js";
 import { makeOption } from "./util.js";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';

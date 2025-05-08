@@ -4,10 +4,7 @@ import { makeOption } from "./util";
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipes` : '/api/recipes';
 
 
-
-
-
-async function getRecipeById(id) {
+const getRecipeById = async (id) => {
   try{
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + id, getOption);
@@ -28,25 +25,15 @@ const addRecipe = async (
   ingredients,
   instructions,
   category,
+  tags,
   // calories,
   recipeListId,
 ) => {
-  const response = await fetch(`${BASE_URL}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      name,
-      description,
-      ingredients,
-      instructions,
-      category,
-      // calories,
-      recipeListId
-    }),
-  });
+
+  const recipeToCreate = { name, description, ingredients, instructions, category, tags, recipeListId };
+
+  const postOption = makeOption("POST", recipeToCreate)
+  const response = await fetch(BASE_URL, postOption);
 
   if (!response.ok) {
     throw new Error('Failed to add recipe: ', response.message);

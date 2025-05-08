@@ -11,6 +11,7 @@
   import { LoaderCircle } from "lucide-svelte";
   import DeleteListDialog from "$lib/components/delete-list-dialog/delete-list-dialog.svelte";
   import EditListDialog from "$lib/components/edit-list-dialog/edit-list-dialog.svelte";
+  import tagsApi from "$lib/api/tagsApi.js";
 
   const { data } = $props();
   const { user } = data;
@@ -22,12 +23,14 @@
   let recipeLists = $state([]);
   let recipes = $state([]);
   let categories = $state([]);
+  let tags = $state([]);
   let loading = $state(true);
 
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     recipeLists = await getRecipeListsByUserId(userId);
     categories = await getCategories();
+    tags = await tagsApi.getRecipeTags();
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
@@ -76,7 +79,7 @@
     {:else if selectedList}
       <div class="group flex items-center justify-between mb-4">
           <EditListDialog bind:selectedList bind:recipeLists />
-        <AddRecipeDialog bind:selectedList {categories} />
+        <AddRecipeDialog bind:selectedList {categories} {tags}/>
       </div>
 
       <RecipeTable bind:selectedList {recipes} />

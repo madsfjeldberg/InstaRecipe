@@ -40,25 +40,38 @@ model RecipeList {
 }
 
 model Category {
-  id      String   @id @default(uuid())
-  name    String   @unique
-  recipes Recipe[]
+  id       String    @id @default(uuid())
+  name     String    @unique
+  recipes  Recipe[]  // 1 category → many recipes
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  recipes  Recipe[]  @relation("RecipeTags") // many ↔ many with Recipe
 }
 
 model Recipe {
-  id              String       @id @default(uuid())
-  name            String
-  description     String
-  ingredients     String?
-  ingredientsList Ingredient[]
-  instructions    String
-  category        Category     @relation(fields: [categoryId], references: [id])
-  likes           String[] // store user IDs as UUID strings (maybe refs to user?)
-  dislikes        String[] // store user IDs as UUID strings (maybe refs to user?)
-  recipeLists     RecipeList[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  categoryId      String
+  id               String         @id @default(uuid())
+  name             String
+  description      String
+  ingredients      String?
+  ingredientsList  Ingredient[]
+  instructions     String
+
+  // 1 recipe → 1 category
+  category         Category       @relation(fields: [categoryId], references: [id])
+  categoryId       String
+
+  // many ↔ many with Tag
+  tags             Tag[]          @relation("RecipeTags")
+
+  likes            String[] // store user IDs as UUID strings (maybe refs to user?)
+  dislikes         String[] // store user IDs as UUID strings (maybe refs to user?)
+  recipeLists      RecipeList[]
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model Ingredient {

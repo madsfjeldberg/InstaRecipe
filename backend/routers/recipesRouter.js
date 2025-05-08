@@ -29,6 +29,7 @@ router.get("/api/recipes/:id", async (req, res) => {
       },
       include: {
         category: true,
+        tags: true,
         ingredientsList: true
       }
     })
@@ -52,12 +53,10 @@ router.get("/api/recipes/categories", async (req, res) => {
 });
 
 router.post("/api/recipes", async (req, res) => {
-  const { name, description, ingredients, instructions, category, recipeListId } = req.body;
-
-  if (!name || !description || !ingredients || !instructions || !category) {
+  const { name, description, ingredients, instructions, category, tags, recipeListId } = req.body;
+  if (!name || !description || !ingredients || !instructions || !category || !tags) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  console.log(ingredients);
 
   const ingredientsWithMacros = await macroService.getMacros(ingredients);
  
@@ -70,9 +69,13 @@ router.post("/api/recipes", async (req, res) => {
           description,
           instructions,
           category: { connect: { name: category } },
+          tags: { connect: tags.map( (tag) => ({id: tag}))},
           recipeLists: { connect: { id: recipeListId } },
         },
-        include: {category: true}
+        include: {
+          category: true,
+          tags: true
+        }
       });
   
       const createdIngredients = await Promise.all(
