@@ -184,9 +184,6 @@
               <MultiSelect bind:selectedItems={selectedTags} items={tags} selectPlaceholder="Select tags..."/>
               <p class="text-xs mt-1">Max 3 tags</p>
             </div>
-            {#if errors.tags}
-              <p class="text-red-500 col-span-4">{errors.tags}</p>
-            {/if}
           </div>
         </div>
 
