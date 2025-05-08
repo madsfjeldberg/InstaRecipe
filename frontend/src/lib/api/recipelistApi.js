@@ -69,10 +69,29 @@ const deleteRecipeList = async (listId) => {
   return data;
 }
 
+const updateRecipeList = async (listId, name, isPrivate) => {
+  const response = await fetch(`${BASE_URL}/${listId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ name, isPrivate }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update recipe list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 export {
   addRecipeList,
   getRecipeListsByUserId,
   getRecipelistByListId,
   deleteRecipeList,
+  updateRecipeList,
 };
 
