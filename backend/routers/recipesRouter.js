@@ -1,6 +1,6 @@
 import { Router } from "express";
-
 import prisma from "../database/prismaClient.js";
+import macroService from "../service/macroService.js";
 
 const router = Router();
 
@@ -59,10 +59,7 @@ router.post("/api/recipes", async (req, res) => {
   }
   console.log(ingredients);
 
-  const ingredientsWithMacros = await getMacros(ingredients);
-  if(!ingredientsWithMacros.items) {
-    ingredientsWithMacros.items = [];
-  } 
+  const ingredientsWithMacros = await macroService.getMacros(ingredients);
  
   try {
     const result = await prisma.$transaction( async (transaction) => {
@@ -80,15 +77,15 @@ router.post("/api/recipes", async (req, res) => {
   
       const createdIngredients = await Promise.all(
         
-        ingredientsWithMacros.items.map( async (ingredient) => {
+        ingredientsWithMacros.map( async (ingredient) => {
           return await transaction.ingredient.create({
             data: {
               name: ingredient.name,
-              servingSize: ingredient.serving_size_g,
+              servingSize: ingredient.servingSize,
               calories: ingredient.calories,
-              protein: ingredient.protein_g,
-              fat: ingredient.fat_total_g,
-              carbs: ingredient.carbohydrates_total_g,
+              protein: ingredient.protein,
+              fat: ingredient.fat,
+              carbs: ingredient.carbs,
               recipeId: newRecipe.id
             }
           })
@@ -115,20 +112,6 @@ router.post("/api/recipes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-async function getMacros(ingredients) {
-  try {
-    const response = await fetch("https://api.calorieninjas.com/v1/nutrition?query=" + ingredients, {
-      headers: {
-        "X-Api-Key": process.env.CALORIE_NINJAS_API_KEY
-      }
-    });
-    return await response.json();
-
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;

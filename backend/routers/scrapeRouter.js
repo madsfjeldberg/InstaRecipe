@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import puppeteer from 'puppeteer';
-import ai from '../util/ai.js';
-import macroAPI from '../util/macroAPI.js';
+import ai from '../service/aiService.js';
+import macroService from '../service/macroService.js';
 import 'dotenv/config';
 
 
@@ -59,10 +59,10 @@ router.post('/api/scrape', async (req, res) => {
 
     console.log("ingredients: ", jsonData.ingredients);
     // get macros for ingredients
-    let ingredientsWithMacros = await macroAPI.getMacros(jsonData.ingredientsInGrams);
+    let ingredientsWithMacros = await macroService.getMacros(jsonData.ingredientsInGrams);
     console.log("ingredients with macros: ", ingredientsWithMacros);
     // calculate total macros
-    const totalMacros = macroAPI.calculateTotalMacros(ingredientsWithMacros);
+    const totalMacros = macroService.calculateTotalMacros(ingredientsWithMacros);
     console.log("total macros: ", totalMacros);
     // add macros to jsonData
     jsonData.macros = totalMacros;

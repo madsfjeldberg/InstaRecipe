@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from 'multer';
-import auth from "../util/auth.js";
+import auth from "../service/authService.js";
 
 import prisma from "../database/prismaClient.js";
 

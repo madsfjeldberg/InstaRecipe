@@ -19,10 +19,18 @@
       type: "doughnut",
       data: {
         labels,
-        datasets: [
-          {
+        datasets: [{
             data,
-            backgroundColor: ["#f87171", "#60a5fa", "#facc15"],
+            backgroundColor: [
+              '#60A5FA', // Sky Blue
+              '#10B981', // Emerald
+              '#FBBF24', // Amber
+              '#F87171', // Rose
+              '#A78BFA', // Violet
+              '#14B8A6', // Teal
+              '#FB923C', // Orange
+              '#9CA3AF'  // Cool Gray
+            ],
             hoverOffset: 8,
           },
         ],
