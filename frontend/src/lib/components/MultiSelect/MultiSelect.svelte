@@ -4,7 +4,7 @@
   let { items, selectedItems = $bindable(), selectPlaceholder } = $props();
 
   const isMaxSelection = () => {
-    if (selectedItems.length === 4) {
+    if (selectedItems.length > 3) {
       selectedItems.pop();
       return;
     }
