@@ -1,3 +1,5 @@
+import { makeOption } from "./util.js";
+
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipelists' || '/recipelists';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipelists` : '/api/recipelists';
 
@@ -19,7 +21,7 @@ const addRecipeList = async (name, userId) => {
   return data;
 }
 
-const addRecipeToStaredRecipeList = (staredListId, recipeId) => {
+const addRecipeToStaredRecipeList = async (staredListId, recipeId) => {
 
   const postOption = makeOption("POST");
   const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, postOption);

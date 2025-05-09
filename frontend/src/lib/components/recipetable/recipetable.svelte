@@ -7,7 +7,8 @@
   import { deleteRecipe } from "$lib/api/recipeApi.js";
   import PopularityVoteButtons from "../popularity-vote-buttons/popularity-vote-buttons.svelte";
   import { goto } from "$app/navigation";
-    import { Star } from "lucide-svelte";
+  import { Star } from "lucide-svelte";
+  import { addRecipeToStaredRecipeList } from "$lib/api/recipelistApi.js";
 
   let { selectedList = $bindable(), recipeLists = $bindable(), recipes } = $props();
 
@@ -28,11 +29,16 @@
     
     try {
       const staredListId = recipeLists[staredListIndex].id
-      await addToStaredRecipeList(staredListId, recipe.id);
+      await addRecipeToStaredRecipeList(staredListId, recipe.id);
       toast.success("Recipe added to stared list!");
     }catch(error) {
       toast.error(error.message);
     }
+  }
+
+  //TODO add function to remove from stared list
+  const removeRecipeFromStaredList = () => {
+    
   }
 </script>
 
@@ -72,8 +78,7 @@
           </Table.Cell>
 
           <Table.Cell onclick={() => addToStaredRecipeList(recipe)}>
-            <!-- TODO FINISH IF THE SELECTED LIST CONTAINS RECIPES THAT CAN BE FOUND IN STARED RENDER THEM ORANGE IF NOT JUST ORDINARY -->
-            {#if recipeLists.find( (list) => list.name === "Stared").includes(recipe)}
+            {#if recipeLists.find( (list) => list.name === "Stared").recipes.includes(recipe)}
             <span class="hover:text-black dark:hover:text-white transition-colors">
               <Star color="orange"/>
             </span>
@@ -81,7 +86,7 @@
               <span class="hover:text-orange-500 transition-colors">
                 <Star />
               </span>
-            {/if}
+              {/if}
           </Table.Cell>
 
           <Table.Cell>
