@@ -7,8 +7,9 @@
   import { deleteRecipe } from "$lib/api/recipeApi.js";
   import PopularityVoteButtons from "../popularity-vote-buttons/popularity-vote-buttons.svelte";
   import { goto } from "$app/navigation";
+    import { Star } from "lucide-svelte";
 
-  let { selectedList = $bindable(), recipes } = $props();
+  let { selectedList = $bindable(), recipeLists = $bindable(), recipes } = $props();
 
   function navigateToRecipe(recipe) {
     goto("/recipes/" + recipe.id);
@@ -20,6 +21,19 @@
     }
     return recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0).toFixed();
   };
+
+  const addToStaredRecipeList = async (recipe) => {
+    const staredListIndex = recipeLists.findIndex( (list) => list.name === "Stared" );
+    recipeLists[staredListIndex].recipes.push(recipe);
+    
+    try {
+      const staredListId = recipeLists[staredListIndex].id
+      await addToStaredRecipeList(staredListId, recipe.id);
+      toast.success("Recipe added to stared list!");
+    }catch(error) {
+      toast.error(error.message);
+    }
+  }
 </script>
 
 <Table.Root>
@@ -30,6 +44,7 @@
       <Table.Head class="">Category</Table.Head>
       <Table.Head class="text-right">Calories</Table.Head>
       <Table.Head class="text-center">Popularity</Table.Head>
+      <Table.Head class="w-[20px]">Star</Table.Head>
       <Table.Head class="w-[20px]"></Table.Head>
     </Table.Row>
   </Table.Header>
@@ -54,6 +69,19 @@
 
           <Table.Cell class="flex items-center justify-center">
             <PopularityVoteButtons />
+          </Table.Cell>
+
+          <Table.Cell onclick={() => addToStaredRecipeList(recipe)}>
+            <!-- TODO FINISH IF THE SELECTED LIST CONTAINS RECIPES THAT CAN BE FOUND IN STARED RENDER THEM ORANGE IF NOT JUST ORDINARY -->
+            {#if recipeLists.find( (list) => list.name === "Stared").includes(recipe)}
+            <span class="hover:text-black dark:hover:text-white transition-colors">
+              <Star color="orange"/>
+            </span>
+              {:else }
+              <span class="hover:text-orange-500 transition-colors">
+                <Star />
+              </span>
+            {/if}
           </Table.Cell>
 
           <Table.Cell>

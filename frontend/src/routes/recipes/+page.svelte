@@ -82,7 +82,7 @@
         <AddRecipeDialog bind:selectedList {categories} {tags}/>
       </div>
 
-      <RecipeTable bind:selectedList {recipes} />
+      <RecipeTable bind:selectedList bind:recipeLists {recipes} />
 
     {:else}
       <div class="flex text-center flex-col items-center justify-center h-full">
