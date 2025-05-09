@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import prisma from '../database/prismaClient.js';
+import recipeListRepository from '../repository/recipeListRepository.js';
 
 const router = Router();
 
@@ -90,6 +91,17 @@ router.post('/api/recipelists', async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 });
+
+router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+  try{
+    const updatedList = await recipeListRepository.addRecipeToStaredList(req.params.listId, req.params.recipeId);
+    res.send({ data: updatedList});
+
+  }catch(error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Server Error. Error adding recipe to stared list"})
+  }
+})
 
 router.put('/api/recipelists/:listId', async (req, res) => {
   const { listId } = req.params;
