@@ -19,6 +19,19 @@ const addRecipeList = async (name, userId) => {
   return data;
 }
 
+const addRecipeToStaredRecipeList = (staredListId, recipeId) => {
+
+  const postOption = makeOption("POST");
+  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, postOption);
+
+  if (!response.ok) {
+    throw new Error('Failed to add recipe to stared list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 const getRecipeListsByUserId = async (userId) => {
   const response = await fetch(`${BASE_URL}/user/${userId}`, {
     method: 'GET',
@@ -89,6 +102,7 @@ const updateRecipeList = async (listId, name, isPrivate) => {
 
 export {
   addRecipeList,
+  addRecipeToStaredRecipeList,
   getRecipeListsByUserId,
   getRecipelistByListId,
   deleteRecipeList,
