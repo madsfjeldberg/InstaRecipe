@@ -69,7 +69,7 @@ router.post("/api/recipes", async (req, res) => {
           description,
           instructions,
           category: { connect: { name: category } },
-          tags: { connect: tags.map( (tag) => ({id: tag}))},
+          tags: { connect: tags.map( (tag) => ({name: tag}))},
           recipeLists: { connect: { id: recipeListId } },
         },
         include: {

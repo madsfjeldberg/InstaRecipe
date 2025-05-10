@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 
 const getRecipeById = async (id) => {
-  try{
+  try {
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + id, getOption);
     const result = await response.json();

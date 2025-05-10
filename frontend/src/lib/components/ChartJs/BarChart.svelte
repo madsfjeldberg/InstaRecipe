@@ -32,17 +32,17 @@
           {
             label: "Protein",
             data: ingredients.map((i) => i.protein),
-            backgroundColor: "#4ade80", // Green
+            backgroundColor: "#60a5fa", // Blue
           },
           {
             label: "Fat",
             data: ingredients.map((i) => i.fat),
-            backgroundColor: "#facc15", // Yellow
+            backgroundColor: "#f472b6", // Pink
           },
           {
             label: "Carbs",
             data: ingredients.map((i) => i.carbs),
-            backgroundColor: "#60a5fa", // Blue
+            backgroundColor: "#4ade80", // Green
           },
         ],
       },
