@@ -12,7 +12,7 @@ Structure:
   "ingredientsInGrams": "",
   "instructions": "",
   "category": "",
-  "calories": 0
+  "tags": []
 }
 Extraction rules:
 Name: Use the title, normally at the beginning.
@@ -35,10 +35,14 @@ IMPORTANT: All measurements MUST be in grams.
 Instructions:
 If instructions are missing, generate plausible cooking steps based on common methods and the ingredients.
 Write clear, numbered, concise steps.
+DO NOT make this an array. it should just be a string.
 
 Category: This should be one of the following: Breakfast, Lunch, Dinner, Dessert, Snack, Beverage.
 
-Calories: Extract the "Calories" value from macros if listed. Otherwise, make an informed guess based on the ingredients, and their amounts.
+Tags:
+Choose appropriate tags for the recipe from the following list:
+Vegan, Vegetarian, Gluten-Free, Dairy-Free, Keto, Paleo, Low-Carb, High-Protein.
+Choose at most 3 tags. 
 
 Special notes:
 Ignore promotions (e.g., cookbook ads, links, social media plugs).

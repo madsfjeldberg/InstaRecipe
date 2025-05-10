@@ -11,10 +11,10 @@
     import { ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
-    import { LoaderCircle } from "lucide-svelte";
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat } from "lucide-svelte";
     import { getRecipeById } from "$lib/api/recipeApi.js";
     import groceryListApi from "$lib/api/groceryListApi";
-    
+        
     let recipe = $state(null);
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
@@ -74,6 +74,10 @@
           <ArrowLeft class="mr-2" />Back
         </Button>
       </div>
+      <p class="col-span-6 text-center">IMAGE GOES HERE</p>
+      {#if recipe.imageUrl}
+          <img src="{recipe.imageUrl}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
+        {/if}
       <div class="w-full">
         <div>
           <div>
@@ -89,31 +93,70 @@
         </div>
         
 
-        <h1 class="text-5xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-        <h2 class="text-left text-gray-700 dark:text-gray-300 mx-auto">{recipe.description}</h2>
-        
-        <p class="text-right">IMAGE GOES HERE</p>
-        {#if recipe.imageUrl}
-          <img src="{recipe.imageUrl}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
-        {/if}
+        <div class="grid grid-cols-6">          
+        <h1 class="col-span-6 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
+        <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10 mx-auto">{recipe.description}</h2>
   
-        
-  
-        <div class="mb-8 text-left">
-          <br>
-          <p class="text-gray-800 dark:text-gray-200">Calories: {recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0).toFixed()}kcal</p>
-          <br>
-          <p class="text-gray-800 dark:text-gray-200">Protein {recipe.ingredientsList.reduce((sum, i) => sum + i.protein, 0).toFixed()}g</p>
-          <p> Fat {recipe.ingredientsList.reduce((sum, i) => sum + i.fat, 0).toFixed()}g</p> 
-          <p> Carbs {recipe.ingredientsList.reduce((sum, i) => sum + i.carbs, 0).toFixed()}g</p>
-        </div>
-        
-  
-      
-        <section class="mb-8">
-          
-        </section>
+        <Card.Root class="col-span-2 col-start-1 shadow-lg p-6 mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
+          <Card.Header class="w-full">
+            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition Facts</Card.Title>
+            <Separator class="mb-4" />
+          </Card.Header>
+            <Card.Content class="w-full">
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                    <Zap class="text-yellow-500 mr-2" />
+                    Calories
+                  </span>
+                  <span class="inline-block font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{recipe.ingredientsList?.reduce((sum, i) => sum + i.calories, 0).toFixed() ?? 0} kcal</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                    <BicepsFlexed class="text-blue-500 mr-2" />
+                    Protein
+                  </span>
+                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.protein, 0).toFixed() ?? 0} g</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                    <CakeSlice class="w-5 h-5 mr-2 text-pink-500" />
+                    Fat
+                  </span>
+                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.fat, 0).toFixed() ?? 0} g</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                    <Wheat class="w-5 h-5 mr-2 text-green-500" />
+                    Carbs
+                  </span>
+                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.carbs, 0).toFixed() ?? 0} g</span>
+                </div>
+              </div>
+            </Card.Content>
+        </Card.Root>
 
+        <div class="col-span-2 flex flex-col space-y-8">
+            <div class="flex flex-col items-center">
+              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
+              <div style="width: 250px; height: 250px;">
+              <DoughnutChart
+                labels={recipe.ingredientsList.map((ingredient) => ingredient.name)}
+                data={recipe.ingredientsList.map((ingredient) => ingredient.calories)}
+                width={250}
+                height={250}
+              />
+              </div>
+            </div>
+            </div>
+            <div class="col-span-2 flex flex-col items-center">
+              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
+              <BarChart ingredients={recipe.ingredientsList} />
+            </div>
+        
+                
+        </div>
+  
         <!-- Ingredients & Instructions Card -->
         <Card.Root class="shadow-lg flex flex-row w-full mb-8">
           <!-- Ingredients Section -->
@@ -139,48 +182,39 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-              <p class="whitespace-pre-line text-left">{recipe.instructions}</p>
-            </Card.Content>
+  <ol class="list-decimal list-inside whitespace-pre-line text-left space-y-4">
+    {#each recipe.instructions
+      // Split on step numbers, capturing only the step text
+      .split(/\d+\.\s+/)
+      .filter(step => step.trim().length > 0) as step}
+      <li>{step.trim()}</li>
+    {/each}
+  </ol>
+</Card.Content>
           </div>
         </Card.Root>
 
         
-          {#if isGroceryListGenerating}
-            <Button disabled> <LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Generating...</Button>
-            {:else}
-            <Button onclick={generateShoppingList}>Generate shopping list</Button>
-          {/if}
+          
         
   
 
         <!-- Diagrams & Comment Grid -->
         <div class="grid grid-cols-2 gap-8 mb-8">
-          <!-- Left Side: Info (empty for now, or add more info here if needed) -->
+          <!-- Left Side: Comments -->
           <div class="col-span-1">
             <h1 class=" text-3xl text-left font-semibold">Comments:</h1>
             <div class="bg-gray-100 dark:bg-gray-800 rounded-lg">
             <span class="text-gray-500 dark:text-gray-400 italic">No comments yet. Be the first to comment!</span>
           </div>
           </div>
-          <!-- Comments Placeholder -->
-          
-          <!-- Right Side: Diagrams -->
-          <div class="col-span-1  flex flex-col space-y-8">
-            <div class="flex flex-col items-center">
-              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
-              <div style="width: 250px; height: 250px;">
-              <DoughnutChart
-                labels={recipe.ingredientsList.map((ingredient) => ingredient.name)}
-                data={recipe.ingredientsList.map((ingredient) => ingredient.calories)}
-                width={250}
-                height={250}
-              />
-              </div>
-            </div>
-            <div class="flex flex-col items-center">
-              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
-              <BarChart ingredients={recipe.ingredientsList} />
-            </div>
+          <!-- Right Side: Generate grocery list button-->
+           <div class="col-span-1 col-end-4">
+           {#if isGroceryListGenerating}
+            <Button disabled> <LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Generating...</Button>
+            {:else}
+            <Button onclick={generateShoppingList}>Generate shopping list</Button>
+          {/if}
           </div>
         </div>
 
