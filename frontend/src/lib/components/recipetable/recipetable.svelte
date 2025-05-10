@@ -8,11 +8,11 @@
   import PopularityVoteButtons from "../popularity-vote-buttons/popularity-vote-buttons.svelte";
   import { goto } from "$app/navigation";
   import { Star } from "lucide-svelte";
-  import { addRecipeToStaredRecipeList } from "$lib/api/recipelistApi.js";
+  import { addRecipeToStaredRecipeList, removeRecipeFromStaredList } from "$lib/api/recipelistApi.js";
 
-  let { selectedList = $bindable(), recipeLists = $bindable(), recipes } = $props();
+  let { selectedList = $bindable(), staredRecipeList = $bindable(), recipes } = $props();
 
-  function navigateToRecipe(recipe) {
+  const navigateToRecipe = (recipe) => {
     goto("/recipes/" + recipe.id);
   }
 
@@ -23,22 +23,42 @@
     return recipe.ingredientsList.reduce((sum, ingredient) => sum + ingredient.calories, 0).toFixed();
   };
 
-  const addToStaredRecipeList = async (recipe) => {
-    const staredListIndex = recipeLists.findIndex( (list) => list.name === "Stared" );
-    recipeLists[staredListIndex].recipes.push(recipe);
+
+
+  const isAddedToStaredRecipeList = async (recipe) => {
+    try {
+      if(staredRecipeList.recipes.some( (checkRecipe) => checkRecipe.id === recipe.id)) {
+        await removeFromStaredList(recipe);
+        toast.success(recipe.name + " was removed from stared list");
+        return;
+      }
+
+      await addToStaredRecipeList(recipe);
+      toast.success(recipe.name + " was added to your stared list")
+
+    }catch(error) {
+      toast.error("Something went wrong interacting with stared list")
+    }
+  }
+
+
+
+  const addToStaredRecipeList = async (newRecipe) => {
+    staredRecipeList.recipes = [...staredRecipeList.recipes, newRecipe];
     
     try {
-      const staredListId = recipeLists[staredListIndex].id
-      await addRecipeToStaredRecipeList(staredListId, recipe.id);
-      toast.success("Recipe added to stared list!");
+      await addRecipeToStaredRecipeList(staredRecipeList.id, newRecipe.id);
+
     }catch(error) {
       toast.error(error.message);
     }
   }
 
-  //TODO add function to remove from stared list
-  const removeRecipeFromStaredList = () => {
-    
+
+
+  const removeFromStaredList = async (recipeToRemove) => {
+      staredRecipeList.recipes = staredRecipeList.recipes.filter( (recipe) => recipe.id !== recipeToRemove.id );
+      await removeRecipeFromStaredList(staredRecipeList.id, recipeToRemove.id)
   }
 </script>
 
@@ -77,8 +97,8 @@
             <PopularityVoteButtons />
           </Table.Cell>
 
-          <Table.Cell onclick={() => addToStaredRecipeList(recipe)}>
-            {#if recipeLists.find( (list) => list.name === "Stared").recipes.includes(recipe)}
+          <Table.Cell onclick={() => isAddedToStaredRecipeList(recipe)}>
+            {#if staredRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
             <span class="hover:text-black dark:hover:text-white transition-colors">
               <Star color="orange"/>
             </span>
