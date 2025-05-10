@@ -61,8 +61,20 @@ const generateRecipe = async (text) => {
   return response;
 };
 
+const generateRecipeImage = async (prompt) => {
+  const response = await client.images.generate({
+    model: "dall-e-2",
+    prompt: prompt,
+    n: 1,
+    size: "1024x1024"
+  });
+
+  return response.data[0].url;
+}
+
 const ai = {
-  generateRecipe
+  generateRecipe,
+  generateRecipeImage
 };
 
 export default ai;
