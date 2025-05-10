@@ -34,6 +34,18 @@ const addRecipeToStaredRecipeList = async (staredListId, recipeId) => {
   return data;
 }
 
+const removeRecipeFromStaredList = async (staredListId, recipeId) => {
+  const deleteOption = makeOption("DELETE");
+  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, deleteOption);
+
+  if (!response.ok) {
+    throw new Error('Failed to remove recipe from stared list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 const getRecipeListsByUserId = async (userId) => {
   const response = await fetch(`${BASE_URL}/user/${userId}`, {
     method: 'GET',
@@ -108,6 +120,7 @@ export {
   getRecipeListsByUserId,
   getRecipelistByListId,
   deleteRecipeList,
+  removeRecipeFromStaredList,
   updateRecipeList,
 };
 

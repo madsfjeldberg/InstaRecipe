@@ -103,6 +103,17 @@ router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
   }
 })
 
+router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+  try{
+    const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
+    res.send({ data: updatedList});
+
+  }catch(error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Server Error. Error removing recipe from stared list"})
+  }
+})
+
 router.put('/api/recipelists/:listId', async (req, res) => {
   const { listId } = req.params;
   const { name, isPrivate } = req.body;
