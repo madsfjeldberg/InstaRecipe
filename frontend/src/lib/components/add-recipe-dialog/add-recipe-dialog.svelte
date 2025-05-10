@@ -72,7 +72,7 @@
       isLoading = true;
       // do something here
       let generatedRecipe = await scrapeLink(url);
-      let { name, description, ingredientsInGrams, instructions, category, tags } = generatedRecipe;
+      let { name, description, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
       response = await addRecipe(
         name,
         description,
@@ -80,6 +80,7 @@
         instructions,
         category,
         tags,
+        image,
         recipeListId
       );
 

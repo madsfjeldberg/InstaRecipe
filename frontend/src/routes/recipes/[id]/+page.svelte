@@ -75,8 +75,8 @@
         </Button>
       </div>
       <p class="col-span-6 text-center">IMAGE GOES HERE</p>
-      {#if recipe.imageUrl}
-          <img src="{recipe.imageUrl}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
+      {#if recipe.image}
+          <img src="{recipe.image}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
         {/if}
       <div class="w-full">
         <div>
