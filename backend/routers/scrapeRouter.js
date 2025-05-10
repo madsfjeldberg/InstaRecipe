@@ -5,7 +5,6 @@ import macroService from '../service/macroService.js';
 import 'dotenv/config';
 
 
-
 const router = new Router();
 
 router.post('/api/scrape', async (req, res) => {
@@ -67,7 +66,7 @@ router.post('/api/scrape', async (req, res) => {
     // add macros to jsonData
     jsonData.macros = totalMacros;
     jsonData.ingredientsWithMacros = ingredientsWithMacros;
-    return res.status(200).json(jsonData);
+    return res.status(200).json({ data: jsonData });
   } catch(err) {
     console.error("Error parsing AI response JSON", err);
     return res.status(500).json({ message: "Invalid JSON format from AI output" });

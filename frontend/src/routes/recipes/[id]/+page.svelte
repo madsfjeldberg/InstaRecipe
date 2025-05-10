@@ -14,7 +14,7 @@
     import { LoaderCircle } from "lucide-svelte";
     import { getRecipeById } from "$lib/api/recipeApi.js";
     import groceryListApi from "$lib/api/groceryListApi";
-    
+        
     let recipe = $state(null);
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
@@ -139,8 +139,15 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-              <p class="whitespace-pre-line text-left">{recipe.instructions}</p>
-            </Card.Content>
+  <ol class="list-decimal list-inside whitespace-pre-line text-left space-y-4">
+    {#each recipe.instructions
+      // Split on step numbers, capturing only the step text
+      .split(/\d+\.\s+/)
+      .filter(step => step.trim().length > 0) as step}
+      <li>{step.trim()}</li>
+    {/each}
+  </ol>
+</Card.Content>
           </div>
         </Card.Root>
 
