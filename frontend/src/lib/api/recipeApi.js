@@ -18,7 +18,7 @@ const getRecipeById = async (id) => {
 }
 
 
-//TODO before adding calling the post retrieve the macros first and then add these to the body of the post request.
+
 const addRecipe = async (
   name,
   description,
@@ -42,6 +42,8 @@ const addRecipe = async (
   const data = await response.json();
   return data;
 }
+
+
 
 const getCategories = async () => {
   const response = await fetch(`${BASE_URL}/categories`, {

@@ -1,10 +1,12 @@
 import 'dotenv/config';
 import { Router } from "express";
+
 import auth from "../service/authService.js";
 import emailService from "../service/emailService.js";
 import prisma from "../database/prismaClient.js";
 import redis from '../database/redisClient.js';
 import { authenticateToken, isAuthenticated } from '../middleware/authenticateToken.js';
+import recipeListRepository from '../repository/recipeListRepository.js';
 
 const router = Router();
 
@@ -24,31 +26,38 @@ router.post("/api/auth/register", async (req, res) => {
   if (!username || !email || !password) {
     return res.status(400).send({ status: 400, message: "All fields are required" });
   }
-  // check if user already exists
-  const existingUser = await prisma.user.findUnique({ where: { username } });
-  if (existingUser) {
-    return res.status(400).send({ status: 400, message: "Username already exists" });
+
+  try {
+    // check if user already exists
+    const existingUser = await prisma.user.findUnique({ where: { username } });
+    if (existingUser) {
+      return res.status(400).send({ status: 400, message: "Username already exists" });
+    }
+    // check if email already exists
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).send({ status: 400, message: "Email already exists" });
+    }
+
+    const hashedPassword = await auth.hashPassword(password);
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    await recipeListRepository.createStaredList(newUser.id);
+
+    //this generates the token and stroes userId as value and token as key
+    const jwt = await auth.generateToken(newUser);
+    await emailService.sendVerificationEmail(newUser.email, jwt);
+    res.cookie("jwt", jwt, cookieOptions).send({ message: "User registered successfully.", status: 200 });
+
+  } catch (error) {
+    res.status(500).send({ errorMessage: "Server error. Error registering user" });
   }
-  // check if email already exists
-  const existingEmail = await prisma.user.findUnique({ where: { email } });
-  if (existingEmail) {
-    return res.status(400).send({ status: 400, message: "Email already exists" });
-  }
-
-  const hashedPassword = await auth.hashPassword(password);
-  const newUser = await prisma.user.create({
-    data: {
-      username,
-      email,
-      password: hashedPassword,
-    },
-  });
-
-  //this generates the token and stroes userId as value and token as key
-  const jwt = await auth.generateToken(newUser);
-  await emailService.sendVerificationEmail(newUser.email, jwt);
-
-  res.cookie("jwt", jwt, cookieOptions).send({ message: "User registered successfully.", status: 200 });
 });
 
 router.post("/api/auth/login", isAuthenticated, async (req, res) => {
@@ -96,16 +105,16 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
 
 
 router.get("/api/auth/logout", async (req, res) => {
-  
+
   const jwt = req.cookies.jwt;
-  if(!jwt) {
-    return res.status(404).send({ errorMessage: "no tokens found on request"})
+  if (!jwt) {
+    return res.status(404).send({ errorMessage: "no tokens found on request" })
   }
 
 
   const isDestroyed = await auth.destroyToken(jwt);
-  if(!isDestroyed) {
-    return res.status(404).send({ errorMessage: "error occurred during logout"})
+  if (!isDestroyed) {
+    return res.status(404).send({ errorMessage: "error occurred during logout" })
   }
 
   res
@@ -142,45 +151,45 @@ router.post("/api/auth/change-password", async (req, res) => {
 
 router.post("/api/auth/forgot-password", async (req, res) => {
   const { email } = req.body;
-  
-  if(!email) {
-    return res.status(401).send({ errorMessage: "Email must be included in the request"});
+
+  if (!email) {
+    return res.status(401).send({ errorMessage: "Email must be included in the request" });
   }
 
-  try{
+  try {
 
-    const isValidEmail = await prisma.user.findUnique({ 
+    const isValidEmail = await prisma.user.findUnique({
       where: {
         email: email
       }
     });
-    if(!isValidEmail) {
-      return res.status(401).send({ errorMessage: "Invalid email"});
+    if (!isValidEmail) {
+      return res.status(401).send({ errorMessage: "Invalid email" });
     }
-    
+
     const foundToken = await redis.exists(email);
-    if(foundToken) {
-      try{
+    if (foundToken) {
+      try {
         await redis.del(email);
-      }catch(error) {
+      } catch (error) {
         console.error(error);
-        return res.status(500).send({ errorMessage: "Error occurred during token reset password token deletion"})
+        return res.status(500).send({ errorMessage: "Error occurred during token reset password token deletion" })
       }
     }
 
     const resetToken = crypto.randomUUID();
     const FIFTEEN_MINUTES = 900;
     const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
-    if(!isSet) {
-      return res.status(500).send({ errorMessage: "Something went wrong generating reset password token"});
+    if (!isSet) {
+      return res.status(500).send({ errorMessage: "Something went wrong generating reset password token" });
     }
 
     await emailService.sendPasswordResetEmail(email, resetToken);
-    res.send({ status: 200, message: "Forgot password request processed successfully"});
+    res.send({ status: 200, message: "Forgot password request processed successfully" });
 
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request"})
+    res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request" })
   }
 })
 
@@ -188,31 +197,31 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
 router.patch("/api/auth/reset-password/:token", async (req, res) => {
   const resetToken = req.params.token;
-  if(!resetToken) {
-    return res.status(401).send({ errorMessage: "Reset token must be included in the request"});
+  if (!resetToken) {
+    return res.status(401).send({ errorMessage: "Reset token must be included in the request" });
   }
 
-  
+
   const { newPassword } = req.body;
-  if(!newPassword) {
-    return res.status(401).send({ errorMessage: "must include a new password"});
+  if (!newPassword) {
+    return res.status(401).send({ errorMessage: "must include a new password" });
   }
 
-  try{
+  try {
     const doesExists = await redis.exists(resetToken);
-    if(!doesExists) {
-      return res.status(401).send({ errorMessage: "No reset token found, send a new forgot password request"})
+    if (!doesExists) {
+      return res.status(401).send({ errorMessage: "No reset token found, send a new forgot password request" })
     }
 
     const email = await redis.get(resetToken);
 
     const isDeleted = await redis.del(resetToken);
-    if(!isDeleted) {
-      return res.status(500).send({ errorMessage: "Error occurred when deleting reset token"});
+    if (!isDeleted) {
+      return res.status(500).send({ errorMessage: "Error occurred when deleting reset token" });
     }
 
     const newHashedPassword = await auth.hashPassword(newPassword);
-    await prisma.user.update({ 
+    await prisma.user.update({
       where: {
         email: email
       },
@@ -221,11 +230,11 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       }
     });
 
-    res.send({ status: 200, message: "Password has been reset"});
+    res.send({ status: 200, message: "Password has been reset" });
 
 
   } catch (error) {
-    res.status(500).send({ errorMessage: "Unexpected error occurred during password reset"})
+    res.status(500).send({ errorMessage: "Unexpected error occurred during password reset" })
     console.error(error);
   }
 

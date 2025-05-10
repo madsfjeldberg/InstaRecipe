@@ -19,8 +19,9 @@
   let isInitialLoad = $state(true); // Flag to track if it's the initial load
 
   let userId = user.id;
-  let selectedList = $state(null);
   let recipeLists = $state([]);
+  let selectedList = $state(null);
+  let staredRecipeList = $state(null);
   let recipes = $state([]);
   let categories = $state([]);
   let tags = $state([]);
@@ -35,6 +36,7 @@
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
       selectedList = recipeLists[0];
+      staredRecipeList = recipeLists.find( (list) => list.name === "Stared");
       recipes = selectedList.recipes;
     } 
     
@@ -82,7 +84,7 @@
         <AddRecipeDialog bind:selectedList {categories} {tags}/>
       </div>
 
-      <RecipeTable bind:selectedList {recipes} />
+      <RecipeTable bind:selectedList bind:staredRecipeList {recipes} />
 
     {:else}
       <div class="flex text-center flex-col items-center justify-center h-full">

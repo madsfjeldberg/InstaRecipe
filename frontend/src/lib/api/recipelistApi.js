@@ -1,3 +1,5 @@
+import { makeOption } from "./util.js";
+
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipelists' || '/recipelists';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipelists` : '/api/recipelists';
 
@@ -13,6 +15,31 @@ const addRecipeList = async (name, userId) => {
 
   if (!response.ok) {
     throw new Error('Failed to add recipe list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+const addRecipeToStaredRecipeList = async (staredListId, recipeId) => {
+
+  const postOption = makeOption("POST");
+  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, postOption);
+
+  if (!response.ok) {
+    throw new Error('Failed to add recipe to stared list');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+const removeRecipeFromStaredList = async (staredListId, recipeId) => {
+  const deleteOption = makeOption("DELETE");
+  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, deleteOption);
+
+  if (!response.ok) {
+    throw new Error('Failed to remove recipe from stared list');
   }
 
   const data = await response.json();
@@ -89,9 +116,11 @@ const updateRecipeList = async (listId, name, isPrivate) => {
 
 export {
   addRecipeList,
+  addRecipeToStaredRecipeList,
   getRecipeListsByUserId,
   getRecipelistByListId,
   deleteRecipeList,
+  removeRecipeFromStaredList,
   updateRecipeList,
 };
 

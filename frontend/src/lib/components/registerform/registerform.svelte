@@ -1,15 +1,18 @@
 <script>
+  import { goto } from '$app/navigation';
+  
+  import { z } from 'zod';
+  import { toast } from 'svelte-sonner';
+  import { LoaderCircle } from "lucide-svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { z } from 'zod';
-  import { goto } from '$app/navigation';
+
   import { authService } from '$lib/api/authApi.js';
-  import { toast } from 'svelte-sonner';
 
   let { onToggleAuthMode } = $props();
-  let loading = $state(false);
+  let isLoading = $state(false);
   let errors = $state({
     username: '',
     password: '',
@@ -41,17 +44,20 @@
     try {
       let response;
       
-      loading = true; // Set loading to true when the request starts
+      isLoading = true; // Set loading to true when the request starts
       //TODO ADD A LOADING SPINNER
       RegisterRequest.parse({ username, email, password});
       response = await authService.register(username, email, password);
       console.log("REGISTER RESPONSE", response)
       
+
       if (response.status === 200) {
         await toast.success('Registration email sent!');
-        loading = false;
+        isLoading = false;
         await goto('/verify');
+
       } else {
+        isLoading = false;
         errors = { ...errors, form: response.message };
       }
       
@@ -63,10 +69,10 @@
             errors[err.path[0]] = err.message;
           }
         });
-        loading = false;
+        isLoading = false;
       } else {
         errors.form = error.message || 'An unexpected error occurred';
-        loading = false;
+        isLoading = false;
       }
     }
   };
@@ -107,7 +113,7 @@
           <span class="text-red-500 text-sm">{errors.password}</span>
         {/if}
       </div>
-      {#if loading}
+      {#if isLoading}
         <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
       {:else}
         <Button type="submit" class="w-full">Sign Up</Button>
