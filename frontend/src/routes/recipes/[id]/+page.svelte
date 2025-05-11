@@ -18,12 +18,16 @@
     let recipe = $state(null);
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
+    let checkedItems = $state([]);
+    let steps = $state([]);
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
 
         try{
           recipe = await getRecipeById(recipeId);
+          steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
+          console.log($state.snapshot(steps));
 
         } catch(error) {
           toast.error("Could not load recipe, try again later")
@@ -33,7 +37,13 @@
         }
     });
 
-
+    function toggleItem(name) {
+      if (checkedItems.includes(name)) {
+        checkedItems = checkedItems.filter(n => n !== name);
+      } else {
+        checkedItems = [...checkedItems, name];
+      }
+    }
 
     async function generateShoppingList() {
       const groceryList = recipe.ingredientsList.map( (ingredient) => {
@@ -165,10 +175,16 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-              <ul class="list-inside space-y-1">
+              <ul class="list-inside space-y-3">
                 {#each recipe.ingredientsList as ingredient}
-                  <li class="cursor-pointer text-left">
-                    <span class="font-medium">{ingredient.name}</span>: {ingredient.servingSize}g
+                  <li>
+                  <button
+                  class="cursor-pointer text-left select-none"
+                    onclick={() => toggleItem(ingredient.name)}>
+                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
+                      {ingredient.name}: {ingredient.servingSize}g
+                      </span>
+                  </button>
                   </li>
                 {/each}
               </ul>
@@ -181,15 +197,20 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-  <ol class="list-decimal list-inside whitespace-pre-line text-left space-y-4">
-    {#each recipe.instructions
-      // Split on step numbers, capturing only the step text
-      .split(/\d+\.\s+/)
-      .filter(step => step.trim().length > 0) as step}
-      <li>{step.trim()}</li>
-    {/each}
-  </ol>
-</Card.Content>
+              <ol class="list-decimal list-outside whitespace-pre-line text-left space-y-6">
+                {#each steps as step}
+                  <li>
+                    <button
+                      class="cursor-pointer text-left select-none"
+                      onclick={() => toggleItem(step)}>
+                      <span class={`font-medium transition-all duration-150 ${checkedItems.includes(step) ? 'line-through text-gray-400' : ''}`}>
+                        {step}
+                      </span>
+                  </button>
+                  </li>
+                {/each}
+              </ol>
+            </Card.Content>
           </div>
         </Card.Root>
 

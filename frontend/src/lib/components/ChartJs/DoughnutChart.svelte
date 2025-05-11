@@ -38,9 +38,7 @@
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            position: "bottom",
-          },
+          legend: false,
         },
       },
     });
