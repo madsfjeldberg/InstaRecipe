@@ -6,6 +6,7 @@
   import { getAllRecipes } from "$lib/api/recipeApi";
 
   import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
 
   const { data } = $props();
   const { user } = data;
@@ -42,6 +43,7 @@
 <div class="grid grid-cols-8">
   <div class=col-span-8>
     <h2 class="font-bold text-2xl text-left dark:text-gray-200">Popular recipes</h2>
+    <Separator class="mt-2 mb-6 h-[2px]" />
     <div class="grid grid-cols-3 gap-4 mt-4">
       {#if loading}
         <LoaderCircle class="animate-spin" />
