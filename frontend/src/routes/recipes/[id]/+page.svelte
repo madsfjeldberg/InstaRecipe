@@ -18,12 +18,15 @@
     let recipe = $state(null);
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
+    let checkedItems = $state([]);
+    let steps = $state([]);
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
 
         try{
           recipe = await getRecipeById(recipeId);
+          steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
 
         } catch(error) {
           toast.error("Could not load recipe, try again later")
@@ -33,7 +36,13 @@
         }
     });
 
-
+    function toggleItem(name) {
+      if (checkedItems.includes(name)) {
+        checkedItems = checkedItems.filter(n => n !== name);
+      } else {
+        checkedItems = [...checkedItems, name];
+      }
+    }
 
     async function generateShoppingList() {
       const groceryList = recipe.ingredientsList.map( (ingredient) => {
@@ -74,9 +83,8 @@
           <ArrowLeft class="mr-2" />Back
         </Button>
       </div>
-      <p class="col-span-6 text-center">IMAGE GOES HERE</p>
-      {#if recipe.imageUrl}
-          <img src="{recipe.imageUrl}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
+      {#if recipe.image}
+          <img src="{recipe.image}" alt="{recipe.name}" class="w-full h-64 rounded-xl object-cover mb-2" />
         {/if}
       <div class="w-full">
         <div>
@@ -97,9 +105,9 @@
         <h1 class="col-span-6 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
         <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10 mx-auto">{recipe.description}</h2>
   
-        <Card.Root class="col-span-2 col-start-1 shadow-lg p-6 mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
+        <Card.Root class="col-span-2 col-start-1 shadow-lg mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
           <Card.Header class="w-full">
-            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition Facts</Card.Title>
+            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition</Card.Title>
             <Separator class="mb-4" />
           </Card.Header>
             <Card.Content class="w-full">
@@ -166,10 +174,16 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-              <ul class="list-inside space-y-1">
+              <ul class="list-inside space-y-3">
                 {#each recipe.ingredientsList as ingredient}
-                  <li class="cursor-pointer text-left">
-                    <span class="font-medium">{ingredient.name}</span>: {ingredient.servingSize}g
+                  <li>
+                  <button
+                  class="cursor-pointer text-left select-none"
+                    onclick={() => toggleItem(ingredient.name)}>
+                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
+                      {ingredient.name}: {ingredient.servingSize}g
+                      </span>
+                  </button>
                   </li>
                 {/each}
               </ul>
@@ -182,15 +196,20 @@
               <Separator />
             </Card.Header>
             <Card.Content>
-  <ol class="list-decimal list-inside whitespace-pre-line text-left space-y-4">
-    {#each recipe.instructions
-      // Split on step numbers, capturing only the step text
-      .split(/\d+\.\s+/)
-      .filter(step => step.trim().length > 0) as step}
-      <li>{step.trim()}</li>
-    {/each}
-  </ol>
-</Card.Content>
+              <ol class="list-decimal list-outside whitespace-pre-line text-left space-y-6">
+                {#each steps as step}
+                  <li>
+                    <button
+                      class="cursor-pointer text-left select-none"
+                      onclick={() => toggleItem(step)}>
+                      <span class={`font-medium transition-all duration-150 ${checkedItems.includes(step) ? 'line-through text-gray-400' : ''}`}>
+                        {step}
+                      </span>
+                  </button>
+                  </li>
+                {/each}
+              </ol>
+            </Card.Content>
           </div>
         </Card.Root>
 

@@ -53,7 +53,7 @@ router.get("/api/recipes/categories", async (req, res) => {
 });
 
 router.post("/api/recipes", async (req, res) => {
-  const { name, description, ingredients, instructions, category, tags, recipeListId } = req.body;
+  const { name, description, ingredients, instructions, category, tags, image, recipeListId } = req.body;
   if (!name || !description || !ingredients || !instructions || !category || !tags) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -71,6 +71,7 @@ router.post("/api/recipes", async (req, res) => {
           category: { connect: { name: category } },
           tags: { connect: tags.map( (tag) => ({name: tag}))},
           recipeLists: { connect: { id: recipeListId } },
+          image,
         },
         include: {
           category: true,

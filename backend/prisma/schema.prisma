@@ -40,38 +40,39 @@ model RecipeList {
 }
 
 model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  recipes  Recipe[]  // 1 category → many recipes
+  id      String   @id @default(uuid())
+  name    String   @unique
+  recipes Recipe[] // 1 category → many recipes
 }
 
 model Tag {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  recipes  Recipe[]  @relation("RecipeTags") // many ↔ many with Recipe
+  id      String   @id @default(uuid())
+  name    String   @unique
+  recipes Recipe[] @relation("RecipeTags") // many ↔ many with Recipe
 }
 
 model Recipe {
-  id               String         @id @default(uuid())
-  name             String
-  description      String
-  ingredients      String?
-  ingredientsList  Ingredient[]
-  instructions     String
+  id              String       @id @default(uuid())
+  name            String
+  description     String
+  ingredients     String?
+  ingredientsList Ingredient[]
+  instructions    String
+  image           String?
 
   // 1 recipe → 1 category
-  category         Category       @relation(fields: [categoryId], references: [id])
-  categoryId       String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 
   // many ↔ many with Tag
-  tags             Tag[]          @relation("RecipeTags")
+  tags Tag[] @relation("RecipeTags")
 
-  likes            String[] // store user IDs as UUID strings (maybe refs to user?)
-  dislikes         String[] // store user IDs as UUID strings (maybe refs to user?)
-  recipeLists      RecipeList[]
+  likes       String[] // store user IDs as UUID strings (maybe refs to user?)
+  dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
+  recipeLists RecipeList[]
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ingredient {
