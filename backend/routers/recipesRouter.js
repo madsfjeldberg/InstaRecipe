@@ -7,6 +7,10 @@ const router = Router();
 router.get("/api/recipes", async (req, res) => {
   try {
     const recipes = await prisma.recipe.findMany({
+      cacheStrategy: {
+        swr: 30,
+        ttl: 60
+      },
       include: {
         category: true,
         tags: true,
