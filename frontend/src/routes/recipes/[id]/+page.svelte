@@ -26,6 +26,7 @@
 
         try{
           recipe = await getRecipeById(recipeId);
+          console.log($state.snapshot(recipe));
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
 
         } catch(error) {

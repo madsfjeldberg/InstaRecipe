@@ -6,7 +6,17 @@ const router = Router();
 
 router.get("/api/recipes", async (req, res) => {
   try {
-    const recipes = await prisma.recipe.findMany();
+    const recipes = await prisma.recipe.findMany({
+      include: {
+        category: true,
+        tags: true,
+        ingredientsList: true,
+        recipeLists: true
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
     res.status(200).json(recipes);
   } catch (error) {
     console.error(error.message)
