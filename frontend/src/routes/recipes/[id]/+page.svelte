@@ -27,7 +27,6 @@
         try{
           recipe = await getRecipeById(recipeId);
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-          console.log($state.snapshot(steps));
 
         } catch(error) {
           toast.error("Could not load recipe, try again later")
