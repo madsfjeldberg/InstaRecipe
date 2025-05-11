@@ -73,6 +73,7 @@
       }
       
     } catch (error) {
+      loading = false;
       if (error instanceof z.ZodError) {
         // Map Zod errors to form fields
         error.errors.forEach((err) => {
