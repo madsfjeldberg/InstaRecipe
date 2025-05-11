@@ -24,13 +24,15 @@ Ingredients: Parse all listed ingredients into a string. IMPORTANT: Add measurem
 If no measurements are given, use common sense to estimate reasonable amounts based on the ingredient type.
 For example, "2 cups of flour", "1 tablespoon of sugar", "3 large eggs".
 DO NOT include any non-ingredient text (e.g., "for garnish", "to taste", "diced", "minced").
+Ingredients should be separated by commas.
 
 IngredientsInGrams: This list will be used for nutritional calculations.
 Convert the ingredients to grams where applicable.
 Do not include items with no nutritional value, such as "salt", "pepper", "water", "1 pinch red pepper".
 If the ingredient is not easily convertible (e.g., "1 cup of flour"), use a common conversion (e.g., 1 cup of flour = 120 grams).
 If the ingredient is a liquid it should still be in grams.
-IMPORTANT: All measurements MUST be in grams.
+IMPORTANT: All measurements MUST be in grams, and should be separated by commas.
+example: '200g onion, 100g carrot'
 
 Instructions:
 If instructions are missing, generate plausible cooking steps based on common methods and the ingredients.
@@ -48,6 +50,7 @@ Special notes:
 Ignore promotions (e.g., cookbook ads, links, social media plugs).
 Always return valid and properly indented JSON.
 Do not include any markdown formatting or code block markers (e.g. avoid wrapping your output with \`\`\`json and \`\`\`).
+Do not include any '\n' characters in the JSON output.
 If necessary, infer missing details sensibly based on the dish type and common cooking practices.
 `
 
