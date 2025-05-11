@@ -2,6 +2,8 @@ import B2 from 'backblaze-b2';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import os from 'os';
+import { v4 as uuidv4 } from 'uuid';
 import { promises as fsPromises } from 'fs';
 import 'dotenv/config';
 
@@ -23,6 +25,8 @@ const authorize = async () => {
 
 // Function to download image from URL
 const downloadImage = async (url, outputPath) => {
+  console.log(`Downloading image from DALL-E to ${outputPath}`);
+
   return new Promise((resolve, reject) => {
     // Ensure the directory exists
     const dir = path.dirname(outputPath);
@@ -53,20 +57,21 @@ const downloadImage = async (url, outputPath) => {
 
 const uploadImage = async (filePath) => {
   try {
+    console.log('Uploading file to Backblaze B2...');
     const fileName = filePath.split('/').pop();
     const bucketId = process.env.BACKBLAZE_BUCKET_ID;
     
     // Read file into buffer instead of using a stream
     const fileBuffer = await fsPromises.readFile(filePath);
 
-    let authorizeData = await authorize();
+    await authorize();
 
     const uploadUrl = await b2Client.getUploadUrl({
       bucketId,
     });
     
     // Upload the file using buffer instead of stream
-    const response = await b2Client.uploadFile({
+    await b2Client.uploadFile({
       uploadUrl: uploadUrl.data.uploadUrl,
       uploadAuthToken: uploadUrl.data.authorizationToken,
       fileName,
@@ -88,14 +93,26 @@ const uploadImage = async (filePath) => {
 const cleanupTempFile = async (filePath) => {
   try {
     await fsPromises.unlink(filePath);
-    console.log(`Temporary file ${filePath} deleted successfully`);
+    console.log(`Temporary file deleted successfully.`);
   } catch (error) {
     console.error(`Error deleting temporary file ${filePath}:`, error);
   }
 };
 
-export {
-  downloadImage,
-  uploadImage,
-  cleanupTempFile,
+const handleB2Upload = async (imageUrl) => {
+  const tempDir = path.join(os.tmpdir(), 'images');
+  const fileName = `${uuidv4()}.jpg`;
+  const tempFilePath = path.join(tempDir, fileName);
+  await downloadImage(imageUrl, tempFilePath);
+  await uploadImage(tempFilePath);
+  await cleanupTempFile(tempFilePath);
+
+  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
+  return b2ImagePath;
 }
+
+const b2 = {
+  handleB2Upload
+}
+
+export default b2;

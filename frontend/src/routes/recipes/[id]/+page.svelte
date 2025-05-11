@@ -74,9 +74,8 @@
           <ArrowLeft class="mr-2" />Back
         </Button>
       </div>
-      <p class="col-span-6 text-center">IMAGE GOES HERE</p>
       {#if recipe.image}
-          <img src="{recipe.image}" alt="{recipe.name}" class="w-full h-64 object-cover rounded-2xl mb-6" />
+          <img src="{recipe.image}" alt="{recipe.name}" class="w-full h-64 rounded-xl object-cover mb-2" />
         {/if}
       <div class="w-full">
         <div>
@@ -97,9 +96,9 @@
         <h1 class="col-span-6 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
         <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10 mx-auto">{recipe.description}</h2>
   
-        <Card.Root class="col-span-2 col-start-1 shadow-lg p-6 mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
+        <Card.Root class="col-span-2 col-start-1 shadow-lg mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
           <Card.Header class="w-full">
-            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition Facts</Card.Title>
+            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition</Card.Title>
             <Separator class="mb-4" />
           </Card.Header>
             <Card.Content class="w-full">

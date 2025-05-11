@@ -52,14 +52,17 @@ If necessary, infer missing details sensibly based on the dish type and common c
 `
 
 const generateRecipe = async (text) => {
-  const response = await client.responses.create({
+  const response = await client.chat.completions.create({
     model: "gpt-4.1",
-    instructions: instructions,
-    input: text
+    messages: [
+      { role: "user", content: instructions },
+      { role: "user", content: text }
+    ],
+    response_format: { type: "json_object"}
   });
 
-  return response;
-};
+  return response.choices[0].message.content;
+}
 
 const generateRecipeImage = async (prompt) => {
   const response = await client.images.generate({
