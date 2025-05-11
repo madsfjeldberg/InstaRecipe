@@ -75,7 +75,8 @@ router.post("/api/recipes", async (req, res) => {
         },
         include: {
           category: true,
-          tags: true
+          tags: true,
+          comments: true
         }
       });
   
