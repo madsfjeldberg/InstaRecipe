@@ -3,9 +3,9 @@ import { io } from 'socket.io-client';
 
 const prodUrl = import.meta.env.PROD_URL || "http://localhost:9000";
 
-function createSocketStore(url, opts = {}) {
+function createSocketStore() {
   
-  const socket = io(url, opts);
+  const socket = io(prodUrl, {withCredentials: true});
   const { subscribe, set } = writable(socket);
 
   return {
@@ -24,6 +24,4 @@ function createSocketStore(url, opts = {}) {
   };
 }
 
-export const socket = createSocketStore(prodUrl, {
-  withCredentials: true
-});
+export const socket = createSocketStore();
