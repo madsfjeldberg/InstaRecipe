@@ -51,6 +51,13 @@ model Tag {
   recipes Recipe[] @relation("RecipeTags") // many ↔ many with Recipe
 }
 
+model Comment {
+  id      String   @id @default(uuid())
+  comment String   
+  recipeId String
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
 model Recipe {
   id              String       @id @default(uuid())
   name            String
@@ -69,6 +76,7 @@ model Recipe {
 
   likes       String[] // store user IDs as UUID strings (maybe refs to user?)
   dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
+  comments Comment[]
   recipeLists RecipeList[]
 
   createdAt DateTime @default(now())
