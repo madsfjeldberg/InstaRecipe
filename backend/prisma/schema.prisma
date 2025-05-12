@@ -57,8 +57,7 @@ model Comment {
   comment String
   postedAt DateTime @default(now()) 
   userId String
-  user User @relation(fields: [userId], references: [id])
-  username String  
+  user User @relation(fields: [userId], references: [id]) 
   recipeId String
   recipe Recipe @relation(fields: [recipeId], references: [id])
 }
