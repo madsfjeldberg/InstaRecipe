@@ -8,15 +8,65 @@
   import { Plus, ThumbsDown, ThumbsUp } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
+  import LikeButton from "../PopularityButtons/LikeButton.svelte";
+  import DislikeButton from "../PopularityButtons/DislikeButton.svelte";
+  import { user } from "../../../stores/authStore.js";
+  import { socket } from "../../../stores/socketStore.js";
  
  let { recipe } = $props();
-
- let { name, description, likes, dislikes, tags, category, image } = recipe;
+ let { id, name, description, tags, category, image } = recipe;
+ let likes = $state(recipe.likes);
+  let dislikes = $state(recipe.dislikes);
+ let userId = $user.id;
 
  const addRecipeToRecipeList = (event) => {
     event.stopPropagation();
     toast.info("Feature coming soon!");
  }
+
+ const handleLike = (event) => {
+    event.stopPropagation();
+
+    if (likes.includes(userId)) {
+      // User already liked the recipe, remove like
+      likes = likes.filter((like) => like !== userId);
+      socket.emit("remove-like", { recipeId: id, userId });
+    } else if (dislikes.includes(userId)) {
+      console.log("Found dislike, removing...")
+      // User has disliked the recipe, remove dislike and add like
+      dislikes = dislikes.filter((dislike) => dislike !== userId);
+      likes.push(userId);
+      socket.emit("remove-dislike", { recipeId: id, userId });
+      socket.emit("add-like", { recipeId: id, userId });
+    } else {
+      // User has not liked the recipe yet, add like
+      likes.push(userId);
+      socket.emit("add-like", { recipeId: id, userId });
+  }
+}
+
+const handleDislike = (event) => {
+    event.stopPropagation();
+
+    if (dislikes.includes(userId)) {
+      // User already disliked the recipe, remove dislike
+      dislikes = dislikes.filter((dislike) => dislike !== userId);
+      socket.emit("remove-dislike", { recipeId: id, userId });
+    } else if (likes.includes(userId)) {
+      console.log("Found like, removing...")
+      // User has liked the recipe, remove like and add dislike
+      likes = likes.filter((like) => like !== userId);
+      dislikes.push(userId);
+      socket.emit("remove-like", { recipeId: id, userId });
+      socket.emit("add-dislike", { recipeId: id, userId });
+    } else {
+      // User has not disliked the recipe yet, add dislike
+      dislikes.push(userId);
+      socket.emit("add-dislike", { recipeId: id, userId });
+    }
+  }
+
+
 
 </script>
  
@@ -53,8 +103,8 @@ onclick={() => {
   </Card.Content>
   <Card.Footer class="relative pb-2 px-2 justify-between">
   <div class="flex items-center">
-    <Button variant="ghost" class="text-green-700 hover:text-green-500 hover:bg-transparent flex items-center"><ThumbsUp /> {likes} 6</Button>
-    <Button variant="ghost" class="text-red-700 hover:text-red-500 hover:bg-transparent flex items-center"><ThumbsDown /> {dislikes} 2</Button>
+    <LikeButton {handleLike} {likes} />
+    <DislikeButton {handleDislike} {dislikes} />
   </div>
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">
