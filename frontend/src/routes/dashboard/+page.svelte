@@ -18,6 +18,7 @@
     loading = true;
     try {
       recipes = await getAllRecipes();
+      console.log("Fetched recipes:", $state.snapshot(recipes));
     } catch (error) {
       console.error("Error fetching recipes:", error);
     } finally {

@@ -152,7 +152,7 @@
           <span class="text-red-500 text-sm">{errors.username}</span>
         {/if}
           </Card.Content>
-          <Card.Footer class="border-t px-6 pt-10">
+          <Card.Footer class="px-6 pt-10">
             <Button type="submit" class="mt-8">Save</Button>
           </Card.Footer>
         </form>
@@ -175,7 +175,7 @@
           <span class="text-red-500 text-sm">{errors.confirmPassword}</span>
         {/if}
           </Card.Content>
-          <Card.Footer class="border-t px-6 py-4">
+          <Card.Footer class="px-6 py-4">
             <Button type="submit">Save</Button>
           </Card.Footer>
           </form>
@@ -210,7 +210,7 @@
               This action is irreversible. Please proceed with caution.
             </p>
           </Card.Content>
-          <Card.Footer class="border-t px-6 py-4">
+          <Card.Footer class="px-6 py-4">
             <DeleteAccountDialog {user} />
           </Card.Footer>
         </Card.Root>
