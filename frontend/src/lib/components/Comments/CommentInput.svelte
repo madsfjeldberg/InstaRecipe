@@ -1,6 +1,5 @@
 <script>
-    import { onDestroy } from "svelte";
-
+    import { toast } from "svelte-sonner";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Textarea } from "$lib/components/ui/textarea/index.js";
 
@@ -11,6 +10,12 @@
     let newCommentValue = $state("");
 
     const postComment = () => {
+
+        if($user === null) {
+            toast.error("You have to have an account for posting comments");
+            return;
+        }
+
         const newComment = {
             userId: $user.id,
             username: $user.username,
@@ -22,6 +27,7 @@
         newCommentValue = "";
 
         socket.emit("new-comment", newComment);
+        toast.success("Comment posted");
     }
 </script>
 
