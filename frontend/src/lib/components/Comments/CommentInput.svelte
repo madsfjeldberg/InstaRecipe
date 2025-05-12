@@ -16,9 +16,16 @@
             return;
         }
 
+        if(newCommentValue === "") {
+            toast.error("Comments block empty, write a comment");
+            return;
+        }
+
         const newComment = {
             userId: $user.id,
-            username: $user.username,
+            user: {
+                username: $user.username
+            },
             comment: newCommentValue,
             postedAt: Date.now(),
             recipeId

@@ -1,8 +1,9 @@
 import { Router } from "express";
 import multer from 'multer';
-import auth from "../service/authService.js";
 
+import auth from "../service/authService.js";
 import prisma from "../database/prismaClient.js";
+import usersRepository from "../repository/usersRepository.js";
 
 const router = Router();
 const upload = multer();
@@ -92,11 +93,18 @@ router.patch('/api/users', async (req, res) => {
       return res.status(400).json({ message: 'Username already exists' });
     }
     // Update the username
-    user.username = newUsername;
-    const updatedUser = await user.save();
-    const token = auth.generateToken(updatedUser);
+    const updatedUser = await usersRepository.updateUsername(userId, newUsername);
+
+    const jwt = req.cookies.jwt;
+    const isDestroyed = await auth.destroyToken(jwt);
+    if (!isDestroyed) {
+      return res.status(404).send({ errorMessage: "error occurred during logout" })
+    }
+
+    const token = await auth.generateToken(updatedUser);
     res
         .status(200)
+        .clearCookie("jwt")
         .cookie("jwt", token, cookieOptions)
         .json({
           id: updatedUser._id,

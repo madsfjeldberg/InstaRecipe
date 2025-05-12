@@ -48,9 +48,18 @@ router.get("/api/recipes/:id", async (req, res) => {
         category: true,
         tags: true,
         ingredientsList: true,
-        comments: true
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true
+              }
+            }
+          }
+        }
       }
     })
+    
     res.send({ data: recipe });
 
   } catch (error) {
