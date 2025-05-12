@@ -37,7 +37,7 @@
   });
   onDestroy(() => {
    // cleanup socket listener
-   socket.off("update-like-dislike");
+   socket.disconnect();
   });
 
   // handle like/dislike events

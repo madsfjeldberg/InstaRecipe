@@ -59,7 +59,7 @@
     });
     onDestroy(() => {
       // Clean up the socket listener when the component is destroyed
-      socket.off("update-like-dislike");
+      socket.disconnect();
     });
 
 
