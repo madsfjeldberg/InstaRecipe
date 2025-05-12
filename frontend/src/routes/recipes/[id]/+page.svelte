@@ -64,7 +64,6 @@
       try{
         isGroceryListGenerating = true;
 
-        // const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
         const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
         if(response.errorMessage) {
           toast.error(response.errorMessage)
@@ -117,7 +116,8 @@
         <h1 class="col-span-6 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
         <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10 mx-auto">{recipe.description}</h2>
   
-        <Card.Root class="col-span-2 col-start-1 shadow-lg mb-10 rounded-2xl bg-white dark:bg-gray-900 flex flex-col items-center">
+        <div class="col-span-2 col-start-1 mt-6 mb-10">
+        <Card.Root class="shadow-lg rounded-2xl flex flex-col">
           <Card.Header class="w-full">
             <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition</Card.Title>
             <Separator class="mb-4" />
@@ -155,8 +155,9 @@
               </div>
             </Card.Content>
         </Card.Root>
+        </div>
 
-        <div class="col-span-2 flex flex-col space-y-8">
+        <div class="col-span-2 flex flex-col space-y-8 mb-10">
             <div class="flex flex-col items-center">
               <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
               <div style="width: 250px; height: 250px;">
@@ -170,7 +171,7 @@
             </div>
             </div>
             <div class="col-span-2 flex flex-col items-center">
-              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Macros per ingredient</p>
+              <p class="text-lg text-gray-700 dark:text-gray-300">Macros per ingredient</p>
               <BarChart ingredients={recipe.ingredientsList} />
             </div>
         
