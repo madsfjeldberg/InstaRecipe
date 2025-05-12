@@ -21,7 +21,7 @@ router.get("/api/recipes", async (req, res) => {
         recipeLists: true
       },
       orderBy: {
-        createdAt: "desc"
+        likes: "desc"
       }
     });
     res.status(200).json(recipes);
@@ -30,8 +30,6 @@ router.get("/api/recipes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-
 
 router.get("/api/recipes/:id", async (req, res) => {
   const id = req.params.id;
@@ -67,8 +65,6 @@ router.get("/api/recipes/:id", async (req, res) => {
     res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" })
   }
 })
-
-
 
 router.get("/api/recipes/categories", async (req, res) => {
   try {

@@ -1,5 +1,8 @@
 import likeDislikeRepository from "../../repository/likeDislikeRepository.js";
 
+// all of these emit the same event "update-like-dislike" to the client
+// containg a recipe object
+// we can use the same socket.on in the frontend to listen to all of them
 export const likeDislikeHandler = (socket, io) => {
 
   socket.on("add-like", async (data) => {

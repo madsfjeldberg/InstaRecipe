@@ -10,7 +10,7 @@ const router = new Router();
 router.post('/api/scrape', async (req, res) => {
   let browser;
   try {
-    // More robust browser launch with additional options
+    
     browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -28,16 +28,6 @@ router.post('/api/scrape', async (req, res) => {
     // Set navigation timeout
     page.setDefaultNavigationTimeout(5000);
 
-    // Add request interception for better error handling
-    await page.setRequestInterception(true);
-    page.on('request', (request) => {
-      if (['image', 'font', 'media'].includes(request.resourceType())) {
-        request.abort(); // Block unnecessary resources to improve performance
-      } else {
-        request.continue();
-      }
-    });
-
     const { url } = req.body;
     
     if (!url || !url.startsWith('http')) {
@@ -47,9 +37,6 @@ router.post('/api/scrape', async (req, res) => {
     // Wait until network is idle to ensure page is fully loaded
     await page.goto(url, { waitUntil: 'networkidle2' });
     
-    // Enable more detailed console logging
-    console.log(`Page loaded: ${url}`);
-
     let scrapedData;
 
     if (url.includes('valdemarsro')) {
@@ -94,8 +81,7 @@ router.post('/api/scrape', async (req, res) => {
     
     if (scrapedData.length === 0) {
       return res.status(404).json({ message: "No h1 content found on page" });
-    }
-      
+      }
     }
 
     await browser.close();
@@ -130,11 +116,7 @@ router.post('/api/scrape', async (req, res) => {
   } finally {
     // Ensure we always close the browser
     if (browser) {
-      try {
-        await browser.close();
-      } catch (closeError) {
-        console.error("Error closing browser:", closeError);
-      }
+      await browser.close();
     }
   }
 });
