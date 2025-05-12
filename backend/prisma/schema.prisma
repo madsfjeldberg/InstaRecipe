@@ -21,6 +21,7 @@ model User {
   password    String
   avatar      Bytes?
   avatarMime  String?
+  comments Comment[]
   isConfirmed Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -53,7 +54,11 @@ model Tag {
 
 model Comment {
   id      String   @id @default(uuid())
-  comment String   
+  comment String
+  postedAt DateTime @default(now()) 
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  username String  
   recipeId String
   recipe Recipe @relation(fields: [recipeId], references: [id])
 }
