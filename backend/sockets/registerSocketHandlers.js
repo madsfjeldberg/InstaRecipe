@@ -8,7 +8,7 @@ export const registerSocketHandlers = (io) => {
 
         commentsHandler(socket, io);
 
-        socket.on("disconnet", () => {
+        socket.on("disconnect", () => {
             console.log("A client has disconnected:", socket.id);
         })
     })
