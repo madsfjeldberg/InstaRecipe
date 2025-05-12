@@ -21,6 +21,7 @@ model User {
   password    String
   avatar      Bytes?
   avatarMime  String?
+  comments Comment[]
   isConfirmed Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -51,6 +52,17 @@ model Tag {
   recipes Recipe[] @relation("RecipeTags") // many ↔ many with Recipe
 }
 
+model Comment {
+  id      String   @id @default(uuid())
+  comment String
+  postedAt DateTime @default(now()) 
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  username String  
+  recipeId String
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
 model Recipe {
   id              String       @id @default(uuid())
   name            String
@@ -69,6 +81,7 @@ model Recipe {
 
   likes       String[] // store user IDs as UUID strings (maybe refs to user?)
   dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
+  comments Comment[]
   recipeLists RecipeList[]
 
   createdAt DateTime @default(now())

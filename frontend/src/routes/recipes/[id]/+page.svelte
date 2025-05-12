@@ -1,25 +1,32 @@
 <script>
     import { onMount } from "svelte";
+
     import { Stretch } from "svelte-loading-spinners";
     import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
     import BarChart from "$lib/components/ChartJs/BarChart.svelte";
-    import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
     import * as Card from "$lib/components/ui/card/index.js";
     import { Root } from "$lib/components/ui/button";
     import { Separator } from "$lib/components/ui/separator";
-    import { ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
-    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat } from "lucide-svelte";
+
     import { getRecipeById } from "$lib/api/recipeApi.js";
     import groceryListApi from "$lib/api/groceryListApi";
+    import Comment from "$lib/components/Comments/Comment.svelte";
+    import CommentInput from "$lib/components/Comments/CommentInput.svelte";
         
     let recipe = $state(null);
-    let isLoading = $state(true);
-    let isGroceryListGenerating = $state(false)
+    let comments = $state([]);
     let checkedItems = $state([]);
     let steps = $state([]);
+
+    let isLoading = $state(true);
+    let isGroceryListGenerating = $state(false)
+
+
+
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
@@ -27,16 +34,19 @@
         try{
           recipe = await getRecipeById(recipeId);
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-
+          comments = recipe.comments;
+          
         } catch(error) {
           toast.error("Could not load recipe, try again later")
-        
+          
         } finally {
           isLoading = false;
         }
     });
 
-    function toggleItem(name) {
+
+
+    const toggleItem = (name) => {
       if (checkedItems.includes(name)) {
         checkedItems = checkedItems.filter(n => n !== name);
       } else {
@@ -44,7 +54,9 @@
       }
     }
 
-    async function generateShoppingList() {
+
+
+    const generateShoppingList = async () => {
       const groceryList = recipe.ingredientsList.map( (ingredient) => {
         return {name: ingredient.name, measurements: ingredient.servingSize};
       });
@@ -225,8 +237,8 @@
           <div class="col-span-1">
             <h1 class=" text-3xl text-left font-semibold">Comments:</h1>
             <div class="bg-gray-100 dark:bg-gray-800 rounded-lg">
-            <span class="text-gray-500 dark:text-gray-400 italic">No comments yet. Be the first to comment!</span>
-          </div>
+              <Comment bind:comments recipeId={recipe.id}/>
+            </div>
           </div>
           <!-- Right Side: Generate grocery list button-->
            <div class="col-span-1 col-end-4">

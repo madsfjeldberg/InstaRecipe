@@ -33,6 +33,7 @@
     "puppeteer": "^24.8.0",
     "redis": "^5.0.0",
     "resend": "4.5.0",
+    "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

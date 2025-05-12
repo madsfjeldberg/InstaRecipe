@@ -47,7 +47,8 @@ router.get("/api/recipes/:id", async (req, res) => {
       include: {
         category: true,
         tags: true,
-        ingredientsList: true
+        ingredientsList: true,
+        comments: true
       }
     })
     res.send({ data: recipe });
@@ -92,7 +93,8 @@ router.post("/api/recipes", async (req, res) => {
         },
         include: {
           category: true,
-          tags: true
+          tags: true,
+          comments: true
         }
       });
   
