@@ -3,7 +3,7 @@
   import { ThumbsDown } from "lucide-svelte";
   import { user } from "../../../stores/authStore";
 
-  let { handleDislike, dislikes } = $props();
+  let { onDislike, dislikes } = $props();
 
   const handleColor = () => {
     if (dislikes.includes($user.id)) {
@@ -16,7 +16,7 @@
 
 <Button 
   variant="ghost" 
-  onclick={handleDislike} 
+  onclick={onDislike} 
   class="text-red-700 hover:text-red-500 hover:bg-transparent flex items-center">
   <ThumbsDown class={handleColor()} /> {dislikes.length}
 </Button>

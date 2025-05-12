@@ -12,6 +12,8 @@
   import DislikeButton from "../PopularityButtons/DislikeButton.svelte";
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
+  import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
+  import { onMount } from "svelte";
  
  let { recipe } = $props();
  let { id, name, description, tags, category, image } = recipe;
@@ -24,49 +26,41 @@
     toast.info("Feature coming soon!");
  }
 
- const handleLike = (event) => {
-    event.stopPropagation();
-
-    if (likes.includes(userId)) {
-      // User already liked the recipe, remove like
-      likes = likes.filter((like) => like !== userId);
-      socket.emit("remove-like", { recipeId: id, userId });
-    } else if (dislikes.includes(userId)) {
-      console.log("Found dislike, removing...")
-      // User has disliked the recipe, remove dislike and add like
-      dislikes = dislikes.filter((dislike) => dislike !== userId);
-      likes.push(userId);
-      socket.emit("remove-dislike", { recipeId: id, userId });
-      socket.emit("add-like", { recipeId: id, userId });
-    } else {
-      // User has not liked the recipe yet, add like
-      likes.push(userId);
-      socket.emit("add-like", { recipeId: id, userId });
-  }
-}
-
-const handleDislike = (event) => {
-    event.stopPropagation();
-
-    if (dislikes.includes(userId)) {
-      // User already disliked the recipe, remove dislike
-      dislikes = dislikes.filter((dislike) => dislike !== userId);
-      socket.emit("remove-dislike", { recipeId: id, userId });
-    } else if (likes.includes(userId)) {
-      console.log("Found like, removing...")
-      // User has liked the recipe, remove like and add dislike
-      likes = likes.filter((like) => like !== userId);
-      dislikes.push(userId);
-      socket.emit("remove-like", { recipeId: id, userId });
-      socket.emit("add-dislike", { recipeId: id, userId });
-    } else {
-      // User has not disliked the recipe yet, add dislike
-      dislikes.push(userId);
-      socket.emit("add-dislike", { recipeId: id, userId });
+ onMount(() => {
+  // listen for changes to like/dislike counts
+  socket.on("update-like-dislike", (recipe) => {
+    if (recipe.id === id) {
+      likes = recipe.likes;
+      dislikes = recipe.dislikes;
     }
+  });
+ });
+
+ const onLike = (event) => {
+    const updated = handleLike({
+      event,
+      likes,
+      dislikes,
+      userId,
+      recipeId: id,
+      socket,
+    });
+    likes = updated.likes;
+    dislikes = updated.dislikes;
   }
 
-
+  const onDislike = (event) => {
+    const updated = handleDislike({
+      event,
+      likes,
+      dislikes,
+      userId,
+      recipeId: id,
+      socket,
+    });
+    likes = updated.likes;
+    dislikes = updated.dislikes;
+  }
 
 </script>
  
@@ -103,8 +97,8 @@ onclick={() => {
   </Card.Content>
   <Card.Footer class="relative pb-2 px-2 justify-between">
   <div class="flex items-center">
-    <LikeButton {handleLike} {likes} />
-    <DislikeButton {handleDislike} {dislikes} />
+    <LikeButton {onLike} {likes} />
+    <DislikeButton {onDislike} {dislikes} />
   </div>
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">
