@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     import { Stretch } from "svelte-loading-spinners";
     import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
@@ -56,6 +56,10 @@
             dislikes = recipe.dislikes;
           }
         });
+    });
+    onDestroy(() => {
+      // Clean up the socket listener when the component is destroyed
+      socket.off("update-like-dislike");
     });
 
 

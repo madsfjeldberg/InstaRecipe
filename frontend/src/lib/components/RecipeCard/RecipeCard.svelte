@@ -13,30 +13,35 @@
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
  
- let { recipe } = $props();
- let { id, name, description, tags, category, image } = recipe;
- let likes = $state(recipe.likes);
+  let { recipe } = $props();
+  let { id, name, description, tags, category, image } = recipe;
+  let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
- let userId = $user.id;
+  let userId = $user.id;
 
- const addRecipeToRecipeList = (event) => {
-    event.stopPropagation();
-    toast.info("Feature coming soon!");
- }
+  const addRecipeToRecipeList = (event) => {
+     event.stopPropagation();
+     toast.info("Feature coming soon!");
+  }
 
- onMount(() => {
-  // listen for changes to like/dislike counts
-  socket.on("update-like-dislike", (recipe) => {
-    if (recipe.id === id) {
-      likes = recipe.likes;
-      dislikes = recipe.dislikes;
-    }
+  onMount(() => {
+   // listen for changes to like/dislike counts
+   socket.on("update-like-dislike", (recipe) => {
+     if (recipe.id === id) {
+       likes = recipe.likes;
+       dislikes = recipe.dislikes;
+     }
+   });
   });
- });
+  onDestroy(() => {
+   // cleanup socket listener
+   socket.off("update-like-dislike");
+  });
 
- const onLike = (event) => {
+  // handle like/dislike events
+  const onLike = (event) => {
     const updated = handleLike({
       event,
       likes,
@@ -47,7 +52,7 @@
     });
     likes = updated.likes;
     dislikes = updated.dislikes;
-  }
+  };
 
   const onDislike = (event) => {
     const updated = handleDislike({
@@ -60,7 +65,7 @@
     });
     likes = updated.likes;
     dislikes = updated.dislikes;
-  }
+  };
 
 </script>
  
