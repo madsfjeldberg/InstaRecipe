@@ -8,15 +8,64 @@
   import { Plus, ThumbsDown, ThumbsUp } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
+  import LikeButton from "../PopularityButtons/LikeButton.svelte";
+  import DislikeButton from "../PopularityButtons/DislikeButton.svelte";
+  import { user } from "../../../stores/authStore.js";
+  import { socket } from "../../../stores/socketStore.js";
+  import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
+  import { onDestroy, onMount } from "svelte";
  
- let { recipe } = $props();
+  let { recipe } = $props();
+  let { id, name, description, tags, category, image } = recipe;
+  let likes = $state(recipe.likes);
+  let dislikes = $state(recipe.dislikes);
+  let userId = $user.id;
 
- let { name, description, likes, dislikes, tags, category, image } = recipe;
+  const addRecipeToRecipeList = (event) => {
+     event.stopPropagation();
+     toast.info("Feature coming soon!");
+  }
 
- const addRecipeToRecipeList = (event) => {
-    event.stopPropagation();
-    toast.info("Feature coming soon!");
- }
+  onMount(() => {
+   // listen for changes to like/dislike counts
+   socket.on("update-like-dislike", (recipe) => {
+     if (recipe.id === id) {
+       likes = recipe.likes;
+       dislikes = recipe.dislikes;
+     }
+   });
+  });
+  onDestroy(() => {
+   // cleanup socket listener
+   socket.off("update-like-dislike");
+  });
+
+  // handle like/dislike events
+  const onLike = (event) => {
+    const updated = handleLike({
+      event,
+      likes,
+      dislikes,
+      userId,
+      recipeId: id,
+      socket,
+    });
+    likes = updated.likes;
+    dislikes = updated.dislikes;
+  };
+
+  const onDislike = (event) => {
+    const updated = handleDislike({
+      event,
+      likes,
+      dislikes,
+      userId,
+      recipeId: id,
+      socket,
+    });
+    likes = updated.likes;
+    dislikes = updated.dislikes;
+  };
 
 </script>
  
@@ -53,8 +102,8 @@ onclick={() => {
   </Card.Content>
   <Card.Footer class="relative pb-2 px-2 justify-between">
   <div class="flex items-center">
-    <Button variant="ghost" class="text-green-700 hover:text-green-500 hover:bg-transparent flex items-center"><ThumbsUp /> {likes} 6</Button>
-    <Button variant="ghost" class="text-red-700 hover:text-red-500 hover:bg-transparent flex items-center"><ThumbsDown /> {dislikes} 2</Button>
+    <LikeButton {onLike} {likes} />
+    <DislikeButton {onDislike} {dislikes} />
   </div>
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">

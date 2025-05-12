@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     import { Stretch } from "svelte-loading-spinners";
     import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
@@ -16,17 +16,21 @@
     import groceryListApi from "$lib/api/groceryListApi";
     import Comment from "$lib/components/Comments/Comment.svelte";
     import CommentInput from "$lib/components/Comments/CommentInput.svelte";
+    import { user } from "../../../stores/authStore";
+    import { handleLike, handleDislike } from "$lib/utils/recipeLikes";
+    import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
+    import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
+    import { socket } from "../../../stores/socketStore";
         
     let recipe = $state(null);
     let comments = $state([]);
     let checkedItems = $state([]);
     let steps = $state([]);
+    let likes = $state([]);
+    let dislikes = $state([]);
 
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
-
-
-
 
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
@@ -35,6 +39,8 @@
           recipe = await getRecipeById(recipeId);
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
           comments = recipe.comments;
+          likes = recipe.likes;
+          dislikes = recipe.dislikes;
           
         } catch(error) {
           toast.error("Could not load recipe, try again later")
@@ -42,6 +48,18 @@
         } finally {
           isLoading = false;
         }
+
+        // listen for changes to like/dislike counts
+        socket.on("update-like-dislike", (recipe) => {
+          if (recipe.id === recipeId) {
+            likes = recipe.likes;
+            dislikes = recipe.dislikes;
+          }
+        });
+    });
+    onDestroy(() => {
+      // Clean up the socket listener when the component is destroyed
+      socket.off("update-like-dislike");
     });
 
 
@@ -61,7 +79,7 @@
         return {name: ingredient.name, measurements: ingredient.servingSize};
       });
 
-      try{
+      try {
         isGroceryListGenerating = true;
 
         const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
@@ -72,13 +90,40 @@
 
         toast.success("Grocery list has been generated and sent to your email");
 
-      }catch(error) {
+      } catch (error) {
         toast.error(error.message);
 
-      }finally {
+      } finally {
         isGroceryListGenerating = false;
       }
     }
+
+    const onLike = (event) => {
+      const updated = handleLike({
+        event,
+        likes,
+        dislikes,
+        userId: $user.id,
+        recipeId: recipe.id,
+        socket,
+      });
+      likes = updated.likes;
+      dislikes = updated.dislikes;
+    };
+
+    const onDislike = (event) => {
+      const updated = handleDislike({
+        event,
+        likes,
+        dislikes,
+        userId: $user.id,
+        recipeId: recipe.id,
+        socket,
+      });
+      likes = updated.likes;
+      dislikes = updated.dislikes;
+    };
+
 </script>
 
 <div class="p-4 flex flex-col items-center">
@@ -113,8 +158,13 @@
         
 
         <div class="grid grid-cols-6">          
-        <h1 class="col-span-6 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-        <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10 mx-auto">{recipe.description}</h2>
+        <h1 class="col-span-5 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
+        <div class="col-span-1 flex justify-end">
+        <LikeButton {onLike} {likes} />
+        <DislikeButton {onDislike} {dislikes} />
+        </div>
+        <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10">{recipe.description}</h2>
+        
   
         <div class="col-span-2 col-start-1 mt-6 mb-10">
         <Card.Root class="shadow-lg rounded-2xl flex flex-col">
@@ -268,15 +318,7 @@
           {/if}
         </div>
   
-        
-
         <div class="flex space-x-4 mt-12">
-          <button class="flex items-center space-x-1 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition">
-            <span><ThumbsUp /></span><span>{recipe.likes.length}</span>
-          </button>
-          <button class="flex items-center space-x-1 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
-            <span><ThumbsDown /></span><span>{recipe.dislikes.length}</span>
-          </button>
         </div>
         <p class="text-sm text-right text-gray-600 dark:text-gray-300 mb-6">Created: {new Date(recipe.createdAt).toLocaleDateString()} | Updated: {new Date (recipe.updatedAt).toLocaleDateString()}</p>
       </div>

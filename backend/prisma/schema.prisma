@@ -15,16 +15,16 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  username    String   @unique
-  email       String   @unique
+  id          String    @id @default(uuid())
+  username    String    @unique
+  email       String    @unique
   password    String
   avatar      Bytes?
   avatarMime  String?
-  comments Comment[]
-  isConfirmed Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  comments    Comment[]
+  isConfirmed Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   recipeLists RecipeList[]
 }
@@ -53,13 +53,13 @@ model Tag {
 }
 
 model Comment {
-  id      String   @id @default(uuid())
-  comment String
-  postedAt DateTime @default(now()) 
-  userId String
-  user User @relation(fields: [userId], references: [id]) 
+  id       String   @id @default(uuid())
+  comment  String
+  postedAt DateTime @default(now())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
   recipeId String
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipe   Recipe   @relation(fields: [recipeId], references: [id])
 }
 
 model Recipe {
@@ -80,7 +80,7 @@ model Recipe {
 
   likes       String[] // store user IDs as UUID strings (maybe refs to user?)
   dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
-  comments Comment[]
+  comments    Comment[]
   recipeLists RecipeList[]
 
   createdAt DateTime @default(now())
