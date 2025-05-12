@@ -17,9 +17,7 @@
   onMount(async () => {
     loading = true;
     try {
-      const response = await getAllRecipes();
-      recipes = response;
-      console.log($state.snapshot(recipes));
+      recipes = await getAllRecipes();
     } catch (error) {
       console.error("Error fetching recipes:", error);
     } finally {
