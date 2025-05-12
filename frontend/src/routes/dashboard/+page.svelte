@@ -10,7 +10,7 @@
 
   const { data } = $props();
   const { user } = data;
-  let loading = $state(false);
+  let loading = $state(true);
   let recipes = $state([]);
   let username = user.username;
 
@@ -46,7 +46,9 @@
     <Separator class="mt-2 mb-6 h-[2px]" />
     <div class="grid grid-cols-3 gap-4 mt-4">
       {#if loading}
-        <LoaderCircle class="animate-spin" />
+      <div class="flex justify-center items-center col-span-3">
+        <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
+        </div>
       {:else if recipes.length > 0}
         {#each recipes as recipe}
           <RecipeCard recipe={recipe} />

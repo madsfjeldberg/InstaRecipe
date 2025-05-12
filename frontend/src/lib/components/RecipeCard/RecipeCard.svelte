@@ -5,17 +5,23 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import Badge from "../ui/badge/badge.svelte";
-  import { ThumbsDown, ThumbsUp } from "lucide-svelte";
+  import { Plus, ThumbsDown, ThumbsUp } from "lucide-svelte";
   import { goto } from "$app/navigation";
+  import { toast } from "svelte-sonner";
  
  let { recipe } = $props();
 
  let { name, description, likes, dislikes, tags, category, image } = recipe;
 
+ const addRecipeToRecipeList = (event) => {
+    event.stopPropagation();
+    toast.info("Feature coming soon!");
+ }
+
 </script>
  
 <Card.Root 
-class="cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.02]"
+class="group cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.02] overflow-hidden"
 onclick={() => {
   goto("/recipes/" + recipe.id);
 }}
@@ -24,17 +30,17 @@ onclick={() => {
     <img
       src={image || '/recipe-image-placeholder.png'}
       alt=""
-      class="w-full h-48 object-cover rounded-t-lg"
+      class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
     />
     <Card.Title class="ml-4 text-xl">{name}</Card.Title>
     <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3">{description}</Card.Description>
   </Card.Header>
   <Card.Content class="relative pb-2 px-4">
-  <div class="flex flex-col gap-2 pb-10">
+  <div class="flex flex-col gap-2">
     <div>
       <Badge class="bg-slate-700">{category.name}</Badge>
     </div>
-    <div class="flex flex-wrap gap-x-2">
+    <div class="flex flex-wrap gap-x-2 gap-y-2">
       {#if tags.length > 0}
       {#each tags as tag}
         <Badge class="tag">{tag.name}</Badge>
@@ -45,11 +51,15 @@ onclick={() => {
     </div>
   </div>
   </Card.Content>
-  <Card.Footer class="relative pb-2 px-4">
-  
-  <div class="absolute bottom-2 right-4 flex gap-x-4 items-center">
-    <span class="text-green-600 flex items-center"><ThumbsUp class="inline text-green-600 mr-1" /> {likes} 6</span>
-    <span class="text-red-600 flex items-center"><ThumbsDown class="inline text-red-600 mr-1" /> {dislikes} 2</span>
+  <Card.Footer class="relative pb-2 px-2 justify-between">
+  <div class="flex items-center">
+    <Button variant="ghost" class="text-green-700 hover:text-green-500 hover:bg-transparent flex items-center"><ThumbsUp /> {likes} 6</Button>
+    <Button variant="ghost" class="text-red-700 hover:text-red-500 hover:bg-transparent flex items-center"><ThumbsDown /> {dislikes} 2</Button>
+  </div>
+  <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <Button onclick={addRecipeToRecipeList} variant="ghost">
+      <Plus class="h-5 w-5 text-gray-600" />Add to list
+    </Button>
   </div>
 </Card.Footer>
 </Card.Root>
