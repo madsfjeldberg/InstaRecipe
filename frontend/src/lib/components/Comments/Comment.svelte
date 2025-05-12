@@ -5,6 +5,7 @@
 
     import { socket } from "../../../stores/socketStore.js";
     import CommentInput from "./CommentInput.svelte";
+    import CommentReply from "./CommentReply.svelte";
 
     let { comments = $bindable(), recipeId } = $props();
     let isDisplayingReplyDialog = $state(false);
@@ -32,8 +33,7 @@
         <Card.Root class="w-[81rem] mt-4">
             <Card.Header>
                 <Card.Title>{comment.username}</Card.Title>
-            <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description
-                >
+            <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description>
             </Card.Header>
             
             <Card.Content class="grid gap-4">
@@ -41,15 +41,27 @@
             </Card.Content>
             
             <Card.Footer class="flex justify-end z-10 relative">
+                {#if isDisplayingReplyDialog}
+                <Button disabled>Reply</Button>
+                
+                {:else}
                 <Button onclick={showReplyBox}>Reply</Button>
+
+                {/if}
             </Card.Footer>
         </Card.Root>
+
+        {#if comment.replies}
+            {#each replies as reply }
+                
+            {/each}
+        {/if}
         
+        {#if isDisplayingReplyDialog}
+            <CommentReply bind:isDisplayingReplyDialog username={comment.username}/>
+        {/if}
     {/each}
 
 {/if}
 
 
-{#if isDisplayingReplyDialog}
-    <CommentReply/>
-{/if}
