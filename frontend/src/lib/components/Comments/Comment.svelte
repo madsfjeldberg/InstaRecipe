@@ -1,49 +1,43 @@
 <script>
-    import { onDestroy } from "svelte";
-
     import { Button } from "$lib/components/ui/button/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
+    import { onDestroy } from "svelte";
 
     import { socket } from "../../../stores/socketStore.js";
     import CommentInput from "./CommentInput.svelte";
 
-    let { comments } = $props();
-    let isDisplayingReplyDialog = false;
-
-    console.log("asdasdasdads", comments.length)
+    let { comments = $bindable(), recipeId } = $props();
+    let isDisplayingReplyDialog = $state(false);
 
     const disconnect = socket.on("new-comment", (data) => {
-
+        comments.push(data)
     })
 
-    const postComment = () => {
-        socket.emit("new-comment", {});
-    }
+    onDestroy(disconnect)
 
     const showReplyBox = () => {
         isDisplayingReplyDialog = true;
     }
 
-    onDestroy(disconnect);
 </script>
 
-<CommentInput/> 
+<CommentInput bind:comments recipeId={recipeId}/> 
 
 {#if comments.length === 0}
     <span class="text-gray-500 dark:text-gray-400 italic">No comments yet. Be the first to comment!</span>
 
     {:else}
-    {#each comments as comment}
+    {#each comments as comment, index (comment.id || index)}
         
-        <Card.Root class="w-[81rem]">
+        <Card.Root class="w-[81rem] mt-4">
             <Card.Header>
-                <Card.Title>{comment.owner.name}</Card.Title>
-            <Card.Description>{comment.postDate}</Card.Description
+                <Card.Title>{comment.username}</Card.Title>
+            <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description
                 >
             </Card.Header>
             
             <Card.Content class="grid gap-4">
-                <p>{comment.text}</p>
+                <p>{comment.comment}</p>
             </Card.Content>
             
             <Card.Footer class="flex justify-end z-10 relative">
@@ -59,14 +53,3 @@
 {#if isDisplayingReplyDialog}
     <CommentReply/>
 {/if}
-
-<!-- <div class="flex flex-col rounded-xl">
-    <div class="flex justify-between">
-        <h4>Name here</h4>
-        <span class="font-sm">date here</span>
-        </div>
-        
-        <p>
-            comment goes here
-    </p>
-</div> -->
