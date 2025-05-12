@@ -6,7 +6,6 @@ const router = Router();
 router.get("/api/tags", async(req, res) => {
     try{
         const recipeTags = await prisma.tag.findMany();
-        console.log(recipeTags);
         res.send({ data: recipeTags});
 
     }catch(error) {
