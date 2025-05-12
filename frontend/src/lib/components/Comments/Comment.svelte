@@ -11,7 +11,9 @@
     let isDisplayingReplyDialog = $state(false);
 
     const disconnect = socket.on("new-comment", (data) => {
-        comments.push(data)
+        if(recipeId === data.recipeId) {
+            comments.push(data)
+        }
     })
 
     onDestroy(disconnect)
@@ -32,7 +34,7 @@
         
         <Card.Root class="w-[81rem] mt-4">
             <Card.Header>
-                <Card.Title>{comment.username}</Card.Title>
+                <Card.Title>{comment.user.username}</Card.Title>
             <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description>
             </Card.Header>
             
