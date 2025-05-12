@@ -14,9 +14,8 @@ const b2Client = new B2({
 
 const authorize = async () => {
   try {
-    let response = await b2Client.authorize();
+    await b2Client.authorize();
     console.log('Backblaze B2 authorized successfully');
-    return response;
   } catch (error) {
     console.error('Error authorizing Backblaze B2:', error);
     throw error; // Re-throw the error to handle it in the calling function
@@ -99,6 +98,7 @@ const cleanupTempFile = async (filePath) => {
   }
 };
 
+// Main function to handle the upload process
 const handleB2Upload = async (imageUrl) => {
   const tempDir = path.join(os.tmpdir(), 'images');
   const fileName = `${uuidv4()}.jpg`;

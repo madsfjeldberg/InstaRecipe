@@ -114,7 +114,7 @@
 </script>
 
 <svelte:head>
-  <title>Settings</title>
+  <title>InstaRecipe | Settings</title>
 </svelte:head>
 
 <div class="flex min-h-screen w-full flex-col">

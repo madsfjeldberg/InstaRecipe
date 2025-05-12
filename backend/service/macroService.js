@@ -20,8 +20,6 @@ async function getMacros(ingredients) {
     }
 }
 
-
-
 const stripItems = (items) => {
     return items.map(item => ({
         name: item.name,
@@ -33,26 +31,4 @@ const stripItems = (items) => {
     }));
 };
 
-
-
-const calculateTotalMacros = (items) => {
-    const totalMacros = {
-        calories: 0,
-        protein: 0,
-        fat: 0,
-        carbs: 0,
-    };
-
-    items.forEach(item => {
-        totalMacros.calories += item.calories;
-        totalMacros.protein += item.protein;
-        totalMacros.fat += item.fat;
-        totalMacros.carbs += item.carbs;
-    });
-
-    return totalMacros;
-};
-
-
-
-export default { getMacros, stripItems, calculateTotalMacros };
+export default { getMacros, stripItems };

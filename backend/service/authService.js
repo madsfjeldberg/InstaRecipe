@@ -11,8 +11,8 @@ const hashPassword = async (password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, SALT);
     return hashedPassword;
-  } catch (e) {
-    throw new Error('Error hashing password');
+  } catch (error) {
+    throw new Error(`Error hashing password: ${error.message}`);
   }
 }
 
@@ -20,8 +20,8 @@ const verifyPassword = async (password, hashedPassword) => {
   try {
     const isMatch = await bcrypt.compare(password, hashedPassword);
     return isMatch;
-  } catch (e) {
-    throw new Error(`Error verifying password: ${e.message}`);
+  } catch (error) {
+    throw new Error(`Error verifying password: ${error.message}`);
   }
 }
 
@@ -38,36 +38,36 @@ const generateToken = async (user) => {
   }, JWT_SECRET);
 
   // store token in redis
-  try{
+  try {
     await redis.setEx(token, JWT_EXPIRATION, user.id.toString())
     return token;
     
-  } catch(error) {
-    console.error(error);
+  } catch (error) {
+    throw new Error(`Error generating token: ${error.message}`);
   }
 }
 
 async function verifyToken(token) {
-  try{
+  try {
     const exists = await redis.exists(token);
-    if(!exists){
+    if (!exists) {
       return null;
     }
 
-    // error thrown if varification fails 
+    // error thrown if verification fails 
     // also checks exp by default
     const decodedPayload = jwt.verify(token, JWT_SECRET);
     return decodedPayload;
 
-  } catch(error) {
-    console.error(error);
+  } catch (error) {
+    throw new Error(`Invalid token: ${error.message}`);
     return null;
   }
 }
 
 async function destroyToken(token) {
 
-  try{
+  try {
     const keysDeleted = await redis.del(token);
     if(keysDeleted === 0) {
       return false;
@@ -75,9 +75,8 @@ async function destroyToken(token) {
 
     return true;
 
-  } catch(error) {
-    console.error(error);
-    return false;
+  } catch (error) {
+    throw new Error(`Error deleting token: ${error.message}`);
   }
 }
 
@@ -85,8 +84,8 @@ const decodeToken = (token) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     return decoded;
-  } catch (e) {
-    throw new Error('Invalid token');
+  } catch (error) {
+    throw new Error(`Invalid token: ${error.message}`);
   }
 }
 

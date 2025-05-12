@@ -126,6 +126,12 @@
 
 </script>
 
+<svelte:head>
+  {#if recipe}
+  <title>InstaRecipe | {recipe.name}</title>
+  {/if}
+</svelte:head>
+
 <div class="p-4 flex flex-col items-center">
     {#if isLoading}
     <div class="flex flex-col items-center justify-center h-screen">

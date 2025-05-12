@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 import { io } from 'socket.io-client';
 
-const prodUrl = import.meta.env.PROD_URL || "http://localhost:9000";
+const PROD_URL = import.meta.env.PROD_URL || "http://localhost:9000";
 
 function createSocketStore() {
-  
-  const socket = io(prodUrl, {withCredentials: true});
+
+  const socket = io(PROD_URL, {withCredentials: true});
   const { subscribe, set } = writable(socket);
 
   return {

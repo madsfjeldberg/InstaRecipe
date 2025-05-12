@@ -36,7 +36,9 @@
     }
 </script>
 
-<Toaster />
+<svelte:head>
+    <title>InstaRecipe | Forgot Password</title>
+</svelte:head>
 
 <div class="relative min-h-screen flex flex-col items-center justify-center px-4">
     {#if success}
@@ -61,11 +63,6 @@
             >
                 <div class="flex flex-col gap-1.5">
                     <Label for="email">Email</Label>
-                    <!-- {#if isNewPasswordTooShort}
-                        <p class="text-red-500 text-sm">
-                            {passwordTooShortErrorMessage}
-                        </p>
-                    {/if} -->
                     <Input
                         bind:value={email}
                         type="email"
@@ -77,8 +74,7 @@
 
                 <Button type="submit">
                     {#if isLoading}
-                    <!-- TODO make loading spinners dynamicaly change color based on darkmode or not -->
-                        <Stretch size=20 color=#105e7f/>
+                        <LoaderCircle class="animate-spin"/>
                     {:else}
                         Submit
                     {/if}

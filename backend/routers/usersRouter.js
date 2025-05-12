@@ -15,6 +15,14 @@ const cookieOptions = {
   maxAge: 3600000, // 1 hour
 }
 
+router.get('/api/users/', async (req, res) => { 
+  const users = await prisma.user.findMany();
+  if (!users) {
+    return res.status(404).json({ message: 'No users found' });
+  }
+  res.status(200).json(users);
+});
+
 router.get('/api/users/:id/avatar', async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -23,14 +31,6 @@ router.get('/api/users/:id/avatar', async (req, res) => {
   }
 
   res.set('Content-Type', user.avatarMime ?? 'image/png').send(user.avatar);
-});
-
-router.get('/api/users/', async (req, res) => { 
-  const users = await prisma.user.findMany();
-  if (!users) {
-    return res.status(404).json({ message: 'No users found' });
-  }
-  res.status(200).json(users);
 });
 
 router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
@@ -49,9 +49,7 @@ router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) =
   res.status(200).json({ message: 'Avatar uploaded successfully' });
 });
 
-
-
-// PATCH route to update the username
+// PATCH route to update the username/password
 router.patch('/api/users', async (req, res) => {
   const { userId, newUsername, newPassword } = req.body;
   console.log('Received request to update username:', req.body);
@@ -125,14 +123,14 @@ router.delete('/api/users', async (req, res) => {
     return res.status(400).json({ message: 'User ID is required' });
   }
   try {
-    // 1) Fetch all recipelist IDs for this user
+    // Fetch all recipelist IDs for this user
     const recipeLists = await prisma.recipeList.findMany({
       where: { userId },
       select: { id: true }
     });
     const listIds = recipeLists.map(r => r.id);
 
-    // 2) Delete ALL recipes that belong to any of those lists
+    // Delete ALL recipes that belong to any of those lists
     await prisma.recipe.deleteMany({
       where: {
         recipeLists: {
@@ -141,13 +139,13 @@ router.delete('/api/users', async (req, res) => {
       }
     });
 
-    // 3) Delete the recipe lists themselves
+    // Delete the recipe lists themselves
     await prisma.recipeList.deleteMany({ where: { userId } });
 
-    // 4) Delete the user
+    // Delete the user
     await prisma.user.delete({ where: { id: userId } });
 
-    // 5) Clear the auth cookie
+    // Clear the auth cookie
     res.clearCookie("jwt", cookieOptions);
 
     return res.status(200).json({ message: 'User and all related data deleted.' });

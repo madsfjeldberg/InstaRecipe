@@ -82,7 +82,7 @@ onclick={() => {
       class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
     />
     <Card.Title class="ml-4 text-xl">{name}</Card.Title>
-    <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3">{description}</Card.Description>
+    <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3 min-h-16">{description}</Card.Description>
   </Card.Header>
   <Card.Content class="relative pb-2 px-4">
   <div class="flex flex-col gap-2">

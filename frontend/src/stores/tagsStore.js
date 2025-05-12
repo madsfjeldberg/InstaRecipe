@@ -8,7 +8,6 @@ export const recipeTags = readable([], (set) => {
     // Immediately fetch the data
     tagsApi.getRecipeTags()
         .then(tags => {
-            console.log(tags)
             // Only update if the store hasn't been cleaned up
             if (isMounted) {
                 set(tags);
