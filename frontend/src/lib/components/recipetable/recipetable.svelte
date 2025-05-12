@@ -98,6 +98,7 @@
           </Table.Cell>
 
           <Table.Cell onclick={() => isAddedToStaredRecipeList(recipe)}>
+            {#if staredRecipeList}
             {#if staredRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
             <span class="hover:text-black dark:hover:text-white transition-colors">
               <Star color="orange"/>
@@ -107,6 +108,7 @@
                 <Star />
               </span>
               {/if}
+            {/if}
           </Table.Cell>
 
           <Table.Cell>

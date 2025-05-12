@@ -6,7 +6,21 @@ const router = Router();
 
 router.get("/api/recipes", async (req, res) => {
   try {
-    const recipes = await prisma.recipe.findMany();
+    const recipes = await prisma.recipe.findMany({
+      cacheStrategy: {
+        swr: 30,
+        ttl: 60
+      },
+      include: {
+        category: true,
+        tags: true,
+        ingredientsList: true,
+        recipeLists: true
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
     res.status(200).json(recipes);
   } catch (error) {
     console.error(error.message)
