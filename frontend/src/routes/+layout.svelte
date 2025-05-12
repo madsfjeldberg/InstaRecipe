@@ -14,7 +14,8 @@
   const year = new Date().getFullYear();
 
   onMount(() => {
-    // on mount, check if user already has a token
+    // on mount, update auth state
+    // this makes sure the correct state is set when page is refreshed
     updateAuthState(data.user);
     });
 
