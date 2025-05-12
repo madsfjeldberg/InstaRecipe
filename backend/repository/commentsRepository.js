@@ -1,11 +1,10 @@
 import prisma from "../database/prismaClient.js"
 
-const postComment = async (userId, username, text, recipeId) => {
+const postComment = async (userId, text, recipeId) => {
     try{
         const postedComment = await prisma.comment.create({
             data: {
                 comment: text,
-                username,
                 user: {
                     connect: {
                         id: userId
@@ -14,6 +13,13 @@ const postComment = async (userId, username, text, recipeId) => {
                 recipe: {
                     connect: {
                         id: recipeId
+                    }
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        username: true
                     }
                 }
             }
