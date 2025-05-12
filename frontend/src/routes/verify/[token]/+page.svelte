@@ -40,6 +40,10 @@
   });
 </script>
 
+<svelte:head>
+  <title>Account Verification</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center min-h-screen p-4">
   {#if status === 'verifying'}
     <h1 class="font-bold text-3xl text-center dark:text-gray-200">Verifying your email...</h1>
