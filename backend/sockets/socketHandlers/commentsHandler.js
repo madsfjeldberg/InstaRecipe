@@ -1,11 +1,13 @@
 import commentsRepository from "../../repository/commentsRepository.js";
 
 export const commentsHandler = (socket, io) => {
-    socket.on("new-comment", async (data) => {
-        console.log("comment recived");
+    socket.on("new-comment", async (newComment) => {
+        console.log("comment recived:", newComment);
 
-        const postedComment = await commentsRepository.postComment(data.recipeId, data.commentText);
+        const postedComment = await commentsRepository.postComment(newComment.userId, newComment.username, newComment.comment, newComment.recipeId);
 
-        io.emit("new-comment", {postedComment});
+        socket.broadcast.emit("new-comment", postedComment);
+        
+        console.log("comment emitted:", postedComment)
     })
 }

@@ -30,7 +30,8 @@ router.get("/api/recipes/:id", async (req, res) => {
       include: {
         category: true,
         tags: true,
-        ingredientsList: true
+        ingredientsList: true,
+        comments: true
       }
     })
     res.send({ data: recipe });
