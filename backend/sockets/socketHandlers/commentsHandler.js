@@ -1,8 +1,26 @@
+import emailService from "../../service/emailService.js";
 import commentsRepository from "../../repository/commentsRepository.js";
 
 export const commentsHandler = (socket, io) => {
-  socket.on("new-comment", async (comment) => {
-    const postedComment = await commentsRepository.postComment(comment.userId, comment.comment, comment.recipeId);
-    socket.broadcast.emit("new-comment", postedComment);
-  })
+    socket.on("new-comment", async (newComment) => {
+        console.log("comment recived:", newComment);
+
+        const postedComment = await commentsRepository.postComment(newComment.userId, newComment.comment, newComment.recipeId);
+        //TOdo notifi recipe creator that someone has commented on their recipe.
+        io.emit("new-comment", postedComment);
+        
+        console.log("comment emitted:", postedComment)
+    })
+
+
+
+    socket.on("new-comment-reply", async (newReply) => {
+        console.log("reply recived:", newReply);
+
+        const postedCommentReply = await commentsRepository.postCommentReply(newReply.userId, newReply.comment, newReply.recipeId, newReply.commentParentId);
+        //todo enable email notifications
+        io.emit("new-comment-reply", postedCommentReply);
+        
+        console.log("reply emitted:", postedCommentReply);
+    })
 }

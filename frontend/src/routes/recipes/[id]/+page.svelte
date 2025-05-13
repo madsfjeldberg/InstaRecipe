@@ -12,16 +12,18 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
 
-    import { getRecipeById } from "$lib/api/recipeApi.js";
-    import groceryListApi from "$lib/api/groceryListApi";
     import Comment from "$lib/components/Comments/Comment.svelte";
     import CommentInput from "$lib/components/Comments/CommentInput.svelte";
-    import { user } from "../../../stores/authStore";
-    import { handleLike, handleDislike } from "$lib/utils/recipeLikes";
+    import { getRecipeById } from "$lib/api/recipeApi.js";
+    import groceryListApi from "$lib/api/groceryListApi.js";
+    import commentsApi from "$lib/api/commentsApi.js";
+    import { user } from "../../../stores/authStore.js";
+    import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
     import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
     import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
-    import { socket } from "../../../stores/socketStore";
     import { page } from "$app/stores";
+    import { socket } from "../../../stores/socketStore.js";
+
         
     let recipe = $state(null);
     let comments = $state([]);
@@ -50,11 +52,17 @@
         isLoading = false;
       }
     });
+      
+    // listen for changes to like/dislike counts
+    const disconnect = socket.on("update-like-dislike", (recipe) => {
+      if (recipe.id === recipeId) {
+        likes = recipe.likes;
+        dislikes = recipe.dislikes;
+      }
 
-    onDestroy(() => {
-      // Clean up the socket listener when the component is destroyed
-      socket.disconnect();
     });
+      
+    onDestroy(disconnect);
 
     const toggleItem = (name) => {
       if (checkedItems.includes(name)) {

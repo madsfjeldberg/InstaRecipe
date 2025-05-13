@@ -21,24 +21,25 @@
   let dislikes = $state(recipe.dislikes);
   let userId = $user.id;
 
+
+  
+     const disconnect = socket.on("update-like-dislike", (recipe) => {
+       if (recipe.id === id) {
+         likes = recipe.likes;
+         dislikes = recipe.dislikes;
+       }
+     });
+  
+    onDestroy(disconnect);
+
+
+    
   const addRecipeToRecipeList = (event) => {
      event.stopPropagation();
      toast.info("Feature coming soon!");
   }
 
-  onMount(() => {
-   // listen for changes to like/dislike counts
-   socket.on("update-like-dislike", (recipe) => {
-     if (recipe.id === id) {
-       likes = recipe.likes;
-       dislikes = recipe.dislikes;
-     }
-   });
-  });
-  onDestroy(() => {
-   // cleanup socket listener
-   socket.disconnect();
-  });
+
 
   // handle like/dislike events
   const onLike = (event) => {
