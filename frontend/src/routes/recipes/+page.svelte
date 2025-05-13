@@ -75,7 +75,7 @@
   <div class="col-span-8 mt-10">
     {#if loading}
       <div class="flex text-center flex-col items-center justify-center h-full">
-        <h1 class="flex text-2xl font-semibold items-center mt-72"><LoaderCircle class="mr-2 h-10 w-10  animate-spin inline-block" /> Loading...</h1>
+        <h1 class="flex text-2xl font-semibold items-center mt-72"><LoaderCircle class="mr-2 h-10 w-10 animate-spin inline-block" /> Loading...</h1>
       </div>
 
     {:else if selectedList}

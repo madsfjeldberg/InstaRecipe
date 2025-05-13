@@ -5,7 +5,30 @@ import macroService from "../service/macroService.js";
 const router = Router();
 
 router.get("/api/recipes", async (req, res) => {
-  try {
+  const { partialName } = req.query;
+
+  if (partialName) {
+    try {
+      const recipes = await prisma.recipe.findMany({
+        where: {
+          name: {
+            contains: partialName,
+            mode: "insensitive"
+          },
+          recipeLists: {
+            some: {
+              isPrivate: false
+            }
+          }
+        },
+      });
+      return res.status(200).json(recipes);
+    } catch (error) {
+      console.error(error.message)
+      return res.status(500).json({ message: error.message });
+    }
+  } else {
+    try {
     const recipes = await prisma.recipe.findMany({
       where: {
         recipeLists: {
@@ -27,7 +50,8 @@ router.get("/api/recipes", async (req, res) => {
     res.status(200).json(recipes);
   } catch (error) {
     console.error(error.message)
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
+    }
   }
 });
 

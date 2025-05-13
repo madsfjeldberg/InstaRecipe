@@ -85,7 +85,7 @@ onclick={() => {
     <Card.Title class="ml-4 text-xl">{name}</Card.Title>
     <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3 min-h-16">{description}</Card.Description>
   </Card.Header>
-  <Card.Content class="relative pb-2 px-4">
+  <Card.Content class="pb-2 px-4">
   <div class="flex flex-col gap-2">
     <div>
       <Badge class="bg-slate-700">{category.name}</Badge>
@@ -101,7 +101,7 @@ onclick={() => {
     </div>
   </div>
   </Card.Content>
-  <Card.Footer class="relative pb-2 px-2 justify-between">
+  <Card.Footer class="pb-2 px-2 justify-between">
   <div class="flex items-center">
     <LikeButton {onLike} {likes} />
     <DislikeButton {onDislike} {dislikes} />

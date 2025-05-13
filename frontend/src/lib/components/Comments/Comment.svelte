@@ -74,7 +74,7 @@
             <CommentReply bind:isDisplayingReplyDialog parentComment={comment}/>
         {/if}
         
-        {#if comment.replies.length > 0}
+        {#if comment.replies && comment.replies.length > 0}
             {#each comment.replies as reply }
                             <Card.Root class="mt-4">
                         <Card.Header>
