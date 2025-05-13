@@ -75,7 +75,6 @@
         {/if}
         
         {#if comment.replies && comment.replies.length > 0}
-            <h1>REPLIES!</h1>
             {#each comment.replies as reply }
                             <Card.Root class="mt-4">
                         <Card.Header>
@@ -99,7 +98,7 @@
                     </Card.Root>
 
                     {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
-                        <CommentReply bind:isDisplayingReplyDialog parentComment={comment}/>
+                        <CommentReply bind:isDisplayingReplyDialog parentComment={comment} replyParent={reply}/>
                     {/if}
             {/each}
         {/if}

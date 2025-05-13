@@ -44,9 +44,10 @@
       try {
         recipe = await getRecipeById(recipeId);
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-        comments = recipe.comments;
+        comments = await commentsApi.getCommentsByRecipeId(recipeId);
         likes = recipe.likes;
         dislikes = recipe.dislikes;
+        
       } catch (error) {
         toast.error("Could not load recipe, try again later");
       } finally {

@@ -7,7 +7,7 @@
 
     import { socket } from "../../../stores/socketStore.js";
 
-    let { isDisplayingReplyDialog = $bindable(), parentComment, allComments = $bindable() } = $props();
+    let { isDisplayingReplyDialog = $bindable(), parentComment, replyParent } = $props();
     let commentReplyText = $state("@" + parentComment.user.username + "\n");
 
 
@@ -22,6 +22,7 @@
             userId: parentComment.userId,
             recipeId: parentComment.recipeId,
             commentParentId: parentComment.id,
+            replyParent: replyParent,
             comment: commentReplyText
         } 
 
