@@ -36,31 +36,31 @@
 
     
     onMount(async () => {
-        const recipeId = location.href.split("/").pop();
+      const recipeId = location.href.split("/").pop();
 
-        try{
-          recipe = await getRecipeById(recipeId);
-          steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-          comments = await commentsApi.getCommentsByRecipeId(recipeId);
-          likes = recipe.likes;
-          dislikes = recipe.dislikes;
-          
-        } catch(error) {
-          toast.error("Could not load recipe, try again later")
-          
-        } finally {
-          isLoading = false;
-        }
+      try{
+        recipe = await getRecipeById(recipeId);
+        steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
+        comments = await commentsApi.getCommentsByRecipeId(recipeId);
+        likes = recipe.likes;
+        dislikes = recipe.dislikes;
+        
+      } catch(error) {
+        toast.error("Could not load recipe, try again later")
+        
+      } finally {
+        isLoading = false;
+      }
 
-      });
+    });
       
-      // listen for changes to like/dislike counts
-      const disconnect = socket.on("update-like-dislike", (recipe) => {
-        if (recipe.id === recipeId) {
-          likes = recipe.likes;
-          dislikes = recipe.dislikes;
-        }
-      });
+    // listen for changes to like/dislike counts
+    const disconnect = socket.on("update-like-dislike", (recipe) => {
+      if (recipe.id === recipeId) {
+        likes = recipe.likes;
+        dislikes = recipe.dislikes;
+      }
+    });
       
     onDestroy(disconnect);
 
