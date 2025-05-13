@@ -1,3 +1,4 @@
+import emailService from "../../service/emailService.js";
 import commentsRepository from "../../repository/commentsRepository.js";
 
 export const commentsHandler = (socket, io) => {
@@ -5,7 +6,7 @@ export const commentsHandler = (socket, io) => {
         console.log("comment recived:", newComment);
 
         const postedComment = await commentsRepository.postComment(newComment.userId, newComment.comment, newComment.recipeId);
-        socket.broadcast.emit("new-comment", postedComment);
+        io.emit("new-comment", postedComment);
         
         console.log("comment emitted:", postedComment)
     })
@@ -16,7 +17,8 @@ export const commentsHandler = (socket, io) => {
         console.log("reply recived:", newReply);
 
         const postedCommentReply = await commentsRepository.postCommentReply(newReply.userId, newReply.comment, newReply.recipeId, newReply.commentParentId);
-        socket.broadcast.emit("new-comment-reply", postedCommentReply);
+        //todo enable email notifications
+        io.emit("new-comment-reply", postedCommentReply);
         
         console.log("reply emitted:", postedCommentReply);
     })

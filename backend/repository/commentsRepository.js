@@ -46,7 +46,8 @@ const postComment = async (userId, text, recipeId) => {
                     select: {
                         username: true
                     }
-                }
+                },
+                replies: true
             }
         })
         return postedComment;
@@ -63,7 +64,6 @@ const postCommentReply = async (userId, text, recipeId, commentParentId) => {
     try {
         const postedComment = await prisma.comment.create({
             data: {
-                parentId: commentParentId,
                 comment: text,
                 user: {
                     connect: {
@@ -73,6 +73,11 @@ const postCommentReply = async (userId, text, recipeId, commentParentId) => {
                 recipe: {
                     connect: {
                         id: recipeId
+                    }
+                },
+                parent: {
+                    connect: {
+                        id: commentParentId
                     }
                 }
             },
