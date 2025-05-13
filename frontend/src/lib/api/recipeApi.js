@@ -23,6 +23,13 @@ const getRecipeById = async (id) => {
   }
 }
 
+const getRecipesByPartialName = async (query) => {
+  const getOption = makeOption("GET");
+  const response = await fetch(`${BASE_URL}/?partialName=${query}`, getOption);
+  const result = await response.json();
+  return result;
+}
+
 const addRecipe = async (
   name,
   description,
@@ -86,6 +93,7 @@ const deleteRecipe = async (recipeId) => {
 
 export {
   getAllRecipes,
+  getRecipesByPartialName,
   getRecipeById,
   addRecipe,
   getCategories,

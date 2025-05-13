@@ -1,8 +1,20 @@
 import { isAuthenticated } from "../../stores/authStore.js";
+import { makeOption } from "./util.js";
 
 // const BASE_URL = import.meta.env.VITE_BASE_URL + "/users" || "/users";
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users` : '/api/users';
 
+const getUsersByPartialUsername = async (query) => {
+  const option = makeOption("GET", null);
+  const response = await fetch(`${BASE_URL}/?partialUsername=${query}`, option);
+
+  if (response.status === 200) {
+    isAuthenticated.set(true);
+  }
+  
+  const data = await response.json();
+  return data;
+}
 
 const changeUsername = async (userId, newUsername) => {
   const response = await fetch(`${BASE_URL}`, {
@@ -60,6 +72,7 @@ const deleteUser = async (userId) => {
 }
 
 export {
+  getUsersByPartialUsername,
   changeUsername,
   changePassword,
   deleteUser,

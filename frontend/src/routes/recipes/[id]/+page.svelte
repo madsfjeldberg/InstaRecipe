@@ -21,8 +21,9 @@
     import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
     import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
     import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
+    import { page } from "$app/stores";
     import { socket } from "../../../stores/socketStore.js";
-    // import { disconnect } from "process";
+
         
     let recipe = $state(null);
     let comments = $state([]);
@@ -34,24 +35,22 @@
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
 
-    
-    onMount(async () => {
-      const recipeId = location.href.split("/").pop();
-
-      try{
+    $effect(async () => {
+      const recipeId = $page.params.id;
+      if (!recipeId) return;
+        
+      isLoading = true;
+      try {
         recipe = await getRecipeById(recipeId);
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-        comments = await commentsApi.getCommentsByRecipeId(recipeId);
+        comments = recipe.comments;
         likes = recipe.likes;
         dislikes = recipe.dislikes;
-        
-      } catch(error) {
-        toast.error("Could not load recipe, try again later")
-        
+      } catch (error) {
+        toast.error("Could not load recipe, try again later");
       } finally {
         isLoading = false;
       }
-
     });
       
     // listen for changes to like/dislike counts
@@ -60,11 +59,10 @@
         likes = recipe.likes;
         dislikes = recipe.dislikes;
       }
+
     });
       
     onDestroy(disconnect);
-
-
 
     const toggleItem = (name) => {
       if (checkedItems.includes(name)) {

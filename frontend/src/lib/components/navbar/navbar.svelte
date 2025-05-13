@@ -1,20 +1,40 @@
 <script>
   import CircleUser from "lucide-svelte/icons/circle-user";
   import Menu from "lucide-svelte/icons/menu";
-  import { Cog, CookingPot, LogIn, LogOut } from "lucide-svelte";
+  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle } from "lucide-svelte";
+  import Search from "@lucide/svelte/icons/search";
   
+  import { Input } from "$lib/components/ui/input/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import ThemeToggle from "../theme-toggle/theme-toggle.svelte";
   import { page } from "$app/stores";
-  import { isAuthenticated } from "../../../stores/authStore";
+  import { isAuthenticated, user } from "../../../stores/authStore";
   import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./navlink.svelte";
   import { goto } from "$app/navigation";
   import { authService } from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";
   import { avatarStore } from "../../../stores/avatarStore.js";
+  import { blur } from "svelte/transition";
+  import { getUsersByPartialUsername } from "$lib/api/userApi";
+  import { getRecipesByPartialName } from "$lib/api/recipeApi";
+  import Label from "../ui/label/label.svelte";
+
+  let searchValue = $state("");
+  let searchFocused = $state(false);
+  let searchResults = $state([]);
+  let recipeSearchResults = $state([]);
+  let userSearchResults = $state([]);
+  let searchLoading = $state(false);
+
+  let debounceTimeout;
+
+  // users/${user.id}/avatar
+  const avatarUrl = (userId) => {
+    return import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar` : `/api/users/${userId}/avatar`;
+  }
 
   const handleLogout = async () => {
     await authService.logout();
@@ -22,6 +42,61 @@
     avatarStore.set(null); // Clear the avatar store
     goto("/");
   };
+
+  $effect(() => {
+  if (searchValue) {
+    searchLoading = true;
+    userSearchResults = [];
+    recipeSearchResults = [];
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+      searchLoading = true;
+      try {
+        // Run searches in parallel
+        await Promise.all([
+          handleUserSearch(searchValue),
+          handleRecipeSearch(searchValue)
+        ]);
+      } finally {
+        // Ensure loading is set to false even if there are errors
+        searchLoading = false;
+      }
+    }, 300); // 300ms debounce delay
+  } else {
+    userSearchResults = [];
+    recipeSearchResults = [];
+  }
+});
+
+  const handleUserSearch = async (query) => {
+    console.log("Searching for users with query:", query);
+    if (query.length > 2) {
+      const results = await getUsersByPartialUsername(query);
+      userSearchResults = results;
+      console.log("User search results:", $state.snapshot(userSearchResults));
+    } else {
+      userSearchResults = [];
+    }
+  }
+
+  const handleRecipeSearch = async (query) => {
+    console.log("Searching for recipes with query:", query);
+    if (query.length > 2) {
+      const results = await getRecipesByPartialName(query);
+      recipeSearchResults = results;
+      console.log("Recipe search results:", $state.snapshot(recipeSearchResults));
+    } else {
+      recipeSearchResults = [];
+    }
+  }
+
+  const handleNavigate = (recipeId) => {
+    goto(`/recipes/${recipeId}`);
+    searchValue = "";
+    searchFocused = false;
+    recipeSearchResults = [];
+    userSearchResults = [];
+  }
 
 </script>
 
@@ -78,6 +153,136 @@
         {/if}
       </div>
       {#if $isAuthenticated}
+    <div class="relative z-50">
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        class="rounded-lg flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-slate-800"
+        onclick={() => searchFocused = true}
+      >
+        <Search class="h-4 w-4" />
+        <span>Search</span>
+      </Button>
+
+      <!-- Search results dropdown -->
+{#if searchFocused}
+  <!-- Blocker to disable all interaction with the rest of the page -->
+  <div
+    class="fixed inset-0 z-40"
+    style="background: transparent;"
+    tabindex="-1"
+    role="button"
+    onclick={() => searchFocused = false}
+    onkeydown={(e) => e.key === 'Escape' && (searchFocused = false)}
+    aria-label="Close search"
+  ></div>
+
+  <div
+    transition:blur={{ duration: 250 }}
+    class="fixed z-50 inset-0 flex items-start justify-center pt-16 bg-black/40"
+    style="pointer-events: none;"
+  >
+    <div
+      class="w-full max-w-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden mt-10"
+      style="pointer-events: auto;"
+    >
+      <!-- Panel header with search input -->
+      <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-slate-800">
+        <div class="flex-grow flex items-center gap-2">
+            <Search class="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+          <Input
+            type="search"
+            placeholder="Search..."
+            class="border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 h-9 bg-transparent"
+            bind:value={searchValue}
+            autofocus
+          />
+        </div>
+      </div>
+      
+      <!-- Scrollable content -->
+      <div class="max-h-[60vh] overflow-y-auto">
+        {#if recipeSearchResults.length}
+          <div class="px-4 py-3">
+            <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <CookingPot class="h-4 w-4" />
+              Recipes
+            </h3>
+            <ul class="mt-2 divide-y divide-gray-100 dark:divide-gray-800">
+              {#each recipeSearchResults as recipe}
+                <button 
+                  onclick={() => handleNavigate(recipe.id)}
+                  class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded transition-colors duration-150"
+                >
+                  <img
+                    src={recipe.image || '/recipe-image-placeholder.png'}
+                    alt={recipe.name}
+                    class="h-14 w-14 rounded-md object-cover shadow-sm border border-gray-200 dark:border-gray-700"
+                  />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate text-left">{recipe.name}</p>
+                    {#if recipe.description}
+                      <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 text-left">{recipe.description}</p>
+                    {/if}
+                  </div>
+                </button>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+        
+        {#if userSearchResults.length}
+          <div class="px-4 py-3 {recipeSearchResults.length ? 'border-t border-gray-200 dark:border-gray-700' : ''}">
+            <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <CircleUser class="h-4 w-4" />
+              Users
+            </h3>
+            <ul class="mt-2 divide-y divide-gray-100 dark:divide-gray-800">
+              {#each userSearchResults as usr}
+                <button
+                  onclick={() => { goto(`/users/${usr.id}`); searchFocused=false }}
+                  class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded transition-colors duration-150"
+                >
+                  <div class="flex-shrink-0">
+                    <img 
+                      src={avatarUrl(usr.id)} 
+                      alt={usr.username} 
+                      class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm" 
+                    />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-left text-sm font-medium text-gray-900 dark:text-gray-100">{usr.username}</p>
+                  </div>
+                </button>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+
+        {#if searchLoading}
+          <div class="py-10 px-8 text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 mb-4">
+              <LoaderCircle class="h-6 w-6 animate-spin text-gray-500 dark:text-gray-400" />
+            </div>
+          </div>
+        {/if}
+        
+        {#if !searchLoading && !recipeSearchResults.length && !userSearchResults.length}
+          <div class="py-10 px-8 text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 mb-4">
+              <Search class="h-6 w-6 text-gray-500 dark:text-gray-400" />
+            </div>
+            <p class="text-gray-700 dark:text-gray-300 font-medium">No results found for "{searchValue}"</p>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+{/if}
+</div>
+<!-- END SEARCH INPUT AND DROPDOWN -->
+    {/if}
+      {#if $isAuthenticated}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger let:props>
           {#snippet child({props})}
@@ -107,7 +312,7 @@
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       {/if}
-      
+
       <ThemeToggle />
     </div>
   </div>

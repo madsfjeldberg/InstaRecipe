@@ -15,13 +15,33 @@ const cookieOptions = {
   maxAge: 3600000, // 1 hour
 }
 
-router.get('/api/users/', async (req, res) => { 
-  const users = await prisma.user.findMany();
-  if (!users) {
-    return res.status(404).json({ message: 'No users found' });
+router.get('/api/users', async (req, res) => { 
+  const { partialUsername } = req.query;
+  if (partialUsername) {
+    const foundUsers = await prisma.user.findMany({
+      where: {
+        username: {
+          contains: partialUsername,
+          mode: 'insensitive'
+        }
+      }
+    });
+    if (foundUsers.length === 0) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+    return res.status(200).json(foundUsers);
+  } else {
+    const users = await prisma.user.findMany();
+    if (!users) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+    return res.status(200).json(users);
   }
-  res.status(200).json(users);
+
+  
 });
+
+
 
 router.get('/api/users/:id/avatar', async (req, res) => {
   let userId = req.params.id;
