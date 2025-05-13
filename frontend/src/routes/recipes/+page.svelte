@@ -53,7 +53,6 @@
   loading = true;
   recipes = selectedList.recipes;
   loading = false;
-  console.log("Selected List:", $state.snapshot(selectedList));
 });
   
   
