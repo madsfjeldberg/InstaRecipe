@@ -27,10 +27,6 @@
     }
   });
 
-
-  
-
-
 </script>
 
 <svelte:head>

@@ -7,7 +7,6 @@
   <Separator />
   <div class="container mx-auto px-4 py-4">
     <div class="flex flex-col items-center space-y-2">
-      <!-- Logo or company name could go here -->
       <nav class="flex flex-wrap justify-center gap-x-8 gap-y-4">
         <a 
           href="/about" 
@@ -30,7 +29,7 @@
       </nav>
       
       <p class="text-sm text-muted-foreground">
-        &copy; {currentYear} madsfjeldberg. All rights reserved.
+        &copy; {currentYear} madsfjeldberg / chrisye0001. All rights reserved.
       </p>
     </div>
   </div>

@@ -93,24 +93,13 @@ router.post('/api/recipelists', async (req, res) => {
 });
 
 router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
-  try{
+  try {
     const updatedList = await recipeListRepository.addRecipeToStaredList(req.params.listId, req.params.recipeId);
     res.send({ data: updatedList});
 
-  }catch(error) {
+  } catch (error) {
     console.error(error);
     res.status(500).send({ errorMessage: "Server Error. Error adding recipe to stared list"})
-  }
-})
-
-router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
-  try{
-    const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
-    res.send({ data: updatedList});
-
-  }catch(error) {
-    console.error(error);
-    res.status(500).send({ errorMessage: "Server Error. Error removing recipe from stared list"})
   }
 })
 
@@ -133,6 +122,17 @@ router.put('/api/recipelists/:listId', async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 });
+
+router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+  try {
+    const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
+    res.send({ data: updatedList });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: `Server Error. Error removing recipe from stared list: ${error.message}` });
+  }
+})
 
 router.delete('/api/recipelists/:listId', async (req, res) => {
   const { listId } = req.params;

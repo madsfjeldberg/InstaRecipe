@@ -87,7 +87,6 @@
       if (response.status === 201) {
         const newRecipe = response.data.recipe;
         newRecipe.ingredientsList = response.data.ingredients;
-        console.log("newRecipe: ", newRecipe);
 
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
         selectedList = { ...selectedList};
@@ -158,7 +157,6 @@
       if (response.status === 201) {
         const newRecipe = response.data.recipe;
         newRecipe.ingredientsList = response.data.ingredients;
-        console.log("newRecipe: ", newRecipe);
 
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
         selectedList = { ...selectedList};

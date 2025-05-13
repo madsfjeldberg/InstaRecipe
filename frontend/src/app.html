@@ -18,12 +18,6 @@
         } else {
           document.documentElement.classList.remove("dark");
         }
-
-        // Log for debugging
-        console.log(
-          "Theme initialized:",
-          storedTheme || (prefersDark ? "dark (system)" : "light (system)")
-        );
       })();
     </script>
     %sveltekit.head%

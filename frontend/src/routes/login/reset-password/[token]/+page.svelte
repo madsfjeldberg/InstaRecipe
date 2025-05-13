@@ -9,6 +9,7 @@
     import { goto } from "$app/navigation";
     import { z } from "zod";
     import { Stretch } from 'svelte-loading-spinners'; 
+    import { LoaderCircle } from "lucide-svelte";
 
     let newPassword = $state("");
     let confirmPassword = $state("");
@@ -122,8 +123,6 @@
     }
 </script>
 
-<Toaster />
-
 <div class="relative min-h-screen flex flex-col items-center justify-center px-4">
     {#if success}
         <div class="absolute flex flex-col items-center justify-center text-center mb-[27rem]">
@@ -177,7 +176,7 @@
                 <Button type="submit">
                     {#if isLoading}
                     <!-- TODO make loading spinners dynamicaly change color based on darkmode or not -->
-                        <Stretch size=20 color=#105e7f/>
+                        <LoaderCircle class="animate-spin"/>
 
                         {:else}
                             Reset

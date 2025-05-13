@@ -9,9 +9,8 @@ router.post("/api/grocerylist", async (req, res) => {
         return res.status(400).send({ errorMessage: "Technical error: Grocery list was not generated propaply neither included in the request" });
     }
 
-    const emailResponse = await emailService.sendGroceryListEmail(req.user.email, groceryList)
-    console.log("IN GROCERY LIST ROUTER", emailResponse);
-    res.send({ data: groceryList})
+    await emailService.sendGroceryListEmail(req.user.email, groceryList)
+    res.send({ data: groceryList })
 })
 
 export default router;
