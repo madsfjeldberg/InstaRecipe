@@ -41,7 +41,7 @@
         isDisplayingReplyDialog = true;
     }
 </script>
-
+<!-- TODO REFACTOR AND FINISH COMMENTCARD COMPONENT -->
 <CommentInput bind:comments recipeId={recipeId}/> 
 
 {#if comments.length === 0}

@@ -6,6 +6,7 @@ export const commentsHandler = (socket, io) => {
         console.log("comment recived:", newComment);
 
         const postedComment = await commentsRepository.postComment(newComment.userId, newComment.comment, newComment.recipeId);
+        //TOdo notifi recipe creator that someone has commented on their recipe.
         io.emit("new-comment", postedComment);
         
         console.log("comment emitted:", postedComment)
