@@ -17,11 +17,11 @@
     import { getRecipeById } from "$lib/api/recipeApi.js";
     import groceryListApi from "$lib/api/groceryListApi.js";
     import commentsApi from "$lib/api/commentsApi.js";
-    import { user } from "../../../stores/authStore";
-    import { handleLike, handleDislike } from "$lib/utils/recipeLikes";
+    import { user } from "../../../stores/authStore.js";
+    import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
     import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
     import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
-    import { socket } from "../../../stores/socketStore";
+    import { socket } from "../../../stores/socketStore.js";
         
     let recipe = $state(null);
     let comments = $state([]);
