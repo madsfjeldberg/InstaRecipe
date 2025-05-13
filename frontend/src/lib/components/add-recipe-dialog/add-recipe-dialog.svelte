@@ -131,7 +131,9 @@
     const ingredients = formData.get('ingredients');
     const instructions = formData.get('instructions');
     const category = formData.get('category');
+    const image = null;
     const recipeListId = selectedList.id;
+    console.log("recipeListId", recipeListId);
     
     try {
       let response;
@@ -151,6 +153,7 @@
         instructions,
         category,
         selectedTags,
+        image,
         recipeListId
       );
 
