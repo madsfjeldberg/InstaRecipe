@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 
 import authRouter from './routers/authRouter.js';
 import categoriesRouter from './routers/categoriesRouter.js';
+import commentsRouter from './routers/commentsRouter.js'
 import groceryListRouter from './routers/groceryListRouter.js';
 import recipelistsRouter from './routers/recipelistsRouter.js';
 import recipesRouter from './routers/recipesRouter.js';
@@ -38,6 +39,7 @@ app.use(authRouter);
 app.use(authenticateToken);
 
 app.use(categoriesRouter);
+app.use(commentsRouter)
 app.use(groceryListRouter);
 app.use(recipelistsRouter);
 app.use(recipesRouter);

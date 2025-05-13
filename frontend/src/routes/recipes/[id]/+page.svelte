@@ -12,10 +12,11 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
 
-    import { getRecipeById } from "$lib/api/recipeApi.js";
-    import groceryListApi from "$lib/api/groceryListApi";
     import Comment from "$lib/components/Comments/Comment.svelte";
     import CommentInput from "$lib/components/Comments/CommentInput.svelte";
+    import { getRecipeById } from "$lib/api/recipeApi.js";
+    import groceryListApi from "$lib/api/groceryListApi.js";
+    import commentsApi from "$lib/api/commentsApi.js";
         
     let recipe = $state(null);
     let comments = $state([]);
@@ -34,7 +35,7 @@
         try{
           recipe = await getRecipeById(recipeId);
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-          comments = recipe.comments;
+          comments = await commentsApi.getCommentsByRecipeId(recipeId);
           
         } catch(error) {
           toast.error("Could not load recipe, try again later")
