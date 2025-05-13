@@ -19,7 +19,6 @@
     
     const disconnect = socket.on("new-comment-reply", (commentReply) => {
         if(recipeId === commentReply.recipeId) {
-            console.log("before mutatuib", comments)
             comments = comments.map( (comment) => {
                 if(comment.id === commentReply.parentId) {
                     return {

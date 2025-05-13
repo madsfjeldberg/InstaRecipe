@@ -22,6 +22,7 @@
     import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
     import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
     import { socket } from "../../../stores/socketStore.js";
+    // import { disconnect } from "process";
         
     let recipe = $state(null);
     let comments = $state([]);
@@ -33,6 +34,7 @@
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
 
+    
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
 
@@ -50,18 +52,17 @@
           isLoading = false;
         }
 
-        // listen for changes to like/dislike counts
-        socket.on("update-like-dislike", (recipe) => {
-          if (recipe.id === recipeId) {
-            likes = recipe.likes;
-            dislikes = recipe.dislikes;
-          }
-        });
-    });
-    onDestroy(() => {
-      // Clean up the socket listener when the component is destroyed
-      socket.disconnect();
-    });
+      });
+      
+      // listen for changes to like/dislike counts
+      const disconnect = socket.on("update-like-dislike", (recipe) => {
+        if (recipe.id === recipeId) {
+          likes = recipe.likes;
+          dislikes = recipe.dislikes;
+        }
+      });
+      
+    onDestroy(disconnect);
 
 
 
