@@ -12,15 +12,17 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import Badge from "$lib/components/ui/badge/badge.svelte";
 
-    import { getRecipeById } from "$lib/api/recipeApi.js";
-    import groceryListApi from "$lib/api/groceryListApi";
     import Comment from "$lib/components/Comments/Comment.svelte";
     import CommentInput from "$lib/components/Comments/CommentInput.svelte";
-    import { user } from "../../../stores/authStore";
-    import { handleLike, handleDislike } from "$lib/utils/recipeLikes";
+    import { getRecipeById } from "$lib/api/recipeApi.js";
+    import groceryListApi from "$lib/api/groceryListApi.js";
+    import commentsApi from "$lib/api/commentsApi.js";
+    import { user } from "../../../stores/authStore.js";
+    import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
     import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
     import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
-    import { socket } from "../../../stores/socketStore";
+    import { socket } from "../../../stores/socketStore.js";
+    // import { disconnect } from "process";
         
     let recipe = $state(null);
     let comments = $state([]);
@@ -32,13 +34,14 @@
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
 
+    
     onMount(async () => {
         const recipeId = location.href.split("/").pop();
 
         try{
           recipe = await getRecipeById(recipeId);
           steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-          comments = recipe.comments;
+          comments = await commentsApi.getCommentsByRecipeId(recipeId);
           likes = recipe.likes;
           dislikes = recipe.dislikes;
           
@@ -49,18 +52,17 @@
           isLoading = false;
         }
 
-        // listen for changes to like/dislike counts
-        socket.on("update-like-dislike", (recipe) => {
-          if (recipe.id === recipeId) {
-            likes = recipe.likes;
-            dislikes = recipe.dislikes;
-          }
-        });
-    });
-    onDestroy(() => {
-      // Clean up the socket listener when the component is destroyed
-      socket.disconnect();
-    });
+      });
+      
+      // listen for changes to like/dislike counts
+      const disconnect = socket.on("update-like-dislike", (recipe) => {
+        if (recipe.id === recipeId) {
+          likes = recipe.likes;
+          dislikes = recipe.dislikes;
+        }
+      });
+      
+    onDestroy(disconnect);
 
 
 

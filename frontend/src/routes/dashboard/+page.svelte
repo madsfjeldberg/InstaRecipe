@@ -18,8 +18,10 @@
     loading = true;
     try {
       recipes = await getAllRecipes();
+
     } catch (error) {
       console.error("Error fetching recipes:", error);
+      
     } finally {
       loading = false;
     }

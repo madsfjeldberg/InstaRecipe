@@ -42,7 +42,7 @@ const sendPasswordResetEmail = async (to, token) => {
 
 
 
-async function sendGroceryListEmail(to, groceryList) {
+const sendGroceryListEmail = async (to, groceryList) => {
   const subject = "Grocery list - " + groceryList.name;
 
   let groceries = groceryList.items.map( (item) => {
@@ -60,10 +60,28 @@ async function sendGroceryListEmail(to, groceryList) {
 
 
 
+const sendCommentReplyNotification = async (to, comment) => {
+  const subject = comment.user.username + " has replied to your comment";
+
+  // send the respond in the email
+  // include a link to the page so that reciver can respond to comment again
+
+  const html = `
+    <h2>Comment</h2>
+    <h2>Comment</h2>
+    <p>${comment.comment}</p>
+    <br>
+    <button href="${FRONTEND_URL}/recipes/${comment.recipeId}">Respond</button>
+  `
+}
+
+
+
 export default {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendGroceryListEmail,
+  sendCommentReplyNotification,
 };
 
