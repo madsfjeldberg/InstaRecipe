@@ -34,9 +34,10 @@
 
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
+    let recipeId = $state(null);
 
     $effect(async () => {
-      const recipeId = $page.params.id;
+      recipeId = $page.params.id;
       if (!recipeId) return;
         
       isLoading = true;
