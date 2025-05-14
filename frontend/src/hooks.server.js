@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { isAuthenticated, updateAuthState } from './stores/authStore';
 import { JWT_SECRET, COOKIE_OPTIONS } from '$lib/config/env.server';
 
-// This is a SvelteKit hook that runs on every request
+// This is a SvelteKit hook that runs on first request to the server
 // It checks if the user is authenticated by looking for a JWT token in cookies
 // If the token is not present and the user is trying to access a protected route,
 // it redirects them to the login page

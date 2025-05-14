@@ -107,7 +107,7 @@ const handleB2Upload = async (imageUrl) => {
   await uploadImage(tempFilePath);
   await cleanupTempFile(tempFilePath);
 
-  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
+  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}${fileName}`;
   return b2ImagePath;
 }
 
