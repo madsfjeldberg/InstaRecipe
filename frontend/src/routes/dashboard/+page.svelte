@@ -8,6 +8,8 @@
   import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
 
+  import { blur } from "svelte/transition";
+
   const { data } = $props();
   const { user } = data;
   let loading = $state(true);
@@ -17,6 +19,8 @@
   onMount(async () => {
     loading = true;
     try {
+      // delay for 1 second to simulate loading
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       recipes = await getAllRecipes();
 
     } catch (error) {
@@ -34,28 +38,35 @@
 </svelte:head>
 
 <div class="flex flex-col p-10">
-<h1 class="font-bold text-3xl text-left dark:text-gray-200 mb-10">Hello, {username}!</h1>
+  <h1 class="font-bold text-3xl text-left dark:text-gray-200 mb-10">Hello, {username}!</h1>
 
-<div class="grid grid-cols-8">
-  <div class=col-span-8>
-    <h2 class="font-bold text-2xl text-left dark:text-gray-200">Popular recipes</h2>
-    <Separator class="mt-2 mb-6 h-[2px]" />
-    <div class="grid grid-cols-3 gap-4 mt-4">
-      {#if loading}
-      <div class="flex justify-center items-center col-span-3">
-        <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
+  {#if loading}
+    <!-- still loading: show spinner -->
+    <div class="flex justify-center items-center h-64">
+      <LoaderCircle class="animate-spin h-16 w-16" />
+    </div>
+  {:else}
+    <!-- only *this* block gets mounted when loading → false -->
+    <div 
+      transition:blur={{ duration: 250 }} 
+      class="grid grid-cols-8 gap-4"
+    >
+      <div class="col-span-8">
+        <h2 class="text-2xl mb-2">Popular recipes</h2>
+        <Separator class="mb-6" />
+
+        <div class="grid grid-cols-3 gap-4">
+          {#if recipes.length > 0}
+            {#each recipes as recipe (recipe.id)}
+              <RecipeCard 
+                recipe={recipe}
+              />
+            {/each}
+          {:else}
+            <p>No recipes found.</p>
+          {/if}
         </div>
-      {:else if recipes.length > 0}
-        {#each recipes as recipe}
-          <RecipeCard recipe={recipe} />
-        {/each}
-      {:else}
-        <p>No recipes found.</p>
-      {/if}
       </div>
-  </div>
-
-
-</div>
-
+    </div>
+  {/if}
 </div>

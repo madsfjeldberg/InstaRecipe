@@ -3,7 +3,7 @@ import { JWT_SECRET } from '$lib/config/env.server';
 import { redirect } from '@sveltejs/kit';
 import { isAuthenticated } from '../stores/authStore';
 
-export function load({ cookies }) {
+export function load({ url, cookies }) {
   const token = cookies.get('jwt');
   let user = null;
 
@@ -19,5 +19,5 @@ export function load({ cookies }) {
       console.log("Cookie has been deleted");
     }
   }
-  return { user }; // user === null if not logged in
+  return { user, url: url.pathname }; // user === null if not logged in
 }

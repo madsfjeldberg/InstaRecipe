@@ -13,6 +13,9 @@
   import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
   import { getCategories } from "$lib/api/categoryApi.js";
   import tagsApi from "$lib/api/tagsApi.js";
+  import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
+  import { blur } from "svelte/transition";
 
   const { data } = $props();
   const { user } = data;
@@ -83,8 +86,25 @@
           <EditListDialog bind:selectedList bind:recipeLists />
         <AddRecipeDialog bind:selectedList {categories} {tags}/>
       </div>
-
-      <RecipeTable bind:selectedList bind:staredRecipeList {recipes} />
+  <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">
+    <div class=col-span-8>
+      <Separator class="mt-2 mb-6 h-[2px]" />
+      <div class="grid grid-cols-3 gap-4 mt-4">
+        {#if loading}
+        <div class="flex justify-center items-center col-span-3">
+          <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
+          </div>
+        {:else if recipes.length > 0}
+          {#each recipes as recipe}
+            <RecipeCard recipe={recipe} />
+          {/each}
+        {:else}
+          <p>No recipes found.</p>
+        {/if}
+        </div>
+    </div>
+  </div>
+      <!-- <RecipeTable bind:selectedList bind:staredRecipeList {recipes} /> -->
 
     {:else}
       <div class="flex text-center flex-col items-center justify-center h-full">

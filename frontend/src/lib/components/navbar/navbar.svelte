@@ -31,7 +31,6 @@
 
   let debounceTimeout;
 
-  // users/${user.id}/avatar
   const avatarUrl = (userId) => {
     return import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar` : `/api/users/${userId}/avatar`;
   }
