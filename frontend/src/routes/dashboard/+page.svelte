@@ -19,8 +19,10 @@
   onMount(async () => {
     loading = true;
     try {
-      // delay for 1 second to simulate loading
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Conditionally delay for 1 second to simulate loading in non-production environments
+      if (import.meta.env.MODE !== "production") {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
       recipes = await getAllRecipes();
 
     } catch (error) {
