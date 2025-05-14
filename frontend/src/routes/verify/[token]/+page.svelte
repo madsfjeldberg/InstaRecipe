@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+  import { updateAuthState } from '../../../stores/authStore';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL + '/auth' : '/auth';
 
@@ -25,8 +26,13 @@
       if (response.ok) {
         status = 'success';
         message = data.message;
+        let user = {
+          id: data.user.id,
+          username: data.user.username
+        }
         // Redirect to login after 3 seconds
         setTimeout(() => {
+          updateAuthState(user);
           goto('/dashboard');
         }, 3000);
       } else {

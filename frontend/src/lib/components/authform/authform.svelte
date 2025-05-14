@@ -11,7 +11,6 @@
 
   const handleToggleAuthMode = () => {
     loginMode = !loginMode;
-    console.log("Toggled auth mode to: ", loginMode);
   };
 </script>
 
