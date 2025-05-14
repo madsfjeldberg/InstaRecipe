@@ -19,8 +19,9 @@
     import commentsApi from "$lib/api/commentsApi.js";
     import { user } from "../../../stores/authStore.js";
     import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
-    import LikeButton from "$lib/components/PopularityButtons/LikeButton.svelte";
-    import DislikeButton from "$lib/components/PopularityButtons/DislikeButton.svelte";
+    import RecipeViews from "$lib/components/RecipePopularity/RecipeViews.svelte";
+    import LikeButton from "$lib/components/RecipePopularity/LikeButton.svelte";
+    import DislikeButton from "$lib/components/RecipePopularity/DislikeButton.svelte";
     import { page } from "$app/stores";
     import { socket } from "../../../stores/socketStore.js";
 
@@ -31,6 +32,7 @@
     let steps = $state([]);
     let likes = $state([]);
     let dislikes = $state([]);
+    let totalViews = $state();
 
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
@@ -39,18 +41,22 @@
     $effect(async () => {
       recipeId = $page.params.id;
       if (!recipeId) return;
-        
+
       isLoading = true;
       try {
         recipe = await getRecipeById(recipeId);
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
+      
         likes = recipe.likes;
         dislikes = recipe.dislikes;
+        totalViews = recipe.totalViews;
         
       } catch (error) {
         toast.error("Could not load recipe, try again later");
+
       } finally {
+        
         isLoading = false;
       }
     });
@@ -166,72 +172,74 @@
         
 
         <div class="grid grid-cols-6">          
-        <h1 class="col-span-5 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-        <div class="col-span-1 flex justify-end">
-        <LikeButton {onLike} {likes} />
-        <DislikeButton {onDislike} {dislikes} />
-        </div>
-        <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10">{recipe.description}</h2>
+          <h1 class="col-span-5 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
+          <div class="col-span-1 flex justify-end items-center">
+            <RecipeViews {totalViews} {recipeId} />
+            <LikeButton {onLike} {likes} />
+            <DislikeButton {onDislike} {dislikes} />
+          </div>
+          <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10">{recipe.description}</h2>
         
   
-        <div class="col-span-2 col-start-1 mt-6 mb-10">
-        <Card.Root class="shadow-lg rounded-2xl flex flex-col">
-          <Card.Header class="w-full">
-            <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition</Card.Title>
-            <Separator class="mb-4" />
-          </Card.Header>
-            <Card.Content class="w-full">
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                    <Zap class="text-yellow-500 mr-2" />
-                    Calories
-                  </span>
-                  <span class="inline-block font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{recipe.ingredientsList?.reduce((sum, i) => sum + i.calories, 0).toFixed() ?? 0} kcal</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                    <BicepsFlexed class="text-blue-500 mr-2" />
-                    Protein
-                  </span>
-                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.protein, 0).toFixed() ?? 0} g</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                    <CakeSlice class="w-5 h-5 mr-2 text-pink-500" />
-                    Fat
-                  </span>
-                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.fat, 0).toFixed() ?? 0} g</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                    <Wheat class="w-5 h-5 mr-2 text-green-500" />
-                    Carbs
-                  </span>
-                  <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.carbs, 0).toFixed() ?? 0} g</span>
-                </div>
-              </div>
-            </Card.Content>
-        </Card.Root>
-        </div>
+          <div class="col-span-2 col-start-1 mt-6 mb-10">
+            <Card.Root class="shadow-lg rounded-2xl flex flex-col">
+              <Card.Header class="w-full">
+                <Card.Title class="text-2xl text-center font-bold text-gray-900 dark:text-gray-100 mb-2">Nutrition</Card.Title>
+                <Separator class="mb-4" />
+              </Card.Header>
+                <Card.Content class="w-full">
+                  <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                        <Zap class="text-yellow-500 mr-2" />
+                        Calories
+                      </span>
+                      <span class="inline-block font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{recipe.ingredientsList?.reduce((sum, i) => sum + i.calories, 0).toFixed() ?? 0} kcal</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                        <BicepsFlexed class="text-blue-500 mr-2" />
+                        Protein
+                      </span>
+                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.protein, 0).toFixed() ?? 0} g</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                        <CakeSlice class="w-5 h-5 mr-2 text-pink-500" />
+                        Fat
+                      </span>
+                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.fat, 0).toFixed() ?? 0} g</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
+                        <Wheat class="w-5 h-5 mr-2 text-green-500" />
+                        Carbs
+                      </span>
+                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.carbs, 0).toFixed() ?? 0} g</span>
+                    </div>
+                  </div>
+                </Card.Content>
+            </Card.Root>
+          </div>
 
-        <div class="col-span-2 flex flex-col space-y-8 mb-10">
-            <div class="flex flex-col items-center">
-              <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
-              <div style="width: 250px; height: 250px;">
-              <DoughnutChart
-                labels={recipe.ingredientsList.map((ingredient) => ingredient.name)}
-                data={recipe.ingredientsList.map((ingredient) => ingredient.calories)}
-                width={250}
-                height={250}
-              />
+          <div class="col-span-2 flex flex-col space-y-8 mb-10">
+              <div class="flex flex-col items-center">
+                <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
+                <div style="width: 250px; height: 250px;">
+                <DoughnutChart
+                  labels={recipe.ingredientsList.map((ingredient) => ingredient.name)}
+                  data={recipe.ingredientsList.map((ingredient) => ingredient.calories)}
+                  width={250}
+                  height={250}
+                />
+                </div>
               </div>
-            </div>
-            </div>
-            <div class="col-span-2 flex flex-col items-center">
-              <p class="text-lg text-gray-700 dark:text-gray-300">Macros per ingredient</p>
-              <BarChart ingredients={recipe.ingredientsList} />
-            </div>
+          </div>
+
+          <div class="col-span-2 flex flex-col items-center">
+            <p class="text-lg text-gray-700 dark:text-gray-300">Macros per ingredient</p>
+            <BarChart ingredients={recipe.ingredientsList} />
+          </div>
         
                 
         </div>

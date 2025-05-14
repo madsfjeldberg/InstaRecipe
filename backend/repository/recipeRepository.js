@@ -15,4 +15,28 @@ const getRecipeById = async (recipeId) => {
     }
 }
 
-export default { getRecipeById }
+
+
+const incrementTotalViews = async (recipeId) => {
+    try{
+        const updatedRecipe = prisma.recipe.update({
+            where: {
+                id: recipeId
+            },
+            data: {
+                totalViews: {
+                    increment: 1
+                }
+            }
+        });
+        return updatedRecipe;
+
+    }catch(error) {
+        console.error(error);
+        throw new Error("Could not increment total views for recipe with id:", recipeId);
+    }
+}
+
+
+
+export default { getRecipeById, incrementTotalViews }
