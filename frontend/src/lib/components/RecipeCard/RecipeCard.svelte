@@ -14,9 +14,10 @@
   import { socket } from "../../../stores/socketStore.js";
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
   import { onDestroy, onMount } from "svelte";
+  import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
  
   let { recipe } = $props();
-  let { id, name, description, tags, category, image } = recipe;
+  let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
   let userId = $user.id;
@@ -82,7 +83,7 @@ onclick={() => {
       alt=""
       class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
     />
-    <Card.Title class="ml-4 text-xl">{name}</Card.Title>
+    <Card.Title class="ml-4 text-xl mr-2">{name}</Card.Title>
     <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3 min-h-16">{description}</Card.Description>
   </Card.Header>
   <Card.Content class="pb-2 px-4">
@@ -105,6 +106,7 @@ onclick={() => {
   <div class="flex items-center">
     <LikeButton {onLike} {likes} />
     <DislikeButton {onDislike} {dislikes} />
+    <RecipeViews {totalViews} recipeId={id}/>
   </div>
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">

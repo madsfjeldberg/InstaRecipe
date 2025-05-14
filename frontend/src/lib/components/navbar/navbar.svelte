@@ -290,14 +290,14 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if $avatarStore}
+            {#if $avatarStore === "null"}
+              <CircleUser class="h-8 w-8" />
+            {:else}
               <img
                 src={$avatarStore}
                 alt="User Avatar"
                 class="h-8 w-8 rounded-full object-cover"
               />
-            {:else}
-              <CircleUser class="h-8 w-8" />
             {/if}
             <span class="sr-only">Toggle user menu</span>
           </span>

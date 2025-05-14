@@ -13,6 +13,7 @@
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
   import { passive } from "svelte/legacy";
+  import { CircleUser } from "lucide-svelte";
 
   const { data } = $props();
   let { user } = data;
@@ -186,7 +187,9 @@
             <Card.Description>
               Change your avatar.
             </Card.Description>
-            {#if $avatarStore}
+            {#if $avatarStore == "null"}
+            <CircleUser class="absolute top-8 right-8 rounded-full w-32 h-32 object-cover" />
+            {:else}
             <img 
               class="absolute top-8 right-8 rounded-full w-32 h-32 object-cover" 
               src={$avatarStore}

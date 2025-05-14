@@ -292,22 +292,17 @@
           </div>
         </Card.Root>
 
-        
-          
-        
-  
-
         <!-- Diagrams & Comment Grid -->
-        <div class="grid grid-cols-2 gap-8 mb-8">
+        <div class="grid grid-cols-4 gap-8 mb-8">
           <!-- Left Side: Comments -->
-          <div class="col-span-1">
+          <div class="col-span-3">
             <h1 class=" text-3xl text-left font-semibold">Comments:</h1>
             <div class="bg-gray-100 dark:bg-gray-800 rounded-lg">
               <Comment bind:comments recipeId={recipe.id}/>
             </div>
           </div>
           <!-- Right Side: Generate grocery list button-->
-           <div class="col-span-1 col-end-4">
+           <div class="col-span-1 col-end-6">
            {#if isGroceryListGenerating}
             <Button disabled> <LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Generating...</Button>
             {:else}
