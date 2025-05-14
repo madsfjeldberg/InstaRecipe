@@ -8,8 +8,8 @@
   import { Plus, ThumbsDown, ThumbsUp } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
-  import LikeButton from "../PopularityButtons/LikeButton.svelte";
-  import DislikeButton from "../PopularityButtons/DislikeButton.svelte";
+  import LikeButton from "../RecipePopularity/LikeButton.svelte";
+  import DislikeButton from "../RecipePopularity/DislikeButton.svelte";
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";

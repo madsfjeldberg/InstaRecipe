@@ -86,6 +86,7 @@ model Recipe {
   // many ↔ many with Tag
   tags Tag[] @relation("RecipeTags")
 
+  totalViews  Int @default(0)
   likes       String[] // store user IDs as UUID strings (maybe refs to user?)
   dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
   comments    Comment[]

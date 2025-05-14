@@ -26,6 +26,7 @@
   let { selectedList = $bindable(), categories, tags } = $props();
 
   let selectedTags = $state([]);
+  let counter = $state(0);
   // let tags = $state($recipeTags);
 
   let isLoading = $state(false);
@@ -58,9 +59,20 @@
     category: z.string().min(1, "Category is required"),
   });
 
+
+
+  const startTimer = () => {
+    const intervalId = setInterval(() => counter++, 1000);
+    return intervalId;
+  }
+
+
+
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
 
+    const intervalId = startTimer();
+  
     const formData = new FormData(event.target);
     const url = formData.get('url');
     const recipeListId = selectedList.id;
@@ -90,8 +102,8 @@
 
         selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
         selectedList = { ...selectedList};
-        selectedList.recipes.push(newRecipe)
-
+        selectedList.recipes.push(newRecipe);
+        
         errors = resetErrors();
         selectedTags = [];
         isDialogOpen = false; // Close the dialog
@@ -103,7 +115,8 @@
       
       isLoading = false;
       
-  } catch (error) {
+    } catch (error) {
+
       if (error instanceof z.ZodError) {
         errors = resetErrors();
         error.errors.forEach((err) => {
@@ -117,10 +130,13 @@
           form: error.message || "An unexpected error occurred",
         };
       }
+
     } finally {
+      counter = 0;
+      clearInterval(intervalId)
       isLoading = false;
     }
-}
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -190,10 +206,10 @@
       isLoading = false;
     }
   };
+</script>
 
- </script>
 
-<!-- TODO REMOVE DEFAULT VALUES THESE ARE ONLY FOR TESTING -->
+
 <Sheet.Root bind:open={isDialogOpen}>
   <Sheet.Trigger let:props>
     {#snippet child({props})}
@@ -203,22 +219,25 @@
     </Button>
     {/snippet}
   </Sheet.Trigger>
+
   <Sheet.Content side="right">
     <Sheet.Header>
       <Sheet.Title class="text-lg font-semibold">Add Recipe</Sheet.Title>
       <Sheet.Description>
         Fill in the details of the recipe you want to add.
       </Sheet.Description>
+
       <RadioGroup.Root bind:value={inputMode}>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="link" id="r1" />
-    <Label for="r1">Link</Label>
-  </div>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="manual" id="r2" />
-    <Label for="r2">Manual</Label>
-  </div>
-</RadioGroup.Root>
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item value="link" id="r1" />
+          <Label for="r1">Link</Label>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item value="manual" id="r2" />
+          <Label for="r2">Manual</Label>
+        </div>
+      </RadioGroup.Root>
 
       {#if inputMode == "link"}
       <form onsubmit={handleLinkSubmit}>
@@ -230,14 +249,18 @@
             <ErrorMessage message={errors.url} className="col-span-3 col-end-5" />
           </div>
         </div>
-      <Sheet.Footer>
-        {#if isLoading}
-          <Button type="submit" disabled>
-            <LoaderCircle class="animate-spin"/>
-              Generating...
-          </Button>
+        <Sheet.Footer>
+          {#if isLoading}
+          <div class="flex items-center">
+            <p class="mr-3 text-sm"><strong>EST. 21 sec</strong></p>
+            <p class="mr-3 text-sm"><i>Current: {counter} sec</i></p>
+             <Button type="submit" disabled>
+               <LoaderCircle class="animate-spin"/>
+               Generating...
+              </Button>
+            </div>
           {:else}
-          <Button type="submit">Generate</Button>
+            <Button type="submit">Generate</Button>
           {/if}
         </Sheet.Footer>
       </form>
