@@ -83,7 +83,6 @@ const uploadImage = async (filePath) => {
     console.log('File uploaded successfully:', imageUrl);
     return imageUrl;
   } catch (error) {
-    console.error('Error uploading file:', error);
     throw error; // Re-throw the error to handle it in the calling function
   }
 };
@@ -107,7 +106,7 @@ const handleB2Upload = async (imageUrl) => {
   await uploadImage(tempFilePath);
   await cleanupTempFile(tempFilePath);
 
-  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}${fileName}`;
+  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
   return b2ImagePath;
 }
 
