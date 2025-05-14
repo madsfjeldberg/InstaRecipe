@@ -15,7 +15,6 @@
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
   import { onDestroy, onMount } from "svelte";
   import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
-  import { fade } from "svelte/transition";
  
   let { recipe } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
