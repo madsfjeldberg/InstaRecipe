@@ -80,7 +80,7 @@ onclick={() => {
 }}
 >
 {#if selectedList}
-<DeleteRecipeDialog onclick={(e) => e.stopPropagation()}  recipeId={id} bind:selectedList />
+<DeleteRecipeDialog recipeId={id} bind:selectedList />
 {/if}
   <Card.Header class="p-0">
     <img
