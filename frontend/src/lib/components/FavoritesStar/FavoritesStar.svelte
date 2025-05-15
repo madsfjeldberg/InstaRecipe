@@ -57,7 +57,7 @@
     };
 </script>
 
-<button onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
+<button class="mr-2" onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
     {#if favoritesRecipeList && favoritesRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
         <span class="hover:text-black dark:hover:text-white transition-colors">
             <Star color="orange" />
