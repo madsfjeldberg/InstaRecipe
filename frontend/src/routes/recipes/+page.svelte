@@ -78,35 +78,15 @@
         <h1 class="flex text-2xl font-semibold items-center mt-72"><LoaderCircle class="mr-2 h-10 w-10 animate-spin inline-block" /> Loading...</h1>
       </div>
 
-      {:else if selectedList.name === "Favorites"} 
-        <div class="group flex items-center justify-between mb-4">
-          <h1 class="text-2xl font-semibold transition-all">{selectedList.name}</h1>  
-        </div>
-        <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">
-          <div class=col-span-8>
-            <Separator class="mt-2 mb-6 h-[2px]" />
-            <div class="grid grid-cols-3 gap-4 mt-4">
-              {#if loading}
-                <div class="flex justify-center items-center col-span-3">
-                  <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
-                </div>
-                {:else if selectedList.recipes && selectedList.recipes.length > 0}
-                  {#each selectedList.recipes as recipe}
-                    <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList/>
-                  {/each}
-  
-                {:else}
-                  <p>No recipes found.</p>
-              {/if}
-            </div>
-          </div>
-        </div>
+      {:else if selectedList}
 
-      {:else if selectedList && selectedList.name !== "Favorites"}
-        <div class="group flex items-center justify-between mb-4">
-            <EditListDialog bind:selectedList bind:recipeLists />
-          <AddRecipeDialog bind:selectedList {categories} {tags}/>
-        </div>
+        {#if selectedList.name !== "Favorites"}
+          <div class="group flex items-center justify-between mb-4">
+              <EditListDialog bind:selectedList bind:recipeLists />
+            <AddRecipeDialog bind:selectedList {categories} {tags}/>
+          </div>
+        {/if}
+        
         <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">
           <div class=col-span-8>
             <Separator class="mt-2 mb-6 h-[2px]" />
