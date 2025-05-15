@@ -147,6 +147,7 @@
   const handleSubmit = async (event) => {
     event.preventDefault();
     
+    errors = resetErrors();
     const formData = new FormData(event.target);
     const name = formData.get('recipeName');
     const description = formData.get('description');

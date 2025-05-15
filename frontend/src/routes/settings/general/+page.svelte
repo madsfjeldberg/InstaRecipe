@@ -13,7 +13,8 @@
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
   import { passive } from "svelte/legacy";
-  import { CircleUser } from "lucide-svelte";
+  import { CircleUser, LoaderCircle } from "lucide-svelte";
+  import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
 
   const { data } = $props();
   let { user } = data;
@@ -21,13 +22,19 @@
   let password = $state("");
   let confirmPassword = $state("");
   username = user.username;
+  let changeUsernameLoading = $state(false);
+  let changePasswordLoading = $state(false);
 
-  let errors = $state({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    form: "",
-  });
+  const resetErrors = () => {
+    return {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      form: "",
+    };
+  };
+
+  let errors = $state(resetErrors());
 
   const changeUsernameRequest = z.object({
     username: z.string()
@@ -46,6 +53,8 @@
 
   const handleChangeUsername = async (event) => {
     event.preventDefault();
+    errors = resetErrors();
+    changeUsernameLoading = true;
     const formData = new FormData(event.target);
     const username = formData.get("username");
 
@@ -58,24 +67,31 @@
         
       } else {
         await toast.error("Error updating username: " + response.message);
-        errors = { };
+        errors = resetErrors();
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
-        // Map Zod errors to form fields
+        errors.resetErrors();
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {
             errors[err.path[0]] = err.message;
           }
         });
       } else {
-        console.error("Unexpected error:", error);
+        errors = {
+          ...resetErrors(),
+          form: error.message || "An unexpected error occurred. Please try again later.",
+        }
       }
+    } finally {
+      changeUsernameLoading = false;
     }
   };
 
   const handleChangePassword = async (event) => {
     event.preventDefault();
+    errors = resetErrors();
+    changePasswordLoading = true;
     const formData = new FormData(event.target);
     let passwordData = formData.get("password");
     let confirmPasswordData = formData.get("confirmPassword");
@@ -96,10 +112,11 @@
         
       } else {
         await toast.error("Error updating password: " + response.message);
-        errors = { };
+        errors = resetErrors();
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
+        errors = resetErrors();
         // Map Zod errors to form fields
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {
@@ -109,6 +126,8 @@
       } else {
         console.error("Unexpected error:", error);
       }
+    } finally {
+      changePasswordLoading = false;
     }
   };
 
@@ -123,14 +142,19 @@
     </Card.Description>
   </Card.Header>
   <form onsubmit={handleChangeUsername}>
+  <ErrorMessage message={errors.form} />
   <Card.Content>
+
       <Input bind:value={username} name="username" />
-      {#if errors.username}
-  <span class="text-red-500 text-sm">{errors.username}</span>
-{/if}
+      <ErrorMessage message={errors.username} />
+
   </Card.Content>
   <Card.Footer class="px-6 pt-10">
-    <Button type="submit" class="mt-8">Save</Button>
+    {#if changeUsernameLoading}
+      <Button disabled class="mt-8"><LoaderCircle class="animate-spin" />Saving...</Button>
+    {:else}
+      <Button type="submit" class="mt-8">Save</Button>
+    {/if}
   </Card.Footer>
 </form>
 </Card.Root>
@@ -142,18 +166,22 @@
     </Card.Description>
   </Card.Header>
   <form onsubmit={handleChangePassword}>
+  <ErrorMessage message={errors.form} />
   <Card.Content class="flex flex-col gap-4">
+
       <Input bind:value={password} type="password" name="password" placeholder="New Password" />
-      {#if errors.password}
-  <span class="text-red-500 text-sm">{errors.password}</span>
-{/if}
+      <ErrorMessage message={errors.password} />
+      
       <Input bind:value={confirmPassword} type="password" name="confirmPassword" placeholder="Confirm Password" />
-      {#if errors.confirmPassword}
-  <span class="text-red-500 text-sm">{errors.confirmPassword}</span>
-{/if}
+      <ErrorMessage message={errors.confirmPassword} />
+
   </Card.Content>
   <Card.Footer class="px-6 py-4">
-    <Button type="submit">Save</Button>
+    {#if changePasswordLoading}
+      <Button disabled><LoaderCircle class="animate-spin" />Saving...</Button>
+    {:else}
+      <Button type="submit">Save</Button>
+    {/if}
   </Card.Footer>
   </form>
 </Card.Root>
