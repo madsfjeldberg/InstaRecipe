@@ -8,7 +8,7 @@ const scrapeLink = async (link) => {
 
     const response = await fetch(BASE_URL, getOption);
     const result = await response.json();
-    return result.data;
+    return result;
 
   } catch (error) {
     console.error(error);

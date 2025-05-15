@@ -83,6 +83,9 @@ router.post('/api/scrape', async (req, res) => {
       if (scrapedData.length === 0) {
         return res.status(404).json({ message: "No matching span content found on page" });
       }
+    } else {
+      console.log("No specific URL detected");
+      return res.status(500).send({ status: 500, data: { message: "Invalid URL" } });
     }
 
     await browser.close();
@@ -105,11 +108,11 @@ router.post('/api/scrape', async (req, res) => {
       
       data.ingredientsWithMacros = ingredientsWithMacros;
       data.image = b2ImagePath;
-      
-      return res.status(200).json({ data });
+
+      return res.status(200).json({ status: 200, data });
     } catch(err) {
       console.error("Error parsing AI response JSON:", err);
-      return res.status(500).json({ message: "Invalid JSON format from AI output", error: err.message });
+      return res.status(500).json({ message: "Server error. Please try again.", error: err.message });
     }
   } catch (error) {
     console.error("Error in scrape endpoint:", error);

@@ -53,6 +53,7 @@ Always return valid and properly indented JSON.
 Do not include any markdown formatting or code block markers (e.g. avoid wrapping your output with \`\`\`json and \`\`\`).
 Do not include any '\n' characters in the JSON output.
 If necessary, infer missing details sensibly based on the dish type and common cooking practices.
+Recipe text must always be in English.
 `
 
 const generateRecipe = async (text) => {
@@ -69,13 +70,14 @@ const generateRecipe = async (text) => {
 }
 
 const generateRecipeImage = async (prompt) => {
+  console.log("Generating image with prompt:", prompt);
   const response = await client.images.generate({
     model: "dall-e-2",
     prompt: prompt,
     n: 1,
     size: "1024x1024"
   });
-
+  console.log("Generated image: ", response.data[0].url);
   return response.data[0].url;
 }
 
