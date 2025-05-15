@@ -1,10 +1,10 @@
 import prisma from "../database/prismaClient.js";
 
-const createStaredList = async (userId) => {
+const createFavoritesList = async (userId) => {
     try {
         const staredList = await prisma.recipeList.create({
             data: {
-                name: "Stared",
+                name: "Favorites",
                 userId: userId
             }
         })
@@ -62,4 +62,4 @@ const removeRecipeFromStaredList = async (recipeListId, recipeId) => {
     }
 }
 
-export default { createStaredList, addRecipeToStaredList, removeRecipeFromStaredList }
+export default { createFavoritesList, addRecipeToStaredList, removeRecipeFromStaredList }

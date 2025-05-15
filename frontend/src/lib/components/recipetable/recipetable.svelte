@@ -8,7 +8,7 @@
   import PopularityVoteButtons from "../popularity-vote-buttons/popularity-vote-buttons.svelte";
   import { goto } from "$app/navigation";
   import { Star } from "lucide-svelte";
-  import { addRecipeToStaredRecipeList, removeRecipeFromStaredList } from "$lib/api/recipelistApi.js";
+  import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js"; // stared -> favorites
 
   let { selectedList = $bindable(), staredRecipeList = $bindable(), recipes } = $props();
 

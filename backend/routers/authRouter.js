@@ -48,7 +48,7 @@ router.post("/api/auth/register", async (req, res) => {
       },
     });
 
-    await recipeListRepository.createStaredList(newUser.id);
+    await recipeListRepository.createFavoritesList(newUser.id);
 
     // send verification mail with uuid
     const uuid = newUser.id;

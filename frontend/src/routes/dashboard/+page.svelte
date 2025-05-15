@@ -9,17 +9,24 @@
   import Separator from "$lib/components/ui/separator/separator.svelte";
 
   import { blur } from "svelte/transition";
+    import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
 
   const { data } = $props();
   const { user } = data;
   let loading = $state(true);
   let recipes = $state([]);
+  let favoritesRecipeList = $state(null);
   let username = user.username;
 
   onMount(async () => {
     loading = true;
     try {
       recipes = await getAllRecipes();
+      const recipeLists = await getRecipeListsByUserId(user.id);
+
+      if (recipeLists.length > 0) {
+        favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites");
+      } 
 
     } catch (error) {
       console.error("Error fetching recipes:", error);
@@ -58,6 +65,7 @@
             {#each recipes as recipe (recipe.id)}
               <RecipeCard 
                 recipe={recipe}
+                bind:favoritesRecipeList
               />
             {/each}
           {:else}
