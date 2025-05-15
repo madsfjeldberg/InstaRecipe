@@ -70,13 +70,14 @@ const generateRecipe = async (text) => {
 }
 
 const generateRecipeImage = async (prompt) => {
+  console.log("Generating image with prompt:", prompt);
   const response = await client.images.generate({
     model: "dall-e-2",
     prompt: prompt,
     n: 1,
     size: "1024x1024"
   });
-
+  console.log("Generated image: ", response.data[0].url);
   return response.data[0].url;
 }
 

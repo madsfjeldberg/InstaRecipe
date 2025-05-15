@@ -84,7 +84,6 @@
       isLoading = true;
       
       let generatedRecipe = await scrapeLink(url);
-      console.log("generatedRecipe", generatedRecipe);
 
       if (generatedRecipe.status !== 200) {
         errors = { ...errors, form: generatedRecipe.data.message };
@@ -156,7 +155,6 @@
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
-    console.log("recipeListId", recipeListId);
     
     try {
       let response;
