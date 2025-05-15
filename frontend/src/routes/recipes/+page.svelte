@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-  <title>Recipes</title>
+  <title>InstaRecipe | Recipes</title>
 </svelte:head>
 
 <div class="grid grid-cols-8 p-10">

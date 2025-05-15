@@ -19,10 +19,6 @@
   onMount(async () => {
     loading = true;
     try {
-      // Conditionally delay for 1 second to simulate loading in non-production environments
-      if (import.meta.env.MODE !== "production") {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
       recipes = await getAllRecipes();
 
     } catch (error) {
@@ -36,7 +32,7 @@
 </script>
 
 <svelte:head>
-  <title>Dashboard</title>
+  <title>InstaRecipe | Dashboard</title>
 </svelte:head>
 
 <div class="flex flex-col p-10">
