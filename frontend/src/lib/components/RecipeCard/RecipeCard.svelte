@@ -1,39 +1,40 @@
 <script>
+  import { onDestroy, onMount } from "svelte";
+  import { goto } from "$app/navigation";
+
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import Badge from "../ui/badge/badge.svelte";
-  import { Plus, ThumbsDown, ThumbsUp } from "lucide-svelte";
-  import { goto } from "$app/navigation";
+  import { Plus, ThumbsDown, ThumbsUp, Star } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import LikeButton from "../RecipePopularity/LikeButton.svelte";
   import DislikeButton from "../RecipePopularity/DislikeButton.svelte";
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
-  import { onDestroy, onMount } from "svelte";
   import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
   import X from "@lucide/svelte/icons/x";
   import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
+  import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
  
-  let { recipe, selectedList = $bindable() } = $props();
+  let { recipe, selectedList = $bindable(), favoritesRecipeList = $bindable() } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
   let userId = $user.id;
 
+  
+  const disconnect = socket.on("update-like-dislike", (recipe) => {
+    if (recipe.id === id) {
+      likes = recipe.likes;
+      dislikes = recipe.dislikes;
+    }
+  });
 
-  
-     const disconnect = socket.on("update-like-dislike", (recipe) => {
-       if (recipe.id === id) {
-         likes = recipe.likes;
-         dislikes = recipe.dislikes;
-       }
-     });
-  
-    onDestroy(disconnect);
+  onDestroy(disconnect);
 
 
     
@@ -70,6 +71,51 @@
     likes = updated.likes;
     dislikes = updated.dislikes;
   };
+
+
+
+  //Favorites list functionality
+  const isAddedToFavoritesRecipeList = async (event, recipe) => {
+    event.stopPropagation();
+
+    try {
+      if(favoritesRecipeList.recipes.some( (checkRecipe) => checkRecipe.id === recipe.id)) {
+        await removeFromFavoritesList(recipe);
+        toast.success(recipe.name + " was removed from favorites list");
+        return;
+      }
+
+      await addToFavoritesRecipeList(recipe);
+      toast.success(recipe.name + " was added to your favorites list")
+
+    }catch(error) {
+      console.error(error)
+      toast.error("Something went wrong interacting with favorites list")
+    }
+  }
+
+
+
+  const addToFavoritesRecipeList = async (newRecipe) => {
+    favoritesRecipeList.recipes = [...favoritesRecipeList.recipes, newRecipe];
+    
+    try {
+      await addRecipeToFavoritesRecipeList(favoritesRecipeList.id, newRecipe.id);
+
+    }catch(error) {
+      toast.error(error.message);
+    }
+  }
+
+
+
+  const removeFromFavoritesList = async (recipeToRemove) => {
+      favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter( (recipe) => recipe.id !== recipeToRemove.id );
+      await removeRecipeFromFavoritesList(favoritesRecipeList.id, recipeToRemove.id)
+  }
+
+
+
 
 </script>
  
@@ -113,6 +159,20 @@ onclick={() => {
     <DislikeButton {onDislike} {dislikes} />
     <RecipeViews {totalViews} recipeId={id}/>
   </div>
+  <button onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
+    
+      {#if favoritesRecipeList && favoritesRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
+        <span class="hover:text-black dark:hover:text-white transition-colors">
+          <Star color="orange"/>
+        </span>
+
+        {:else }
+          <span class="hover:text-orange-500 transition-colors">
+            <Star />
+          </span>
+      {/if}
+
+  </button>
   {#if !selectedList}
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">
