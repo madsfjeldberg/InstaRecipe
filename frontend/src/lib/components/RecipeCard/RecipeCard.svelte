@@ -18,7 +18,7 @@
   import X from "@lucide/svelte/icons/x";
   import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
  
-  let { recipe, selectedList } = $props();
+  let { recipe, selectedList = $bindable() } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
@@ -80,7 +80,7 @@ onclick={() => {
 }}
 >
 {#if selectedList}
-<DeleteRecipeDialog onclick={(e) => e.stopPropagation()}  recipeId={id} {selectedList} />
+<DeleteRecipeDialog onclick={(e) => e.stopPropagation()}  recipeId={id} bind:selectedList />
 {/if}
   <Card.Header class="p-0">
     <img
