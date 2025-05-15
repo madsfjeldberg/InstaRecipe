@@ -96,7 +96,7 @@
           </div>
         {:else if recipes.length > 0}
           {#each recipes as recipe}
-            <RecipeCard recipe={recipe} />
+            <RecipeCard {recipe} {selectedList} />
           {/each}
         {:else}
           <p>No recipes found.</p>
