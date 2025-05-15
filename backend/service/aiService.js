@@ -53,6 +53,7 @@ Always return valid and properly indented JSON.
 Do not include any markdown formatting or code block markers (e.g. avoid wrapping your output with \`\`\`json and \`\`\`).
 Do not include any '\n' characters in the JSON output.
 If necessary, infer missing details sensibly based on the dish type and common cooking practices.
+Recipe text must always be in English.
 `
 
 const generateRecipe = async (text) => {

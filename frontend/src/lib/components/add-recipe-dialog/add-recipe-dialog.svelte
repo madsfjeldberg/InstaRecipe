@@ -70,7 +70,7 @@
 
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
-
+    errors = resetErrors();
     const intervalId = startTimer();
   
     const formData = new FormData(event.target);
@@ -82,9 +82,16 @@
       let success = linkRequest.parse({ url });
       
       isLoading = true;
-      // do something here
+      
       let generatedRecipe = await scrapeLink(url);
-      let { name, description, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
+      console.log("generatedRecipe", generatedRecipe);
+
+      if (generatedRecipe.status !== 200) {
+        errors = { ...errors, form: generatedRecipe.data.message };
+        return;
+      }
+
+      let { name, description, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
       response = await addRecipe(
         name,
         description,
@@ -241,9 +248,10 @@
 
       {#if inputMode == "link"}
       <form onsubmit={handleLinkSubmit}>
+        
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-4 items-center gap-4">
-            <ErrorMessage message={errors.form} />
+            <ErrorMessage message={errors.form} className="col-span-4 mx-auto" />
             <Label for="url" class="text-right">Link</Label>
             <Input id="url" placeholder="URL" name="url" class="col-span-3" />
             <ErrorMessage message={errors.url} className="col-span-3 col-end-5" />
@@ -252,7 +260,6 @@
         <Sheet.Footer>
           {#if isLoading}
           <div class="flex items-center">
-            <p class="mr-3 text-sm"><strong>EST. 21 sec</strong></p>
             <p class="mr-3 text-sm"><i>Current: {counter} sec</i></p>
              <Button type="submit" disabled>
                <LoaderCircle class="animate-spin"/>
