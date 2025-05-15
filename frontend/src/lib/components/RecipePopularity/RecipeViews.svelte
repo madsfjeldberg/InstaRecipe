@@ -33,5 +33,5 @@
 
 <div class="flex items-center">
     <Eye class="mr-1" size="20" />
-    <p class="font-semibold" >{totalViews}</p>
+    <p>{totalViews}</p>
 </div>

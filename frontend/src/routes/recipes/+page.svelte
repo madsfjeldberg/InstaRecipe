@@ -26,7 +26,6 @@
   let recipeLists = $state([]);
   let selectedList = $state(null);
   let staredRecipeList = $state(null);
-  let recipes = $state([]);
   let categories = $state([]);
   let tags = $state([]);
   let loading = $state(true);
@@ -41,7 +40,6 @@
     if (recipeLists.length > 0) {
       selectedList = recipeLists[0];
       staredRecipeList = recipeLists.find( (list) => list.name === "Stared");
-      recipes = selectedList.recipes;
     } 
     
     // Set the flag to false after the initial load
@@ -54,7 +52,6 @@
   $effect(async () => {
   if (isInitialLoad || !selectedList) return;
   loading = true;
-  recipes = selectedList.recipes;
   loading = false;
 });
   
@@ -94,9 +91,9 @@
         <div class="flex justify-center items-center col-span-3">
           <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
           </div>
-        {:else if recipes.length > 0}
-          {#each recipes as recipe}
-            <RecipeCard recipe={recipe} />
+        {:else if selectedList && selectedList.recipes && selectedList.recipes.length > 0}
+          {#each selectedList.recipes as recipe}
+            <RecipeCard {recipe} bind:selectedList />
           {/each}
         {:else}
           <p>No recipes found.</p>

@@ -5,6 +5,7 @@
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
   import { deleteRecipe } from "$lib/api/recipeApi";
   import { toast } from "svelte-sonner";
+  import { stopPropagation } from "svelte/legacy";
 
   let { recipeId, selectedList = $bindable() } = $props();
   let isDialogOpen = $state(false);
@@ -26,8 +27,8 @@
  </script>
   
  <AlertDialog.Root bind:open={isDialogOpen}>
-  <AlertDialog.Trigger class="opacity-0 group-hover:opacity-100 duration-200 m-1 transition-all rounded-md">
-  <X class="h-5 w-5 hover:text-destructive transition-colors" />
+  <AlertDialog.Trigger onclick={(event) => event.stopPropagation()} class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 duration-300 transition-all">
+  <X class="h-6 w-6 text-destructive transition-colors hover:text-slate-800 hover:bg-destructive rounded-md" />
   </AlertDialog.Trigger>
   <AlertDialog.Content>
    <AlertDialog.Header>

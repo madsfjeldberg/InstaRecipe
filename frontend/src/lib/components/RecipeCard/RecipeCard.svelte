@@ -15,8 +15,10 @@
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
   import { onDestroy, onMount } from "svelte";
   import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
+  import X from "@lucide/svelte/icons/x";
+  import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
  
-  let { recipe } = $props();
+  let { recipe, selectedList = $bindable() } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
@@ -77,13 +79,16 @@ onclick={() => {
   goto("/recipes/" + recipe.id);
 }}
 >
+{#if selectedList}
+<DeleteRecipeDialog onclick={(e) => e.stopPropagation()}  recipeId={id} bind:selectedList />
+{/if}
   <Card.Header class="p-0">
     <img
       src={image || '/recipe-image-placeholder.png'}
       alt=""
       class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
     />
-    <Card.Title class="ml-4 text-xl mr-2">{name}</Card.Title>
+    <Card.Title class="ml-4 text-xl mr-2 line-clamp-2 min-h-16">{name}</Card.Title>
     <Card.Description class="ml-4 mr-4 italic overflow-ellipsis line-clamp-3 min-h-16">{description}</Card.Description>
   </Card.Header>
   <Card.Content class="pb-2 px-4">
@@ -102,16 +107,18 @@ onclick={() => {
     </div>
   </div>
   </Card.Content>
-  <Card.Footer class="pb-2 px-2 justify-between">
+  <Card.Footer class="pb-2 px-2 justify-between gap-2">
   <div class="flex items-center">
     <LikeButton {onLike} {likes} />
     <DislikeButton {onDislike} {dislikes} />
     <RecipeViews {totalViews} recipeId={id}/>
   </div>
+  {#if !selectedList}
   <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
     <Button onclick={addRecipeToRecipeList} variant="ghost">
       <Plus class="h-5 w-5 text-gray-600" />Add to list
     </Button>
   </div>
+  {/if}
 </Card.Footer>
 </Card.Root>
