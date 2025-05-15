@@ -91,7 +91,7 @@
         <div class="flex justify-center items-center col-span-3">
           <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
           </div>
-        {:else if selectedList.recipes.length > 0}
+        {:else if selectedList && selectedList.recipes && selectedList.recipes.length > 0}
           {#each selectedList.recipes as recipe}
             <RecipeCard {recipe} bind:selectedList />
           {/each}
