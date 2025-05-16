@@ -50,10 +50,10 @@
   // when a new recipe list is selected, fetch the recipes for that list
   // and pass to recipe table
   $effect(async () => {
-  if (isInitialLoad || !selectedList) return;
-  loading = true;
-  loading = false;
-});
+    if (isInitialLoad || !selectedList) return;
+    loading = true;
+    loading = false;
+  });
   
   
 </script>
@@ -96,7 +96,8 @@
                   <LoaderCircle class="animate-spin h-16 w-16 mt-56" />
                 </div>
                 {:else if selectedList && selectedList.recipes && selectedList.recipes.length > 0}
-                  {#each selectedList.recipes as recipe}
+                    
+                  {#each selectedList.recipes as recipe (recipe.id)}
                     <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList />
                   {/each}
 
