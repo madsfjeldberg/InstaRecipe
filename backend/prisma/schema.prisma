@@ -21,11 +21,14 @@ model User {
   password    String
   avatar      Bytes?
   avatarMime  String?
-  comments    Comment[]
   isConfirmed Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  
+  following  User[]  @relation("UserFollows")
+  followers  User[]  @relation("UserFollows")
 
+  comments    Comment[]
   recipeLists RecipeList[]
 }
 
