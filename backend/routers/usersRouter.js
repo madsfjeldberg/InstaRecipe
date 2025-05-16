@@ -1,4 +1,4 @@
-import { Router } from "express";
+import e, { Router } from "express";
 import multer from 'multer';
 
 import auth from "../service/authService.js";
@@ -14,6 +14,16 @@ const cookieOptions = {
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
   maxAge: 3600000, // 1 hour
 }
+
+router.get("/api/users/:id", async (req, res) => {
+  try {
+    const foundUser = await usersRepository.getUserById(req.params.id);
+    res.send({ data: foundUser})
+
+  }catch(error) {
+    res.status(500).send({ errorMessage: error.message});
+  }
+})
 
 router.get('/api/users', async (req, res) => { 
   const { partialUsername } = req.query;
