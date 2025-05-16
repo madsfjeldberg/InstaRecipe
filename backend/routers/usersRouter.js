@@ -18,9 +18,15 @@ const cookieOptions = {
 router.get("/api/users/:id", async (req, res) => {
   try {
     const foundUser = await usersRepository.getUserById(req.params.id);
+    if(!foundUser) {
+      res.status(404).send({ data: {} })
+      return;
+    }
+
     res.send({ data: foundUser})
 
   }catch(error) {
+    console.error(error);
     res.status(500).send({ errorMessage: error.message});
   }
 })

@@ -8,7 +8,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const getUserById = async (userId) => {
   const getOption = makeOption("GET");
-  const response = await fetch(BASE_URL + "/" + userId);
+  const response = await fetch(BASE_URL + "/" + userId, getOption);
 
   if(!response.ok) {
     throw new Error("Could not get user with id:", userId);
