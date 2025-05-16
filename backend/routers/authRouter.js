@@ -83,7 +83,7 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
   try {
     if (isValidPassword) {
       const token = await auth.generateToken(user);
-
+      
       res
         .status(200)
         .cookie("jwt", token, cookieOptions)
@@ -179,7 +179,7 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
     const resetToken = crypto.randomUUID();
     const FIFTEEN_MINUTES = 900;
-    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email, user.username);
+    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
     if (!isSet) {
       return res.status(500).send({ errorMessage: "Something went wrong generating reset password token" });
     }
@@ -220,11 +220,13 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       return res.status(500).send({ errorMessage: "Error occurred when deleting reset token" });
     }
 
-    // delete all tokens with the username
-    const username = await redis.get(resetToken, 1);
-    if (username) {
-      const userTokens = await redis.keys(`*${username}*`);
-      await Promise.all(userTokens.map(token => redis.del(token)));
+    // Find and delete all tokens in Redis that have this email as their value
+    const allKeys = await redis.keys("*");
+    for (const key of allKeys) {
+      const value = await redis.get(key);
+      if (value === email) {
+        await redis.del(key);
+      }
     }
 
     const newHashedPassword = await auth.hashPassword(newPassword);
