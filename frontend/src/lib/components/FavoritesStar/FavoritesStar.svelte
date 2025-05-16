@@ -1,8 +1,10 @@
 <script>
     import { Star } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import Button from "../ui/button/button.svelte";
 
     import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
+  
 
 
     const { favoritesRecipeList = $bindable(), recipe } = $props();
@@ -57,14 +59,10 @@
     };
 </script>
 
-<button class="mr-2" onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
+<Button size="icon" variant="ghost" class="transition-all hover:text-orange-400 hover:bg-transparent" onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
     {#if favoritesRecipeList && favoritesRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
-        <span class="hover:text-black dark:hover:text-white transition-colors">
-            <Star color="orange" />
-        </span>
+      <Star class="text-orange-400 fill-current" />
     {:else}
-        <span class="hover:text-orange-500 transition-colors">
-            <Star />
-        </span>
+      <Star class=""/>
     {/if}
-</button>
+</Button>
