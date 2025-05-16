@@ -85,6 +85,10 @@
               <EditListDialog bind:selectedList bind:recipeLists />
             <AddRecipeDialog bind:selectedList {categories} {tags}/>
           </div>
+        {:else}
+          <div class="group flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
+          </div>
         {/if}
         
         <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">
