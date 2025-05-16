@@ -48,12 +48,12 @@ router.post("/api/auth/register", async (req, res) => {
       },
     });
 
-    await recipeListRepository.createStaredList(newUser.id);
+    await recipeListRepository.createFavoritesList(newUser.id);
 
-    //this generates the token and stroes userId as value and token as key
-    const jwt = await auth.generateToken(newUser);
-    await emailService.sendVerificationEmail(newUser.email, jwt);
-    res.cookie("jwt", jwt, cookieOptions).send({ message: "User registered successfully.", status: 200 });
+    // send verification mail with uuid
+    const uuid = newUser.id;
+    await emailService.sendVerificationEmail(newUser.email, uuid);
+    res.send({ message: "User registered successfully.", status: 200 });
 
   } catch (error) {
     res.status(500).send({ errorMessage: "Server error. Error registering user" });
@@ -242,28 +242,42 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
 
 
 
-router.get("/api/auth/verify/:token", authenticateToken, async (req, res) => {
+router.get("/api/auth/verify/:id", async (req, res) => {
+  const id = req.params.id;
   const user = req.user;
 
   try {
 
     await prisma.user.update({
       where: {
-        username: user.username
+        id: id
       },
       data: {
         isConfirmed: true
       }
     });
 
-    return res.status(200).send({
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id
+      }
+    });
+
+    
+    const token = await auth.generateToken(user);
+
+    return res.cookie("jwt", token, cookieOptions).status(200).send({
       status: 200,
+      user: {
+        id: user.id,
+        username: user.username,
+      },
       message: "Account verified successfully."
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: "Somehting went wrong conforming the email" })
+    res.status(500).send({ errorMessage: "Something went wrong confirming the email" })
   }
 
 });

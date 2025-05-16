@@ -1,3 +1,4 @@
+
 import OpenAI from 'openai';
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -8,7 +9,7 @@ Structure:
 {
   "name": "",
   "description": "",
-  "ingredients": "",
+  "ingredients": [],
   "ingredientsInGrams": "",
   "instructions": "",
   "category": "",
@@ -20,11 +21,11 @@ Name: Use the title, normally at the beginning.
 Description: Write a short 1 to 2 sentence summary describing the dish and its appeal, inferring from context,
 or from the given description in the text.
 
-Ingredients: Parse all listed ingredients into a string. IMPORTANT: Add measurements and amounts before each ingredient.
+Ingredients: Parse all listed ingredients into an array.
+IMPORTANT: Add measurements and amounts before each ingredient.
+Prefer using the most common measurement units (e.g., "1 cup", "2 tablespoons", "3 large eggs").
 If no measurements are given, use common sense to estimate reasonable amounts based on the ingredient type.
 For example, "2 cups of flour", "1 tablespoon of sugar", "3 large eggs".
-DO NOT include any non-ingredient text (e.g., "for garnish", "to taste", "diced", "minced").
-Ingredients should be separated by commas.
 
 IngredientsInGrams: This list will be used for nutritional calculations.
 Convert the ingredients to grams where applicable.
@@ -52,6 +53,7 @@ Always return valid and properly indented JSON.
 Do not include any markdown formatting or code block markers (e.g. avoid wrapping your output with \`\`\`json and \`\`\`).
 Do not include any '\n' characters in the JSON output.
 If necessary, infer missing details sensibly based on the dish type and common cooking practices.
+Recipe text must always be in English.
 `
 
 const generateRecipe = async (text) => {
@@ -68,13 +70,14 @@ const generateRecipe = async (text) => {
 }
 
 const generateRecipeImage = async (prompt) => {
+  console.log("Generating image with prompt:", prompt);
   const response = await client.images.generate({
-    model: "dall-e-3",
+    model: "dall-e-2",
     prompt: prompt,
     n: 1,
     size: "1024x1024"
   });
-
+  console.log("Generated image: ", response.data[0].url);
   return response.data[0].url;
 }
 

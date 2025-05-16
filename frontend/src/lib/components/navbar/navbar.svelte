@@ -31,7 +31,6 @@
 
   let debounceTimeout;
 
-  // users/${user.id}/avatar
   const avatarUrl = (userId) => {
     return import.meta.env.VITE_API_URL
       ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
@@ -143,21 +142,9 @@
             <CookingPot class="h-6 w-6" />
             <span class="sr-only">InstaRecipe</span>
           </a>
-          <Navlink
-            href="/dashboard"
-            class="text-muted-foreground hover:text-foreground"
-          >
-            Dashboard
-          </Navlink>
-          <Navlink
-            href="/recipes"
-            class="text-muted-foreground hover:text-foreground"
-          >
-            Recipes
-          </Navlink>
-          <Navlink href="/settings" class="hover:text-foreground">
-            Settings
-          </Navlink>
+          <Navlink href="/dashboard" class="text-muted-foreground hover:text-foreground"> Dashboard </Navlink>
+          <Navlink href="/recipes" class="text-muted-foreground hover:text-foreground"> Recipes </Navlink>
+          <Navlink href="/settings/general" class="hover:text-foreground"> Settings </Navlink>
         </nav>
       </Sheet.Content>
     </Sheet.Root>
@@ -351,41 +338,34 @@
         <!-- END SEARCH INPUT AND DROPDOWN -->
       {/if}
       {#if $isAuthenticated}
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger let:props>
-            {#snippet child({ props })}
-              <span
-                class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
-                {...props}
-              >
-                {#if $avatarStore}
-                  <img
-                    src={$avatarStore}
-                    alt="User Avatar"
-                    class="h-8 w-8 rounded-full object-cover"
-                  />
-                {:else}
-                  <CircleUser class="h-8 w-8" />
-                {/if}
-                <span class="sr-only">Toggle user menu</span>
-              </span>
-            {/snippet}
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end" class="w-56">
-            <DropdownMenu.Label class="font-medium"
-              >My Account</DropdownMenu.Label
-            >
-            <DropdownMenu.Separator class="my-1" />
-            <DropdownMenu.Item
-              onclick={() => goto("/settings")}
-              class="cursor-pointer"><Cog />Settings</DropdownMenu.Item
-            >
-            <DropdownMenu.Separator class="my-1" />
-            <DropdownMenu.Item onclick={handleLogout} class="cursor-pointer"
-              ><LogOut />Log out</DropdownMenu.Item
-            >
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger let:props>
+          {#snippet child({props})}
+          <span
+            class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
+            {...props}
+          >
+            {#if $avatarStore === "null"}
+              <CircleUser class="h-8 w-8" />
+            {:else}
+              <img
+                src={$avatarStore}
+                alt="User Avatar"
+                class="h-8 w-8 rounded-full object-cover"
+              />
+            {/if}
+            <span class="sr-only">Toggle user menu</span>
+          </span>
+          {/snippet}
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end" class="w-56">
+          <DropdownMenu.Label class="font-medium">My Account</DropdownMenu.Label>
+          <DropdownMenu.Separator class="my-1" />
+          <DropdownMenu.Item onclick={() => goto('/settings/general')} class="cursor-pointer"><Cog />Settings</DropdownMenu.Item>
+          <DropdownMenu.Separator class="my-1" />
+          <DropdownMenu.Item onclick={handleLogout} class="cursor-pointer"><LogOut />Log out</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
       {/if}
 
       <ThemeToggle />

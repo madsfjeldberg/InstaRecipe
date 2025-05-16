@@ -55,7 +55,8 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
         recipes: {
           include: {
             category: true,
-            ingredientsList: true
+            ingredientsList: true,
+            tags: true,
           },
         },
       },

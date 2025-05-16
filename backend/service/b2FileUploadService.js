@@ -54,10 +54,9 @@ const downloadImage = async (url, outputPath) => {
   });
 };
 
-const uploadImage = async (filePath) => {
+const uploadImage = async (filePath, fileName) => {
   try {
     console.log('Uploading file to Backblaze B2...');
-    const fileName = filePath.split('/').pop();
     const bucketId = process.env.BACKBLAZE_BUCKET_ID;
     
     // Read file into buffer instead of using a stream
@@ -83,7 +82,6 @@ const uploadImage = async (filePath) => {
     console.log('File uploaded successfully:', imageUrl);
     return imageUrl;
   } catch (error) {
-    console.error('Error uploading file:', error);
     throw error; // Re-throw the error to handle it in the calling function
   }
 };
@@ -104,7 +102,7 @@ const handleB2Upload = async (imageUrl) => {
   const fileName = `${uuidv4()}.jpg`;
   const tempFilePath = path.join(tempDir, fileName);
   await downloadImage(imageUrl, tempFilePath);
-  await uploadImage(tempFilePath);
+  await uploadImage(tempFilePath, fileName);
   await cleanupTempFile(tempFilePath);
 
   const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;

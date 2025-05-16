@@ -21,10 +21,10 @@ const addRecipeList = async (name, userId) => {
   return data;
 }
 
-const addRecipeToStaredRecipeList = async (staredListId, recipeId) => {
+const addRecipeToFavoritesRecipeList = async (favoritesListId, recipeId) => {
 
   const postOption = makeOption("POST");
-  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, postOption);
+  const response = await fetch(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, postOption);
 
   if (!response.ok) {
     throw new Error('Failed to add recipe to stared list');
@@ -34,9 +34,9 @@ const addRecipeToStaredRecipeList = async (staredListId, recipeId) => {
   return data;
 }
 
-const removeRecipeFromStaredList = async (staredListId, recipeId) => {
+const removeRecipeFromFavoritesList = async (favoritesListId, recipeId) => {
   const deleteOption = makeOption("DELETE");
-  const response = await fetch(BASE_URL + "/" + staredListId + "/recipe/" + recipeId, deleteOption);
+  const response = await fetch(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, deleteOption);
 
   if (!response.ok) {
     throw new Error('Failed to remove recipe from stared list');
@@ -116,11 +116,11 @@ const updateRecipeList = async (listId, name, isPrivate) => {
 
 export {
   addRecipeList,
-  addRecipeToStaredRecipeList,
+  addRecipeToFavoritesRecipeList,
   getRecipeListsByUserId,
   getRecipelistByListId,
   deleteRecipeList,
-  removeRecipeFromStaredList,
+  removeRecipeFromFavoritesList,
   updateRecipeList,
 };
 

@@ -3,6 +3,7 @@
 
     import { Button } from "$lib/components/ui/button/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
+    import Separator from "../ui/separator/separator.svelte";
     
     import CommentInput from "./CommentInput.svelte";
     import CommentReply from "./CommentReply.svelte";
@@ -49,7 +50,8 @@
     {:else}
     {#each comments as comment, index (comment.id || index)}
         
-        <Card.Root class="w-[81rem] mt-4">
+        <Separator class="my-4" />
+        <Card.Root class=" mt-4">
             <Card.Header>
                 <Card.Title>{comment.user.username}</Card.Title>
             <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description>
@@ -61,10 +63,10 @@
             
             <Card.Footer class="flex justify-end z-10 relative">
                 {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
-                <Button disabled>Reply</Button>
+                <Button size="sm" disabled>Reply</Button>
                 
                 {:else}
-                <Button onclick={ () => showReplyBox(comment.id)}>Reply</Button>
+                <Button size="sm" onclick={ () => showReplyBox(comment.id)}>Reply</Button>
 
                 {/if}
             </Card.Footer>
@@ -76,7 +78,7 @@
         
         {#if comment.replies && comment.replies.length > 0}
             {#each comment.replies as reply }
-                            <Card.Root class="mt-4">
+                            <Card.Root class="w-3/4 mt-2">
                         <Card.Header>
                             <Card.Title>{reply.user.username}</Card.Title>
                         <Card.Description>Date: {new Date(reply.postedAt).toLocaleDateString()} Time: {new Date(reply.postedAt).toLocaleTimeString()}</Card.Description>
@@ -88,10 +90,10 @@
                         
                         <Card.Footer class="flex justify-end z-10 relative">
                             {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
-                            <Button disabled>Reply</Button>
+                            <Button size="sm" disabled>Reply</Button>
                             
                             {:else}
-                            <Button onclick={ () => showReplyBox(reply.id)}>Reply</Button>
+                            <Button size="sm" onclick={() => showReplyBox(reply.id)}>Reply</Button>
 
                             {/if}
                         </Card.Footer>

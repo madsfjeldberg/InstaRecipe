@@ -34,6 +34,7 @@ const addRecipe = async (
   name,
   description,
   ingredients,
+  ingredientsInGrams,
   instructions,
   category,
   tags,
@@ -41,7 +42,7 @@ const addRecipe = async (
   recipeListId,
 ) => {
 
-  const recipeToCreate = { name, description, ingredients, instructions, category, tags, image, recipeListId };
+  const recipeToCreate = { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId };
 
   const postOption = makeOption("POST", recipeToCreate)
   const response = await fetch(BASE_URL, postOption);

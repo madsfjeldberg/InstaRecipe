@@ -4,6 +4,7 @@
   import { isAuthenticated, updateAuthState } from '../stores/authStore';
   import { authService } from '$lib/api/authApi.js';
   import { onMount } from 'svelte';
+  import * as transition from 'svelte/transition';
 	import { goto } from '$app/navigation';
   import Navbar from '$lib/components/navbar/navbar.svelte';
   import Footer from '$lib/components/ui/footer/footer.svelte';
@@ -32,12 +33,32 @@
 <div class="bg-muted">
   <Navbar />
   <div class="container mx-auto">
-    
-  <main class="min-h-screen">
+  <div class="transition-wrapper">
+  {#key data.url}
+  <main
+    in:transition.blur={{ duration: 300 }}
+    out:transition.blur={{ duration: 300 }}
+    class="min-h-screen"
+   >
 
     {@render children()}
 
   </main>
+  {/key}
+  </div>
   <Footer />
   </div>
 </div>
+
+<style>
+  /* Overlay children so out+in can overlap */
+  .transition-wrapper {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+  }
+  .transition-wrapper > :global(*) {
+    grid-row: 1;
+    grid-column: 1;
+  }
+</style>
