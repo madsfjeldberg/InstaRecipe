@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import puppeteer from 'puppeteer';
 import ai from '../service/aiService.js';
-import macroService from '../service/macroService.js';
+import { authenticateToken } from '../middleware/authenticateToken.js';
+
 import 'dotenv/config';
 import b2 from '../service/b2FileUploadService.js';
 
 const router = new Router();
 
-router.post('/api/scrape', async (req, res) => {
+router.post('/api/scrape', authenticateToken, async (req, res) => {
   let browser;
   try {
     
@@ -103,10 +104,6 @@ router.post('/api/scrape', async (req, res) => {
       // Handle upload to B2
       let b2ImagePath = await b2.handleB2Upload(imageUrl);
       
-      // Get macros for ingredients
-      // let ingredientsWithMacros = await macroService.getMacros(data.ingredientsInGrams);
-      
-      // data.ingredientsWithMacros = ingredientsWithMacros;
       data.image = b2ImagePath;
 
       return res.status(200).json({ status: 200, data });

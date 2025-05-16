@@ -14,7 +14,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production", // Set to true in production
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
-  maxAge: 3600000, // 1 hour
+  maxAge: 604800000, // 7 days
   path: "/"
 }
 
@@ -83,7 +83,7 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
   try {
     if (isValidPassword) {
       const token = await auth.generateToken(user);
-
+      
       res
         .status(200)
         .cookie("jwt", token, cookieOptions)
@@ -158,12 +158,12 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
   try {
 
-    const isValidEmail = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: email
       }
     });
-    if (!isValidEmail) {
+    if (!user) {
       return res.status(401).send({ errorMessage: "Invalid email" });
     }
 
@@ -191,7 +191,7 @@ router.post("/api/auth/forgot-password", async (req, res) => {
     console.error(error);
     res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request" })
   }
-})
+});
 
 
 
@@ -220,6 +220,15 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       return res.status(500).send({ errorMessage: "Error occurred when deleting reset token" });
     }
 
+    // Find and delete all tokens in Redis that have this email as their value
+    const allKeys = await redis.keys("*");
+    for (const key of allKeys) {
+      const value = await redis.get(key);
+      if (value === email) {
+        await redis.del(key);
+      }
+    }
+
     const newHashedPassword = await auth.hashPassword(newPassword);
     await prisma.user.update({
       where: {
@@ -237,8 +246,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
     res.status(500).send({ errorMessage: "Unexpected error occurred during password reset" })
     console.error(error);
   }
-
-})
+});
 
 
 
@@ -279,7 +287,6 @@ router.get("/api/auth/verify/:id", async (req, res) => {
     console.error(error);
     res.status(500).send({ errorMessage: "Something went wrong confirming the email" })
   }
-
 });
 
 export default router;

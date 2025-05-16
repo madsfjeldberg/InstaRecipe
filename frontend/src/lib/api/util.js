@@ -1,3 +1,7 @@
+import { isAuthenticated } from "../../stores/authStore.js";
+import { goto } from "$app/navigation";
+import { toast } from "svelte-sonner";
+
 function makeOption(httpMethod, body) {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
@@ -21,4 +25,17 @@ function makeOption(httpMethod, body) {
     return option;
 }
 
-export { makeOption }
+async function fetchWithAuth(url, options) {
+    const response = await fetch(url, options);
+
+    if (response.status === 401) {
+        isAuthenticated.set(false);
+        toast.error("Session expired. Please log in again.");
+        goto("/login");
+        throw new Error("Unauthorized");
+    }
+
+    return response;
+}
+
+export { makeOption, fetchWithAuth };
