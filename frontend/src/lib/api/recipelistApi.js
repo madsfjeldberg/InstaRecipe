@@ -1,17 +1,11 @@
-import { makeOption } from "./util.js";
+import { makeOption, fetchWithAuth } from "./util.js";
 
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipelists' || '/recipelists';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipelists` : '/api/recipelists';
 
 const addRecipeList = async (name, userId) => {
-  const response = await fetch(`${BASE_URL}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ name, userId }),
-  });
+  const postOption = makeOption("POST", { name, userId });
+  const response = await fetchWithAuth(`${BASE_URL}`, postOption);
 
   if (!response.ok) {
     throw new Error('Failed to add recipe list');
@@ -24,7 +18,7 @@ const addRecipeList = async (name, userId) => {
 const addRecipeToFavoritesRecipeList = async (favoritesListId, recipeId) => {
 
   const postOption = makeOption("POST");
-  const response = await fetch(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, postOption);
+  const response = await fetchWithAuth(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, postOption);
 
   if (!response.ok) {
     throw new Error('Failed to add recipe to stared list');
@@ -36,7 +30,7 @@ const addRecipeToFavoritesRecipeList = async (favoritesListId, recipeId) => {
 
 const removeRecipeFromFavoritesList = async (favoritesListId, recipeId) => {
   const deleteOption = makeOption("DELETE");
-  const response = await fetch(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, deleteOption);
+  const response = await fetchWithAuth(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, deleteOption);
 
   if (!response.ok) {
     throw new Error('Failed to remove recipe from stared list');
@@ -47,7 +41,7 @@ const removeRecipeFromFavoritesList = async (favoritesListId, recipeId) => {
 }
 
 const getRecipeListsByUserId = async (userId) => {
-  const response = await fetch(`${BASE_URL}/user/${userId}`, {
+  const response = await fetchWithAuth(`${BASE_URL}/user/${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -64,7 +58,7 @@ const getRecipeListsByUserId = async (userId) => {
 }
 
 const getRecipelistByListId = async (listId) => {
-  const response = await fetch(`${BASE_URL}/${listId}`, {
+  const response = await fetchWithAuth(`${BASE_URL}/${listId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -80,7 +74,7 @@ const getRecipelistByListId = async (listId) => {
 }
 
 const deleteRecipeList = async (listId) => {
-  const response = await fetch(`${BASE_URL}/${listId}`, {
+  const response = await fetchWithAuth(`${BASE_URL}/${listId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -97,7 +91,7 @@ const deleteRecipeList = async (listId) => {
 }
 
 const updateRecipeList = async (listId, name, isPrivate) => {
-  const response = await fetch(`${BASE_URL}/${listId}`, {
+  const response = await fetchWithAuth(`${BASE_URL}/${listId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

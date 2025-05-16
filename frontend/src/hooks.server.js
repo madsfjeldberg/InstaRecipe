@@ -19,7 +19,7 @@ const validateUser = (token) => {
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    return { id: decoded.id, username: decoded.username };
+    return { id: decoded.id, username: decoded.username, email: decoded.email };
   } catch (err) {
     console.error('JWT verification failed:', err);
     throw redirect(303, '/login');

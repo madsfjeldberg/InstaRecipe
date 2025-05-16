@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import { authenticateToken } from '../middleware/authenticateToken.js';
 
 import prisma from '../database/prismaClient.js';
 import recipeListRepository from '../repository/recipeListRepository.js';
 
 const router = Router();
 
-router.get('/api/recipelists', async (req, res) => {
+router.get('/api/recipelists', authenticateToken, async (req, res) => {
   try {
     const recipeLists = await prisma.recipeList.findMany({
       include: {
@@ -19,7 +20,7 @@ router.get('/api/recipelists', async (req, res) => {
   }
 });
 
-router.get("/api/recipelists/:listId", async (req, res) => {
+router.get("/api/recipelists/:listId", authenticateToken, async (req, res) => {
   const { listId } = req.params;
 
   if (!listId) {
@@ -46,7 +47,7 @@ router.get("/api/recipelists/:listId", async (req, res) => {
 });
 
 // Get all recipe lists for a specific user
-router.get('/api/recipelists/user/:userId', async (req, res) => {
+router.get('/api/recipelists/user/:userId', authenticateToken, async (req, res) => {
   const { userId } = req.params;
   try {
     const recipeLists = await prisma.recipeList.findMany({
@@ -67,7 +68,7 @@ router.get('/api/recipelists/user/:userId', async (req, res) => {
   }
 });
 
-router.post('/api/recipelists', async (req, res) => {
+router.post('/api/recipelists', authenticateToken, async (req, res) => {
   console.log('Received request to add recipe list:', req.body);
   const { name, userId } = req.body;
   console.log('Name:', name);
@@ -93,7 +94,7 @@ router.post('/api/recipelists', async (req, res) => {
   }
 });
 
-router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+router.post("/api/recipelists/:listId/recipe/:recipeId", authenticateToken, async (req, res) => {
   try {
     const updatedList = await recipeListRepository.addRecipeToStaredList(req.params.listId, req.params.recipeId);
     res.send({ data: updatedList});
@@ -104,7 +105,7 @@ router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
   }
 })
 
-router.put('/api/recipelists/:listId', async (req, res) => {
+router.put('/api/recipelists/:listId', authenticateToken, async (req, res) => {
   const { listId } = req.params;
   const { name, isPrivate } = req.body;
 
@@ -124,7 +125,7 @@ router.put('/api/recipelists/:listId', async (req, res) => {
   }
 });
 
-router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+router.delete("/api/recipelists/:listId/recipe/:recipeId", authenticateToken, async (req, res) => {
   try {
     const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
     res.send({ data: updatedList });
@@ -135,7 +136,7 @@ router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
   }
 })
 
-router.delete('/api/recipelists/:listId', async (req, res) => {
+router.delete('/api/recipelists/:listId', authenticateToken, async (req, res) => {
   const { listId } = req.params;
   if (!listId) {
     return res.status(400).send({ errorMessage: 'List ID is required' });

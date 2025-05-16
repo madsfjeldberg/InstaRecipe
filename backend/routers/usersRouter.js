@@ -3,7 +3,9 @@ import multer from 'multer';
 
 import auth from "../service/authService.js";
 import prisma from "../database/prismaClient.js";
+import redis from '../database/redisClient.js';
 import usersRepository from "../repository/usersRepository.js";
+import { authenticateToken } from '../middleware/authenticateToken.js';
 
 const router = Router();
 const upload = multer();
@@ -12,10 +14,10 @@ const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production", // Set to true in production
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
-  maxAge: 3600000, // 1 hour
+  maxAge: 604800000, // 7 days
 }
 
-router.get('/api/users', async (req, res) => { 
+router.get('/api/users', authenticateToken, async (req, res) => {
   const { partialUsername } = req.query;
   if (partialUsername) {
     const foundUsers = await prisma.user.findMany({
@@ -43,7 +45,7 @@ router.get('/api/users', async (req, res) => {
 
 
 
-router.get('/api/users/:id/avatar', async (req, res) => {
+router.get('/api/users/:id/avatar', authenticateToken, async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || !user.avatar) {
@@ -53,7 +55,7 @@ router.get('/api/users/:id/avatar', async (req, res) => {
   res.set('Content-Type', user.avatarMime ?? 'image/png').send(user.avatar);
 });
 
-router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
+router.post('/api/users/:id/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
@@ -70,8 +72,8 @@ router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) =
 });
 
 // PATCH route to update the username/password
-router.patch('/api/users', async (req, res) => {
-  const { userId, newUsername, newPassword } = req.body;
+router.patch('/api/users', authenticateToken, async (req, res) => {
+  const { userId, newUsername, newPassword, } = req.body;
   console.log('Received request to update username:', req.body);
 
   if (!userId && !newUsername && !newPassword) {
@@ -92,7 +94,25 @@ router.patch('/api/users', async (req, res) => {
         where: { id: userId },
         data: { password: hashedPassword }
       });
-      return res.status(200).json({ status: 200, message: 'Password updated successfully' });
+      const allKeys = await redis.keys("*");
+      for (const key of allKeys) {
+        const value = await redis.get(key);
+        if (value === user.email) {
+          await redis.del(key);
+        }
+      }
+
+      const token = await auth.generateToken(user);
+      return res
+        .status(200)
+        .clearCookie("jwt")
+        .cookie("jwt", token, cookieOptions)
+        .json({
+          id: user._id,
+          message: "Password updated successfully.",
+          status: 200,
+        });
+      //return res.status(200).json({ status: 200, message: 'Password updated successfully' });
     } catch (error) {
       console.error('Error updating password:', error);
       return res.status(500).json({ message: 'Internal server error' });
@@ -137,7 +157,7 @@ router.patch('/api/users', async (req, res) => {
 });
 
 // DELETE route to delete a user
-router.delete('/api/users', async (req, res) => {
+router.delete('/api/users', authenticateToken, async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
     return res.status(400).json({ message: 'User ID is required' });
