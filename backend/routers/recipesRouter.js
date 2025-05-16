@@ -1,10 +1,11 @@
 import { Router } from "express";
 import prisma from "../database/prismaClient.js";
 import macroService from "../service/macroService.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 const router = Router();
 
-router.get("/api/recipes", async (req, res) => {
+router.get("/api/recipes", authenticateToken, async (req, res) => {
   const { partialName } = req.query;
 
   if (partialName) {
@@ -55,7 +56,7 @@ router.get("/api/recipes", async (req, res) => {
   }
 });
 
-router.get("/api/recipes/:id", async (req, res) => {
+router.get("/api/recipes/:id", authenticateToken, async (req, res) => {
   const id = req.params.id;
   if (!id) {
     return res.status(400).send({ errorMessage: "Recipe id missing in request" })
@@ -99,7 +100,7 @@ router.get("/api/recipes/categories", async (req, res) => {
   }
 });
 
-router.post("/api/recipes", async (req, res) => {
+router.post("/api/recipes", authenticateToken, async (req, res) => {
   const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId } = req.body;
   if (!name || !description || !ingredients || !instructions || !category || !tags) {
     return res.status(400).json({ message: "All fields are required" });
@@ -166,7 +167,7 @@ router.post("/api/recipes", async (req, res) => {
   }
 });
 
-router.delete("/api/recipes/:id", async (req, res) => {
+router.delete("/api/recipes/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   console.log("ID:", id);
 

@@ -4,6 +4,7 @@ import multer from 'multer';
 import auth from "../service/authService.js";
 import prisma from "../database/prismaClient.js";
 import usersRepository from "../repository/usersRepository.js";
+import { authenticateToken } from '../middleware/authenticateToken.js';
 
 const router = Router();
 const upload = multer();
@@ -15,7 +16,7 @@ const cookieOptions = {
   maxAge: 3600000, // 1 hour
 }
 
-router.get('/api/users', async (req, res) => { 
+router.get('/api/users', authenticateToken, async (req, res) => {
   const { partialUsername } = req.query;
   if (partialUsername) {
     const foundUsers = await prisma.user.findMany({
@@ -43,7 +44,7 @@ router.get('/api/users', async (req, res) => {
 
 
 
-router.get('/api/users/:id/avatar', async (req, res) => {
+router.get('/api/users/:id/avatar', authenticateToken, async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || !user.avatar) {
@@ -53,7 +54,7 @@ router.get('/api/users/:id/avatar', async (req, res) => {
   res.set('Content-Type', user.avatarMime ?? 'image/png').send(user.avatar);
 });
 
-router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
+router.post('/api/users/:id/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
@@ -70,7 +71,7 @@ router.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) =
 });
 
 // PATCH route to update the username/password
-router.patch('/api/users', async (req, res) => {
+router.patch('/api/users', authenticateToken, async (req, res) => {
   const { userId, newUsername, newPassword } = req.body;
   console.log('Received request to update username:', req.body);
 
@@ -137,7 +138,7 @@ router.patch('/api/users', async (req, res) => {
 });
 
 // DELETE route to delete a user
-router.delete('/api/users', async (req, res) => {
+router.delete('/api/users', authenticateToken, async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
     return res.status(400).json({ message: 'User ID is required' });

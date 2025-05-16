@@ -5,7 +5,7 @@ import redis from '../database/redisClient.js';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRATION = 3600; // 1 hour
+const JWT_EXPIRATION = 604800; // 7 days
 
 const hashPassword = async (password) => {
   try {
@@ -61,7 +61,6 @@ async function verifyToken(token) {
 
   } catch (error) {
     throw new Error(`Invalid token: ${error.message}`);
-    return null;
   }
 }
 

@@ -1,11 +1,11 @@
-import { makeOption } from "./util";
+import { makeOption, fetchWithAuth } from "./util";
 
 // const BASE_URL = import.meta.env.VITE_BASE_URL + '/recipes' || '/recipes';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipes` : '/api/recipes';
 
 const getAllRecipes = async () => {
   const getOption = makeOption("GET");
-  const response = await fetch(BASE_URL, getOption);
+  const response = await fetchWithAuth(BASE_URL, getOption);
   const result = await response.json();
   return result;
 }
@@ -13,7 +13,7 @@ const getAllRecipes = async () => {
 const getRecipeById = async (id) => {
   try {
     const getOption = makeOption("GET");
-    const response = await fetch(BASE_URL + "/" + id, getOption);
+    const response = await fetchWithAuth(BASE_URL + "/" + id, getOption);
     const result = await response.json();
     return result.data;
 
@@ -25,7 +25,7 @@ const getRecipeById = async (id) => {
 
 const getRecipesByPartialName = async (query) => {
   const getOption = makeOption("GET");
-  const response = await fetch(`${BASE_URL}/?partialName=${query}`, getOption);
+  const response = await fetchWithAuth(`${BASE_URL}/?partialName=${query}`, getOption);
   const result = await response.json();
   return result;
 }

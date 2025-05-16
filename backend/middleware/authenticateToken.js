@@ -10,7 +10,7 @@ async function authenticateToken(req, res, next) {
     try {
         const user = await auth.verifyToken(token);
         if(!user) {
-            return res.status(401).send({ errorMessage: "Invalid token"});
+            return res.clearCookie("jwt").status(401).send({ errorMessage: "Invalid token" });
         }
         
         req.user = user;

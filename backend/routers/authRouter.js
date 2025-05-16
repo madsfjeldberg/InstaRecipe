@@ -14,7 +14,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production", // Set to true in production
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
-  maxAge: 3600000, // 1 hour
+  maxAge: 604800000, // 7 days
   path: "/"
 }
 
@@ -158,12 +158,12 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
   try {
 
-    const isValidEmail = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: email
       }
     });
-    if (!isValidEmail) {
+    if (!user) {
       return res.status(401).send({ errorMessage: "Invalid email" });
     }
 
@@ -179,7 +179,7 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
     const resetToken = crypto.randomUUID();
     const FIFTEEN_MINUTES = 900;
-    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
+    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email, user.username);
     if (!isSet) {
       return res.status(500).send({ errorMessage: "Something went wrong generating reset password token" });
     }
@@ -191,7 +191,7 @@ router.post("/api/auth/forgot-password", async (req, res) => {
     console.error(error);
     res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request" })
   }
-})
+});
 
 
 
@@ -220,6 +220,13 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       return res.status(500).send({ errorMessage: "Error occurred when deleting reset token" });
     }
 
+    // delete all tokens with the username
+    const username = await redis.get(resetToken, 1);
+    if (username) {
+      const userTokens = await redis.keys(`*${username}*`);
+      await Promise.all(userTokens.map(token => redis.del(token)));
+    }
+
     const newHashedPassword = await auth.hashPassword(newPassword);
     await prisma.user.update({
       where: {
@@ -237,8 +244,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
     res.status(500).send({ errorMessage: "Unexpected error occurred during password reset" })
     console.error(error);
   }
-
-})
+});
 
 
 
@@ -279,7 +285,6 @@ router.get("/api/auth/verify/:id", async (req, res) => {
     console.error(error);
     res.status(500).send({ errorMessage: "Something went wrong confirming the email" })
   }
-
 });
 
 export default router;
