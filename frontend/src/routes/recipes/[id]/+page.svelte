@@ -45,6 +45,7 @@
       isLoading = true;
       try {
         recipe = await getRecipeById(recipeId);
+        console.log($state.snapshot(recipe));
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
@@ -254,7 +255,20 @@
             </Card.Header>
             <Card.Content>
               <ul class="list-inside space-y-3">
-                {#each recipe.ingredientsList as ingredient}
+                {#if recipe.ingredients.length > 0}
+                  {#each recipe.ingredients as ingredient}
+                  <li>
+                  <button
+                  class="cursor-pointer text-left select-none"
+                    onclick={() => toggleItem(ingredient)}>
+                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient) ? 'line-through text-gray-400' : ''}`}>
+                      {ingredient}
+                      </span>
+                  </button>
+                  </li>
+                {/each}
+                {:else}
+                  {#each recipe.ingredientsList as ingredient}
                   <li>
                   <button
                   class="cursor-pointer text-left select-none"
@@ -265,6 +279,8 @@
                   </button>
                   </li>
                 {/each}
+                {/if}
+                
               </ul>
             </Card.Content>
           </div>

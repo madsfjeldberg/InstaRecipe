@@ -81,7 +81,7 @@ router.post('/api/scrape', async (req, res) => {
       console.log("Extracted data:", scrapedData);
       
       if (scrapedData.length === 0) {
-        return res.status(404).json({ message: "No matching span content found on page" });
+        return res.status(404).json({ status: 200, data: { message: "No matching span content found on page" } });
       }
     } else {
       console.log("No specific URL detected");
@@ -104,9 +104,9 @@ router.post('/api/scrape', async (req, res) => {
       let b2ImagePath = await b2.handleB2Upload(imageUrl);
       
       // Get macros for ingredients
-      let ingredientsWithMacros = await macroService.getMacros(data.ingredientsInGrams);
+      // let ingredientsWithMacros = await macroService.getMacros(data.ingredientsInGrams);
       
-      data.ingredientsWithMacros = ingredientsWithMacros;
+      // data.ingredientsWithMacros = ingredientsWithMacros;
       data.image = b2ImagePath;
 
       return res.status(200).json({ status: 200, data });

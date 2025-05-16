@@ -53,28 +53,28 @@ model Tag {
 }
 
 model Comment {
-  id        String    @id @default(uuid())
-  comment   String
-  postedAt  DateTime  @default(now())
+  id       String   @id @default(uuid())
+  comment  String
+  postedAt DateTime @default(now())
 
   // Relations to user and recipe
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  
-  recipeId  String
-  recipe    Recipe    @relation(fields: [recipeId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
 
   // Self-referencing relation for nested comments
-  parentId   String?   // nullable if it's a root comment
-  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies    Comment[] @relation("CommentReplies") // children (replies)
+  parentId String? // nullable if it's a root comment
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies") // children (replies)
 }
 
 model Recipe {
   id              String       @id @default(uuid())
   name            String
   description     String
-  ingredients     String?
+  ingredients     String[]     @default([])
   ingredientsList Ingredient[]
   instructions    String
   image           String?
@@ -86,7 +86,7 @@ model Recipe {
   // many ↔ many with Tag
   tags Tag[] @relation("RecipeTags")
 
-  totalViews  Int @default(0)
+  totalViews  Int          @default(0)
   likes       String[] // store user IDs as UUID strings (maybe refs to user?)
   dislikes    String[] // store user IDs as UUID strings (maybe refs to user?)
   comments    Comment[]

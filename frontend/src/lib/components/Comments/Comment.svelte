@@ -7,6 +7,7 @@
     import CommentInput from "./CommentInput.svelte";
     import CommentReply from "./CommentReply.svelte";
     import { socket } from "../../../stores/socketStore.js";
+  import Separator from "../ui/separator/separator.svelte";
 
 
 
@@ -49,6 +50,7 @@
     {:else}
     {#each comments as comment, index (comment.id || index)}
         
+        <Separator class="my-4" />
         <Card.Root class=" mt-4">
             <Card.Header>
                 <Card.Title>{comment.user.username}</Card.Title>
