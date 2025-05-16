@@ -45,6 +45,7 @@
       isLoading = true;
       try {
         recipe = await getRecipeById(recipeId);
+        console.log($state.snapshot(recipe));
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
@@ -157,14 +158,19 @@
           <img src="{recipe.image}" alt="{recipe.name}" class="w-full h-64 rounded-xl object-cover mb-2" />
         {/if}
       <div class="w-full">
-        <div>
-          <div>
+        <div class="grid grid-cols-2">
+          <div class="col-span-1">
             <Badge>{recipe.category.name}</Badge>
+          </div>
+          <div class="col-span-1 flex justify-end items-center">
+            <RecipeViews {totalViews} {recipeId} />
+            <LikeButton {onLike} {likes} />
+            <DislikeButton {onDislike} {dislikes} />
           </div>
           <div>
             {#if recipe.tags}
               {#each recipe.tags as tag}
-                <Badge class="mt-2 mb-4 mr-2 bg-cyan-800">{tag.name}</Badge>
+                <Badge class="mb-4 mr-2 bg-cyan-800">{tag.name}</Badge>
               {/each}
             {/if}
           </div>
@@ -173,11 +179,6 @@
 
         <div class="grid grid-cols-6">          
           <h1 class="col-span-5 text-4xl text-left font-bold text-gray-900 dark:text-gray-100 mb-4">{recipe.name}</h1>
-          <div class="col-span-1 flex justify-end items-center">
-            <RecipeViews {totalViews} {recipeId} />
-            <LikeButton {onLike} {likes} />
-            <DislikeButton {onDislike} {dislikes} />
-          </div>
           <h2 class="col-span-3 italic text-left text-gray-700 dark:text-gray-300 mb-10">{recipe.description}</h2>
         
   
@@ -254,7 +255,20 @@
             </Card.Header>
             <Card.Content>
               <ul class="list-inside space-y-3">
-                {#each recipe.ingredientsList as ingredient}
+                {#if recipe.ingredients.length > 0}
+                  {#each recipe.ingredients as ingredient}
+                  <li>
+                  <button
+                  class="cursor-pointer text-left select-none"
+                    onclick={() => toggleItem(ingredient)}>
+                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient) ? 'line-through text-gray-400' : ''}`}>
+                      {ingredient}
+                      </span>
+                  </button>
+                  </li>
+                {/each}
+                {:else}
+                  {#each recipe.ingredientsList as ingredient}
                   <li>
                   <button
                   class="cursor-pointer text-left select-none"
@@ -265,6 +279,8 @@
                   </button>
                   </li>
                 {/each}
+                {/if}
+                
               </ul>
             </Card.Content>
           </div>

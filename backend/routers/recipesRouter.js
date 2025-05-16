@@ -100,12 +100,12 @@ router.get("/api/recipes/categories", async (req, res) => {
 });
 
 router.post("/api/recipes", async (req, res) => {
-  const { name, description, ingredients, instructions, category, tags, image, recipeListId } = req.body;
+  const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId } = req.body;
   if (!name || !description || !ingredients || !instructions || !category || !tags) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const ingredientsWithMacros = await macroService.getMacros(ingredients);
+  const ingredientsWithMacros = await macroService.getMacros(ingredientsInGrams);
  
   try {
     const result = await prisma.$transaction( async (transaction) => {
@@ -114,6 +114,7 @@ router.post("/api/recipes", async (req, res) => {
         data: {
           name,
           description,
+          ingredients,
           instructions,
           category: { connect: { name: category } },
           tags: { connect: tags.map( (tag) => ({name: tag}))},

@@ -90,10 +90,11 @@
         return;
       }
 
-      let { name, description, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
+      let { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
       response = await addRecipe(
         name,
         description,
+        ingredients,
         ingredientsInGrams,
         instructions,
         category,
