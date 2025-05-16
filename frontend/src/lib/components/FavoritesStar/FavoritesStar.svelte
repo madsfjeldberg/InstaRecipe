@@ -10,15 +10,12 @@
     const { favoritesRecipeList = $bindable(), recipe } = $props();
 
 
-    const isAddedToFavoritesRecipeList = async (event, recipe) => {
+    const isAddedToFavoritesRecipeList = async (event) => {
         event.stopPropagation();
 
         try {
-            if (
-                favoritesRecipeList.recipes.some(
-                    (checkRecipe) => checkRecipe.id === recipe.id,
-                )
-            ) {
+            const inFavoritesList = favoritesRecipeList.recipes.some( (checkRecipe) => checkRecipe.id === recipe.id )
+            if (inFavoritesList) {
                 await removeFromFavoritesList(recipe);
                 toast.success(recipe.name + " was removed from favorites list");
                 return;
@@ -44,6 +41,7 @@
                 newRecipe.id,
             );
         } catch (error) {
+            console.error(error);
             toast.error(error.message);
         }
     };
@@ -52,14 +50,22 @@
         favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter(
             (recipe) => recipe.id !== recipeToRemove.id,
         );
-        await removeRecipeFromFavoritesList(
-            favoritesRecipeList.id,
-            recipeToRemove.id,
-        );
+
+        try{
+
+            await removeRecipeFromFavoritesList(
+                favoritesRecipeList.id,
+                recipeToRemove.id,
+            );
+            console.log("removed from favorites:", recipe)
+        }catch(error) {
+            console.error(error);
+            toast.error(error.message)
+        }
     };
 </script>
 
-<Button size="icon" variant="ghost" class="transition-all hover:text-orange-400 hover:bg-transparent" onclick={(event) => isAddedToFavoritesRecipeList(event, recipe)}>
+<Button size="icon" variant="ghost" class="transition-all hover:text-orange-400 hover:bg-transparent" onclick={(event) => isAddedToFavoritesRecipeList(event)}>
     {#if favoritesRecipeList && favoritesRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
       <Star class="text-orange-400 fill-current" />
     {:else}

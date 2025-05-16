@@ -6,6 +6,7 @@
     import { Button } from "$lib/components/ui/button/index.js";
 
     import { socket } from "../../../stores/socketStore.js";
+    import { user } from "../../../stores/authStore.js";
 
     let { isDisplayingReplyDialog = $bindable(), parentComment, replyParent } = $props();
     let commentReplyText = $state("@" + parentComment.user.username + "\n");
@@ -13,13 +14,19 @@
 
 
     const postReply = () => {
+
+        if($user === null) {
+            toast.error("You have to login to comment");
+            return;
+        }
+
         if(commentReplyText === "") {
-            toast.error("Your reply is empty, write a reply")
+            toast.error("Your reply is empty, write a reply");
             return;
         }
 
         const newCommentReply = {
-            userId: parentComment.userId,
+            userId: $user.id,
             recipeId: parentComment.recipeId,
             commentParentId: parentComment.id,
             replyParent: replyParent,

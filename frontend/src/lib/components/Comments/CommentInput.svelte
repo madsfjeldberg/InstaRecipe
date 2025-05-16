@@ -20,7 +20,6 @@
             comments = [...comments, data]
         }
     })
-
     onDestroy(disconnect);
 
 
