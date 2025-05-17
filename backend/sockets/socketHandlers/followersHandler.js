@@ -2,7 +2,7 @@ import usersRepository from "../../repository/usersRepository.js";
 
 export const followersHandler = (socket, io) => {
     socket.on("following", async (data) => {
-        console.log("following reviced user:", data);
+        console.log("following received user:", data);
 
         try{
             const updatedUser = await usersRepository.follow(data.parentId, data.childId);
