@@ -30,11 +30,10 @@
         try {
             currentUser = await getUserById(currentUserId);
             currentUserRecipeLists = await getRecipeListsByUserId(currentUserId);
-
-            if(currentUserRecipeLists.length > 0) {
-                selectedList = currentUserRecipeLists[0];
-                favoritesRecipeList = currentUserRecipeLists.find( (list) => list.name === "Favorites" );
-            }
+            selectedList = currentUserRecipeLists[0];
+            
+            const viewerRecipeLists = await getRecipeListsByUserId(viewer.id);
+            favoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
 
             if(currentUser.followers.length === 0 || !viewer) {
                 isFollowing = false;
@@ -129,12 +128,12 @@
         {#if selectedList.recipes.length > 0}
             <div class="grid grid-cols-3 gap-4 mt-4">
                 {#each selectedList.recipes as recipe (recipe.id)}
-                    <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList />
+                    <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList parentUser={currentUser}/>
                 {/each}
             </div>
 
         {:else}
-            <h3 class="flex justify-center">List is empty, no recipes...</h3>
+            <h3 class="flex justify-center">{selectedList.name} is empty, no recipes found...</h3>
 
         {/if}
     {/if}

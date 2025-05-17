@@ -2,26 +2,26 @@
   import { onDestroy, onMount } from "svelte";
   import { goto } from "$app/navigation";
 
+  import { Plus, ThumbsDown, ThumbsUp, Star, X } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import Badge from "../ui/badge/badge.svelte";
-  import { Plus, ThumbsDown, ThumbsUp, Star } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
+
   import LikeButton from "../RecipePopularity/LikeButton.svelte";
   import DislikeButton from "../RecipePopularity/DislikeButton.svelte";
+  import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
+  import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
+  import FavoritesStar from "../FavoritesStar/FavoritesStar.svelte";
+  import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
+  import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
-  import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
-  import RecipeViews from "../RecipePopularity/RecipeViews.svelte";
-  import X from "@lucide/svelte/icons/x";
-  import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
-  import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
-  import FavoritesStar from "../FavoritesStar/FavoritesStar.svelte";
  
-  let { recipe, selectedList = $bindable(), favoritesRecipeList = $bindable() } = $props();
+  let { recipe, selectedList = $bindable(), favoritesRecipeList = $bindable(), parentUser } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
@@ -34,9 +34,7 @@
       dislikes = recipe.dislikes;
     }
   });
-
   onDestroy(disconnect);
-
 
     
   const addRecipeToRecipeList = (event) => {
@@ -82,9 +80,17 @@
   }}
   >
   
-  {#if selectedList && selectedList.name !== "Favorites"}
-    <DeleteRecipeDialog recipeId={id} bind:selectedList />
+  {#if parentUser}
+    {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
+      <DeleteRecipeDialog recipeId={id} bind:selectedList />
+    {/if}
+  
+  {:else} 
+    {#if selectedList && selectedList.name !== "Favorites"}
+      <DeleteRecipeDialog recipeId={id} bind:selectedList />
+    {/if}
   {/if}
+  
 
   
   <Card.Header class="p-0">
