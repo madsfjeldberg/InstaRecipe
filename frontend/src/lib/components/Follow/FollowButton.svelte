@@ -22,7 +22,10 @@
         }
 
         socket.emit("following", data);
-        onToggleFollowButton();
+
+        if(onToggleFollowButton) {
+            onToggleFollowButton();
+        }
     }
 </script>
 

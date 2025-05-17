@@ -21,7 +21,10 @@
         };
 
         socket.emit("unfollowing", data);
-        onToggleFollowButton();
+
+        if(onToggleFollowButton) {
+            onToggleFollowButton();
+        }
     };
 </script>
 
