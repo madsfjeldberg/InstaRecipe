@@ -70,14 +70,34 @@ const follow = async (parentId, childId) => {
                 id: parentId
             },
             data: {
-                following: {
+                followers: {
                     connect: {
                         id: childId
                     }
                 }
+            },
+            include: {
+                followers: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                        avatarMime: true
+                    }
+                },
+                following: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                        avatarMime: true
+                    }
+                }
             }
         });
-        return updatedUser;
+
+        const { password, ...userWithOutPassword} = updatedUser;
+        return userWithOutPassword;
 
     }catch(error) {
         console.error(error);
@@ -89,19 +109,39 @@ const follow = async (parentId, childId) => {
 
 const unfollow = async (parentId, childId) => {
     try{
-        const updatedUser = prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: {
                 id: parentId
             },
             data: {
-                following: {
+                followers: {
                     disconnect: {
                         id: childId
                     }
                 }
+            },
+            include: {
+                followers: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                        avatarMime: true
+                    }
+                },
+                following: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                        avatarMime: true
+                    }
+                }
             }
         });
-        return updatedUser;
+
+        const { password, ...userWithOutPassword} = updatedUser;
+        return userWithOutPassword;
 
     }catch(error) {
         console.error(error);
