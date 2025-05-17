@@ -11,7 +11,7 @@ const getUserById = async (userId) => {
   const response = await fetch(BASE_URL + "/" + userId, getOption);
 
   if(!response.ok) {
-    throw new Error("Could not get user with id:", userId);
+    throw new Error(`Could not get user with id: ${userId}`);
   }
 
   const result = await response.json();
