@@ -17,7 +17,7 @@ export const followersHandler = (socket, io) => {
     })
 
     socket.on("unfollowing", async (data) => {
-        console.log("unforollowing reviced user:", data);
+        console.log("unfollowing received user:", data);
         
         try{
             const updatedUser = await usersRepository.unfollow(data.parentId, data.childId);
