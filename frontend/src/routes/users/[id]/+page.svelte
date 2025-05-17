@@ -6,23 +6,36 @@
     import CircleUser from "lucide-svelte/icons/circle-user";
     import { Separator } from "$lib/components/ui/separator";
 
-    import { getUserById } from "$lib/api/userApi.js";
     import { avatarStore } from "../../../stores/avatarStore.js";
     import { user } from "../../../stores/authStore.js";
     import { socket } from "../../../stores/socketStore.js";
+    import { getUserById } from "$lib/api/userApi.js";
+    import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
     import FollowButton from "$lib/components/Follow/FollowButton.svelte";
     import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
+    import RecipeListSelect from "$lib/components/recipe-list-select/recipe-list-select.svelte";
+    import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
 
     const currentUserId = $page.params.id;
     const viewer = $user;
     let currentUser = $state(null);
+    let currentUserRecipeLists = $state(null);
+    let selectedList = $state(null);
+    let favoritesRecipeList = $state(null);
+
     let isLoading = $state(true);
     let isFollowing = $state(false);
 
     onMount(async () => {
         try {
             currentUser = await getUserById(currentUserId);
-            console.log(currentUser)
+            currentUserRecipeLists = await getRecipeListsByUserId(currentUserId);
+
+            if(currentUserRecipeLists.length > 0) {
+                selectedList = currentUserRecipeLists[0];
+                favoritesRecipeList = currentUserRecipeLists.find( (list) => list.name === "Favorites" );
+            }
+
             if(currentUser.followers.length === 0 || !viewer) {
                 isFollowing = false;
                 return;
@@ -36,6 +49,10 @@
         }
     });
 
+
+    $effect(() => {
+        isLoading = true;
+    })
 
 
     const disconnectFollowing = socket.on("following", (updatedUser) => {
@@ -92,12 +109,14 @@
         </div>
 
         <!-- Follow / Unfollow button -->
-        <div>
+        <div class="flex gap-6">
             {#if isFollowing}
                 <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
             {:else}
                 <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
             {/if}
+
+            <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList/>
         </div>
 
     </div>
@@ -106,8 +125,18 @@
     <Separator class="mt-4 mb-6 h-[2px]" />
 
 
-    <div>
-        
-    </div>
+    {#if selectedList}    
+        {#if selectedList.recipes.length > 0}
+            <div class="grid grid-cols-3 gap-4 mt-4">
+                {#each selectedList.recipes as recipe (recipe.id)}
+                    <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList />
+                {/each}
+            </div>
+
+        {:else}
+            <h3 class="flex justify-center">List is empty, no recipes...</h3>
+
+        {/if}
+    {/if}
 
 {/if}
