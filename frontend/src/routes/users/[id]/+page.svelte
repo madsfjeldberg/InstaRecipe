@@ -15,57 +15,84 @@
     import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
     import RecipeListSelect from "$lib/components/recipe-list-select/recipe-list-select.svelte";
     import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
+    import FollowModal from "$lib/components/Follow/FollowModal.svelte";
 
     const currentUserId = $page.params.id;
-    const viewer = $user;
     let currentUser = $state(null);
     let currentUserRecipeLists = $state(null);
-    let selectedList = $state(null);
-    let favoritesRecipeList = $state(null);
+    
+    let viewer = $state(null);
+    let viewerSelectedList = $state(null);
+    let viewerFavoritesRecipeList = $state(null);
+    let viewerFollowersList = $state([]);
+    let viewerFollowingList = $state([]);
 
     let isLoading = $state(true);
     let isFollowing = $state(false);
+    let isShowingFollowersModal = $state(false);
+    let isShowingFollowingModal = $state(false);
 
     onMount(async () => {
         try {
             currentUser = await getUserById(currentUserId);
             currentUserRecipeLists = await getRecipeListsByUserId(currentUserId);
-            selectedList = currentUserRecipeLists[0];
+            viewerSelectedList = currentUserRecipeLists[0];
             
+            viewer = await getUserById($user.id);
             const viewerRecipeLists = await getRecipeListsByUserId(viewer.id);
-            favoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
-
+            viewerFavoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
+            viewerFollowersList = viewer.followers;
+            viewerFollowingList = viewer.following;
+            
             if(currentUser.followers.length === 0 || !viewer) {
                 isFollowing = false;
                 return;
             }
 
             isFollowing = currentUser.followers.some((follower) => follower.id === viewer.id);
+            
         } catch (error) {
             console.error(error);
         } finally {
             isLoading = false;
         }
     });
+    
+    
+    const disconnectFollowing = socket.on("following", async (updatedUser) => {
+        // If I'm looking at another user's profile page, and follow them, update THEIR data:
+        if(currentUser && currentUser.username === updatedUser.username) {
+            currentUser = updatedUser;
+            return;
+        }
 
-
-    $effect(() => {
-        isLoading = true;
+        // Update my own profile page when follow/unfollow users on my own list
+        if(viewer) {
+            currentUser = await getUserById(viewer.id)
+            viewerFollowersList = currentUser.followers;
+            viewerFollowingList = currentUser.following;
+        }
     })
 
+    const disconnectUnfollowing = socket.on("unfollowing", async (updatedUser) => {
+        if(currentUser && currentUser.username === updatedUser.username) {
+            currentUser = updatedUser;
+            return;
+        }
 
-    const disconnectFollowing = socket.on("following", (updatedUser) => {
-        currentUser = updatedUser;
-    })
-
-    const disconnectUnfollowing = socket.on("unfollowing", (updatedUser) => {
-        currentUser = updatedUser;
+        if(viewer) {
+            currentUser = await getUserById(viewer.id)
+            viewerFollowersList = currentUser.followers;
+            viewerFollowingList = currentUser.following;
+        }
     });
 
     onDestroy(() => {
         disconnectFollowing
         disconnectUnfollowing
     })
+    
+
 
     const handleToggleFollowButton = () => {
         isFollowing = !isFollowing;
@@ -79,7 +106,7 @@
     </div>
 {/if}
 
-{#if currentUser}
+{#if currentUser && viewer}
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
@@ -97,25 +124,21 @@
 
         <!-- Stats: followers / following -->
         <div class="flex space-x-8 text-center">
-            <div>
-                <p class="text-lg font-medium">{currentUser.followers.length}</p>
-                <p class="text-sm text-gray-500">Followers</p>
-            </div>
-            <div>
-                <p class="text-lg font-medium">{currentUser.following.length}</p>
-                <p class="text-sm text-gray-500">Following</p>
-            </div>
+            <FollowModal noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowersList} {viewerFollowingList}/>
+            <FollowModal noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowersList} {viewerFollowingList}/>
         </div>
 
         <!-- Follow / Unfollow button -->
         <div class="flex gap-6">
-            {#if isFollowing}
-                <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
-            {:else}
-                <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+            {#if currentUser.id !== viewer.id} 
+                {#if isFollowing}
+                    <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                {:else}
+                    <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                {/if}
             {/if}
 
-            <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList/>
+            <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList={viewerSelectedList}/>
         </div>
 
     </div>
@@ -124,16 +147,16 @@
     <Separator class="mt-4 mb-6 h-[2px]" />
 
 
-    {#if selectedList}    
-        {#if selectedList.recipes.length > 0}
+    {#if viewerSelectedList}    
+        {#if viewerSelectedList.recipes.length > 0}
             <div class="grid grid-cols-3 gap-4 mt-4">
-                {#each selectedList.recipes as recipe (recipe.id)}
-                    <RecipeCard {recipe} bind:selectedList bind:favoritesRecipeList parentUser={currentUser}/>
+                {#each viewerSelectedList.recipes as recipe (recipe.id)}
+                    <RecipeCard {recipe} bind:selectedList={viewerSelectedList} bind:favoritesRecipeList={viewerFavoritesRecipeList} parentUser={currentUser}/>
                 {/each}
             </div>
 
         {:else}
-            <h3 class="flex justify-center">{selectedList.name} is empty, no recipes found...</h3>
+            <h3 class="flex justify-center">{viewerSelectedList.name} is empty, no recipes found...</h3>
 
         {/if}
     {/if}
