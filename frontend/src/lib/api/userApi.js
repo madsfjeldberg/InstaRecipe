@@ -4,6 +4,22 @@ import { makeOption, fetchWithAuth } from "./util.js";
 // const BASE_URL = import.meta.env.VITE_BASE_URL + "/users" || "/users";
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users` : '/api/users';
 
+
+
+const getUserById = async (userId) => {
+  const getOption = makeOption("GET");
+  const response = await fetch(BASE_URL + "/" + userId, getOption);
+
+  if(!response.ok) {
+    throw new Error(`Could not get user with id: ${userId}`);
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
+
+
 const getUsersByPartialUsername = async (query) => {
   const option = makeOption("GET", null);
   const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
@@ -54,6 +70,7 @@ const deleteUser = async (userId) => {
 }
 
 export {
+  getUserById,
   getUsersByPartialUsername,
   changeUsername,
   changePassword,

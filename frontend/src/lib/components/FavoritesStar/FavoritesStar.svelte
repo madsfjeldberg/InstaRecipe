@@ -69,6 +69,6 @@
     {#if favoritesRecipeList && favoritesRecipeList.recipes.some((checkRecipe) => checkRecipe.id === recipe.id)}
       <Star class="text-orange-400 fill-current" />
     {:else}
-      <Star class=""/>
+      <Star/>
     {/if}
 </Button>
