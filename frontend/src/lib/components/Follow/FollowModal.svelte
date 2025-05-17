@@ -12,13 +12,14 @@
     import FollowButton from "./FollowButton.svelte";
     import { user } from "../../../stores/authStore.js";
 
-    const { noOfUsers, label, parentUserList, viewerFollowersList, viewerFollowingList } = $props();
+    const { noOfUsers, label, parentUserList, viewerFollowingList } = $props();
     let searchValue = $state("");
+    let filteredUsers = $state([]);
+
     const viewer = $user;
 
     $effect(() => {
-        console.log(searchValue)
-        console.log(viewerFollowersList)
+        filteredUsers = parentUserList.filter( (user) => user.username.toLowerCase().includes(searchValue.toLowerCase()) );
     })
 
     const vistUser = (userId) => {
@@ -52,8 +53,8 @@
 
         <Separator class="h-[2px]" />
 
-        {#if parentUserList.length > 0}
-             {#each parentUserList as user (user.id)}
+        {#if parentUserList.length > 0 && searchValue === ""}
+            {#each parentUserList as user (user.id)}
                 <div class="flex justify-between items-center gap-4">
                     <button class="flex gap-3" onclick={ () => vistUser(user.id)}>
                         {#if user.avatar === null || user.avatarMime === null}
@@ -73,10 +74,36 @@
                         {/if}
                     {/if}
                 </div>
-             {/each}
+            {/each}
+
+        {:else if filteredUsers.length === 0 && searchValue !== ""}
+            <p class="p-4 text-center text-gray-500">No results for “{searchValue}”</p>
+            
+        {:else if filteredUsers.length > 0 && searchValue !== ""}
+            {#each filteredUsers as filteredUser (filteredUser.id)}
+                <div class="flex justify-between items-center gap-4">
+                    <button class="flex gap-3" onclick={ () => vistUser(filteredUser.id)}>
+                        {#if filteredUser.avatar === null || filteredUser.avatarMime === null}
+                            <CircleUser/>
+                        {:else}
+                            <img src="" alt={filteredUser.username + "' avatar"}>
+                        {/if}
+                     
+                        <p>{filteredUser.username}</p>
+                    </button>
+                    
+                    {#if filteredUser.id !== viewer.id}
+                        {#if viewerFollowingList.some( (followingUser) => followingUser.id === filteredUser.id)}
+                            <UnfollowButton parentUser={filteredUser}/>
+                        {:else}
+                            <FollowButton parentUser={filteredUser}/>
+                        {/if}
+                    {/if}
+                </div>
+            {/each}
 
         {:else}
-            <p class="flex justify-center">There are currently no {label}...</p>
+            <p class="p-4 text-center text-gray-500">There are currently no {label}...</p>
         {/if}
     </Dialog.Content>
 </Dialog.Root>
