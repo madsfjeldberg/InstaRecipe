@@ -24,7 +24,6 @@
     let viewer = $state(null);
     let viewerSelectedList = $state(null);
     let viewerFavoritesRecipeList = $state(null);
-    let viewerFollowersList = $state([]);
     let viewerFollowingList = $state([]);
 
     let isLoading = $state(true);
@@ -41,7 +40,6 @@
             viewer = await getUserById($user.id);
             const viewerRecipeLists = await getRecipeListsByUserId(viewer.id);
             viewerFavoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
-            viewerFollowersList = viewer.followers;
             viewerFollowingList = viewer.following;
             
             if(currentUser.followers.length === 0 || !viewer) {
@@ -69,7 +67,6 @@
         // Update my own profile page when follow/unfollow users on my own list
         if(viewer) {
             currentUser = await getUserById(viewer.id)
-            viewerFollowersList = currentUser.followers;
             viewerFollowingList = currentUser.following;
         }
     })
@@ -82,7 +79,6 @@
 
         if(viewer) {
             currentUser = await getUserById(viewer.id)
-            viewerFollowersList = currentUser.followers;
             viewerFollowingList = currentUser.following;
         }
     });
@@ -124,8 +120,8 @@
 
         <!-- Stats: followers / following -->
         <div class="flex space-x-8 text-center">
-            <FollowModal noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowersList} {viewerFollowingList}/>
-            <FollowModal noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowersList} {viewerFollowingList}/>
+            <FollowModal noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowingList}/>
+            <FollowModal noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowingList}/>
         </div>
 
         <!-- Follow / Unfollow button -->
