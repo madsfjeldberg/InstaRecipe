@@ -14,7 +14,7 @@ import recipesRouter from "./routers/recipesRouter.js";
 import scrapeRouter from "./routers/scrapeRouter.js";
 import tagsRouter from "./routers/tagsRouter.js";
 import usersRouter from "./routers/usersRouter.js";
-import { limiter, authLimiter } from "./middleware/rateLimiter.js";
+import rateLimiter from "./middleware/rateLimiter.js";
 import logger from "./middleware/logger.js";
 import cors from "./middleware/cors.js";
 import authMiddleware from "./middleware/authMiddleware.js";
@@ -33,8 +33,8 @@ app.use(
 );
 
 app.use(express.json());
-app.use(limiter);
-app.use(["/auth/login", "/auth/register"], authLimiter);
+app.use(rateLimiter.limiter);
+app.use(["/auth/login", "/auth/register"], rateLimiter.authLimiter);
 
 app.use(authRouter);
 

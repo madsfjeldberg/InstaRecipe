@@ -149,4 +149,9 @@ const unfollow = async (parentId, childId) => {
     }
 }
 
-export default { getUserById, updateUsername, follow, unfollow }
+export default {
+  getUserById,
+  updateUsername,
+  follow,
+  unfollow
+}

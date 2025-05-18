@@ -31,4 +31,9 @@ const stripItems = (items) => {
     }));
 };
 
-export default { getMacros, stripItems };
+const macroService = {
+    getMacros,
+    stripItems
+};
+
+export default macroService;

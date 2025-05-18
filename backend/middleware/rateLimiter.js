@@ -10,4 +10,9 @@ const authLimiter = rateLimit({
   max: 5, // limit each IP to 5 requests per windowMs
 });
 
-export { limiter, authLimiter };
+const rateLimiter = {
+  limiter,
+  authLimiter,
+}
+
+export default rateLimiter;
