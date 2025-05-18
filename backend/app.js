@@ -14,10 +14,13 @@ import recipesRouter from './routers/recipesRouter.js';
 import scrapeRouter from './routers/scrapeRouter.js';
 import tagsRouter from './routers/tagsRouter.js';
 import usersRouter from './routers/usersRouter.js';
+
 import { limiter, authLimiter } from './middleware/rateLimiter.js';
 import logger from './middleware/logger.js';
 import cors from './middleware/cors.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
+import globalErrorHandler from './middleware/globalErrorHandler.js';
+
 import { registerSocketHandlers } from './sockets/registerSocketHandlers.js'
 
 const app = express();
@@ -46,6 +49,8 @@ app.use(recipesRouter);
 app.use(scrapeRouter);
 app.use(tagsRouter);
 app.use(usersRouter);
+
+app.use(globalErrorHandler);
 
 
 const httpServer = http.createServer(app);
