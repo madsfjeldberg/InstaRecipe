@@ -25,7 +25,10 @@ router.get("/api/users/:id", async (req, res) => {
       return;
     }
 
-    res.send({ data: foundUser})
+    // Exclude avatar from the response
+    const { avatar, avatarMime, ...userWithoutAvatar } = foundUser;
+
+    res.send({ data: userWithoutAvatar });
 
   }catch(error) {
     console.error(error);
@@ -87,13 +90,47 @@ router.post('/api/users/:id/avatar', authenticateToken, upload.single('avatar'),
   res.status(200).json({ message: 'Avatar uploaded successfully' });
 });
 
+router.put('/api/users', authenticateToken, async (req, res) => {
+  const { user } = req.body;
+  if (!user) {
+    return res.status(400).json({ message: 'User data is required' });
+  }
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        emailNotifications: user.emailNotifications
+      }
+    })
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const token = await auth.generateToken(updatedUser);
+    res
+      .status(200)
+      .clearCookie("jwt")
+      .cookie("jwt", token, cookieOptions)
+      .json({
+        id: updatedUser._id,
+        message: "User updated successfully.",
+        status: 200,
+      });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // PATCH route to update the username/password
 router.patch('/api/users', authenticateToken, async (req, res) => {
-  const { userId, newUsername, newPassword, } = req.body;
+  const { userId, newUsername, newPassword, emailNotifications } = req.body;
   console.log('Received request to update username:', req.body);
 
-  if (!userId && !newUsername && !newPassword) {
-    console.log('Missing userId or newUsername or newPassword');
+  if (!userId && !newUsername && !newPassword && emailNotifications === undefined) {
+    console.log('Missing userId or newUsername or newPassword or emailNotifications');
     return res.status(400).json({ message: 'No values provided.' });
   }
 
