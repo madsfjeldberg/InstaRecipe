@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { Router } from "express";
+import { Router } from 'express';
 
-import auth from "../service/authService.js";
-import emailService from "../service/emailService.js";
-import prisma from "../database/prismaClient.js";
+import auth from '../service/authService.js';
+import emailService from '../service/emailService.js';
+import prisma from '../database/prismaClient.js';
 import redis from '../database/redisClient.js';
 import { isAuthenticated } from '../middleware/authenticateToken.js';
 import recipeListRepository from '../repository/recipeListRepository.js';

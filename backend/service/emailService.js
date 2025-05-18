@@ -20,7 +20,7 @@ const sendEmail = async (to, subject, html) => {
   }
 }
 
-const sendVerificationEmail = async (to, token) => {
+const sendVerificationEmail = (to, token) => {
   const subject = 'Verify your email address';
   const html = `
     <h1>Verify your email address</h1>
@@ -30,7 +30,7 @@ const sendVerificationEmail = async (to, token) => {
   return sendEmail(to, subject, html);
 }
 
-const sendPasswordResetEmail = async (to, token) => {
+const sendPasswordResetEmail = (to, token) => {
   const subject = 'Reset your password';
   const html = `
     <h1>Reset your password</h1>
@@ -42,7 +42,7 @@ const sendPasswordResetEmail = async (to, token) => {
 
 
 
-const sendGroceryListEmail = async (to, groceryList) => {
+const sendGroceryListEmail = (to, groceryList) => {
   const subject = "Grocery list - " + groceryList.name;
 
   let groceries = groceryList.items.map((item) => {
@@ -256,4 +256,3 @@ export default {
   sendCommentNotification,
   sendCommentReplyNotification,
 };
-
