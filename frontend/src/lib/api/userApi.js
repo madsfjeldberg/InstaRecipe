@@ -7,8 +7,8 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 
 const getUserById = async (userId) => {
-  const getOption = makeOption("GET");
-  const response = await fetch(BASE_URL + "/" + userId, getOption);
+  const option = makeOption("GET");
+  const response = await fetch(BASE_URL + "/" + userId, option);
 
   if(!response.ok) {
     throw new Error(`Could not get user with id: ${userId}`);
@@ -21,7 +21,7 @@ const getUserById = async (userId) => {
 
 
 const getUsersByPartialUsername = async (query) => {
-  const option = makeOption("GET", null);
+  const option = makeOption("GET");
   const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
 
   if (response.status === 200) {
@@ -33,7 +33,7 @@ const getUsersByPartialUsername = async (query) => {
 }
 
 const updateUser = async (user) => {
-  // remove avatar and avatarMime from user object
+  // remove avatar, avatarMime, followers, following from user object
   const { avatar, avatarMime, followers, following, ...userWithoutAvatar } = user.user;
   const option = makeOption("PUT", { user: userWithoutAvatar });
   const response = await fetchWithAuth(`${BASE_URL}`, option);

@@ -1,8 +1,10 @@
-import B2 from 'backblaze-b2';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
 import os from 'os';
+
+import B2 from 'backblaze-b2';
+
 import { v4 as uuidv4 } from 'uuid';
 import { promises as fsPromises } from 'fs';
 import 'dotenv/config';

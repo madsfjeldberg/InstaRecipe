@@ -1,10 +1,13 @@
 <script>
+  import { onMount } from "svelte";
+
+  import * as Card from "$lib/components/ui/card/index.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
   import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+
   import { toast } from "svelte-sonner";
-  import { onMount } from "svelte";
+  
   import userApi from "$lib/api/userApi";
 
   let { data } = $props();

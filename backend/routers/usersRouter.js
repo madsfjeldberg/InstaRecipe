@@ -1,9 +1,9 @@
-import e, { Router } from "express";
+import { Router } from "express";
+import prisma from "../database/prismaClient.js";
 import multer from "multer";
 
 import auth from "../service/authService.js";
-import prisma from "../database/prismaClient.js";
-import redis from "../database/redisClient.js";
+
 import usersRepository from "../repository/usersRepository.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 

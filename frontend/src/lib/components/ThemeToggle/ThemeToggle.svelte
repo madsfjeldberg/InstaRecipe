@@ -1,11 +1,10 @@
-<script lang="ts">
+<script>
+  import { toggleMode } from "mode-watcher";
 
+  import { Button } from "$lib/components/ui/button/index.js";
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
   
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { toggleMode } from "mode-watcher";
-
   function handleClick() {
     toggleMode();
   }

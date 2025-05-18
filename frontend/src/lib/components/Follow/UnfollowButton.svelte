@@ -1,7 +1,8 @@
 <script>
-    import { toast } from "svelte-sonner";
-    import { UserRoundMinus } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button/index.js";
+    import { UserRoundMinus } from "lucide-svelte";
+
+    import { toast } from "svelte-sonner";
 
     import { user } from "../../../stores/authStore.js";
     import { socket } from "../../../stores/socketStore.js";

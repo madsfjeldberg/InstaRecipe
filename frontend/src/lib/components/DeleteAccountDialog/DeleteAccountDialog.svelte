@@ -1,12 +1,14 @@
 <script>
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import { X } from "lucide-svelte";
-  import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { toast } from "svelte-sonner";
-  import userApi from "$lib/api/userApi";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+  import AlertDialogAction from "$lib/components/ui/alert-dialog/alert-dialog-action.svelte";
+  import { X } from "lucide-svelte";
+
+  import { toast } from "svelte-sonner";
+  import userApi from "$lib/api/userApi";
   
   let isDialogOpen = $state(false);
   const { user } = $props();

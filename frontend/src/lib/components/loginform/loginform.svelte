@@ -1,15 +1,20 @@
 <script>
+  import { goto } from '$app/navigation';
+
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
+  import { LoaderCircle } from "lucide-svelte";
+
   import { z } from 'zod';
-  import { goto } from '$app/navigation';
-  import authApi from '$lib/api/authApi.js';
   import { toast } from 'svelte-sonner';
+
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { user } from "../../../stores/authStore.js";
-  import { LoaderCircle } from "lucide-svelte";
+
+  import authApi from '$lib/api/authApi.js';
+  
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 

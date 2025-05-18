@@ -1,15 +1,17 @@
 <script>
+    import { goto } from "$app/navigation";
+
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import authApi from "$lib/api/authApi";
     import * as Card from "$lib/components/ui/card";
-    import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
-    import { goto } from "$app/navigation";
-    import { z } from "zod";
     import { Stretch } from 'svelte-loading-spinners'; 
     import { LoaderCircle } from "lucide-svelte";
+
+    import { z } from "zod";
+
+    import authApi from "$lib/api/authApi";
 
     let newPassword = $state("");
     let confirmPassword = $state("");

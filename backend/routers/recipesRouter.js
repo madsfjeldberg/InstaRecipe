@@ -1,8 +1,11 @@
 import { Router } from "express";
 import prisma from "../database/prismaClient.js";
+
 import macroService from "../service/macroService.js";
-import authMiddleware from "../middleware/authMiddleware.js";
 import b2 from "../service/b2FileUploadService.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
+
 
 const router = Router();
 
