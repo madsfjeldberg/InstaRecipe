@@ -88,7 +88,7 @@ const decodeToken = (token) => {
   }
 }
 
-export default {
+const auth = {
   hashPassword,
   verifyPassword,
   generateToken,
@@ -96,3 +96,5 @@ export default {
   verifyToken,
   destroyToken
 };
+
+export default auth;

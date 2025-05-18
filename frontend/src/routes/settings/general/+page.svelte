@@ -9,7 +9,7 @@
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { changeUsername, changePassword, getUserById, updateUser } from "$lib/api/userApi.js";
+  import userApi from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte";
   import { CircleUser, LoaderCircle } from "lucide-svelte";
@@ -62,12 +62,12 @@
     try {
       let response;
       changeUsernameRequest.parse({ username });
-      let fetchedUser = await getUserById(user.id);
+      let fetchedUser = await userApi.getUserById(user.id);
       let updatedUser = {
         ...fetchedUser,
         username: username,
       };
-      response = await updateUser({ user: updatedUser });
+      response = await userApi.updateUser({ user: updatedUser });
       if (response.status === 200) {
         await toast.success("Username updated!");
       } else {
@@ -108,12 +108,12 @@
         errors.confirmPassword = "Passwords do not match";
         return;
       }
-      let fetchedUser = await getUserById(user.id);
+      let fetchedUser = await userApi.getUserById(user.id);
       let updatedUser = {
         ...fetchedUser,
         password: passwordData,
       };
-      response = await updateUser({ user: updatedUser });
+      response = await userApi.updateUser({ user: updatedUser });
       if (response.status === 200) {
         await toast.success("Password updated!");
         // reset password fields

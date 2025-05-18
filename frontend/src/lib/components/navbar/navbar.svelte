@@ -14,12 +14,12 @@
   import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./NavLink.svelte";
   import { goto } from "$app/navigation";
-  import { authService } from "$lib/api/authApi.js";
+  import authApi from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { blur } from "svelte/transition";
-  import { getUsersByPartialUsername } from "$lib/api/userApi";
-  import { getRecipesByPartialName } from "$lib/api/recipeApi";
+  import userApi from "$lib/api/userApi";
+  import recipeApi from "$lib/api/recipeApi";
   import Label from "../ui/label/label.svelte";
 
   let searchValue = $state("");
@@ -38,7 +38,7 @@
   };
 
   const handleLogout = async () => {
-    await authService.logout();
+    await authApi.logout();
     toast.success("Logged out successfully");
     avatarStore.set(null); // Clear the avatar store
     goto("/");
@@ -73,7 +73,7 @@
   const handleUserSearch = async (query) => {
     console.log("Searching for users with query:", query);
     if (query.length > 2) {
-      const results = await getUsersByPartialUsername(query);
+      const results = await userApi.getUsersByPartialUsername(query);
       userSearchResults = results;
       console.log("User search results:", $state.snapshot(userSearchResults));
     } else {
@@ -84,7 +84,7 @@
   const handleRecipeSearch = async (query) => {
     console.log("Searching for recipes with query:", query);
     if (query.length > 2) {
-      const results = await getRecipesByPartialName(query);
+      const results = await recipeApi.getRecipesByPartialName(query);
       recipeSearchResults = results;
       console.log(
         "Recipe search results:",

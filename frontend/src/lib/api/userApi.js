@@ -41,30 +41,6 @@ const updateUser = async (user) => {
   return data;
 }
 
-const changeUsername = async (userId, newUsername) => {
-  const option = makeOption("PATCH", { userId, newUsername });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
-
-  if (response.status === 200) {
-    isAuthenticated.set(true);
-  }
-  
-  const data = await response.json();
-  return data;
-}
-
-const changePassword = async (userId, newPassword) => {
-  const option = makeOption("PATCH", { userId, newPassword });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
-
-  if (response.status === 200) {
-    isAuthenticated.set(true);
-  }
-  
-  const data = await response.json();
-  return data;
-}
-
 const deleteUser = async (userId) => {
   const option = makeOption("DELETE", { userId });
   const response = await fetchWithAuth(`${BASE_URL}`, option);
@@ -78,11 +54,10 @@ const deleteUser = async (userId) => {
   return data;
 }
 
-export {
+const userApi = {
   getUserById,
   getUsersByPartialUsername,
   updateUser,
-  changeUsername,
-  changePassword,
   deleteUser,
 };
+export default userApi;

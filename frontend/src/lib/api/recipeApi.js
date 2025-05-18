@@ -55,26 +55,6 @@ const addRecipe = async (
   return data;
 }
 
-
-
-const getCategories = async () => {
-  const response = await fetch(`${BASE_URL}/categories`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch categories');
-  }
-
-  const data = await response.json();
-  console.log("Categories:", data);
-  return data;
-}
-
 const deleteRecipe = async (recipeId) => {
   const response = await fetch(`${BASE_URL}/${recipeId}`, {
     method: 'DELETE',
@@ -92,11 +72,12 @@ const deleteRecipe = async (recipeId) => {
   return data;
 }
 
-export {
+const recipeApi = {
   getAllRecipes,
-  getRecipesByPartialName,
   getRecipeById,
+  getRecipesByPartialName,
   addRecipe,
-  getCategories,
   deleteRecipe
 };
+
+export default recipeApi;

@@ -2,7 +2,7 @@
 	import '../app.css';
   import { ModeWatcher } from 'mode-watcher';
   import { isAuthenticated, updateAuthState } from '../stores/authStore';
-  import { authService } from '$lib/api/authApi.js';
+  import authApi from '$lib/api/authApi.js';
   import { onMount } from 'svelte';
   import * as transition from 'svelte/transition';
 	import { goto } from '$app/navigation';
@@ -21,7 +21,7 @@
     });
 
   const handleLogout = async () => {
-    await authService.logout();
+    await authApi.logout();
     toast.success('Logged out successfully');
     goto('/');
   };

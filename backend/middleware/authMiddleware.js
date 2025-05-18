@@ -47,4 +47,9 @@ async function isAuthenticated(req, res, next) {
     }
 }
 
-export { authenticateToken, isAuthenticated };
+const authMiddleware = {
+    authenticateToken,
+    isAuthenticated
+};
+
+export default authMiddleware;

@@ -14,4 +14,8 @@ const getCommentsByRecipeId = async (recipeId) => {
     return result.data;
 }
 
-export default { getCommentsByRecipeId }
+const commentsApi = {
+  getCommentsByRecipeId
+};
+
+export default commentsApi;

@@ -21,4 +21,8 @@ const getRecipeTags = async () => {
     }
 }
 
-export default {getRecipeTags}
+const tagsApi = {
+    getRecipeTags,
+};
+
+export default tagsApi;

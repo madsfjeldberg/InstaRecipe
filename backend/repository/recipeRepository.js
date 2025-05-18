@@ -39,4 +39,7 @@ const incrementTotalViews = async (recipeId) => {
 
 
 
-export default { getRecipeById, incrementTotalViews }
+export default {
+  getRecipeById,
+  incrementTotalViews
+}

@@ -5,7 +5,7 @@
   import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import { toast } from "svelte-sonner";
   import { onMount } from "svelte";
-  import { getUserById, updateUser } from "$lib/api/userApi";
+  import userApi from "$lib/api/userApi";
 
   let { data } = $props();
   let userId = data.user.id;
@@ -14,7 +14,7 @@
 
   const saveSettings = async () => {
     user.emailNotifications = emailNotifications;
-    let response = await updateUser( {user} );
+    let response = await userApi.updateUser({ user });
 
     if (response.status !== 200) {
       toast.error("Failed to save settings.");
@@ -24,7 +24,7 @@
   }
 
   onMount(async () => {
-    user = await getUserById(userId);
+    user = await userApi.getUserById(userId);
     emailNotifications = user.emailNotifications;
   });
 

@@ -17,7 +17,7 @@
   import DeleteRecipeDialog from "../delete-recipe-dialog/delete-recipe-dialog.svelte";
   import FavoritesStar from "../FavoritesStar/FavoritesStar.svelte";
   import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
-  import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
+  import recipeListApi from "$lib/api/recipelistApi.js";
   import { user } from "../../../stores/authStore.js";
   import { socket } from "../../../stores/socketStore.js";
  
@@ -132,7 +132,7 @@
 
     {#if !selectedList}
       <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-        <Button onclick={addRecipeToRecipeList} variant="ghost">
+        <Button onclick={recipeListApi.addRecipeToRecipeList} variant="ghost">
           <Plus class="h-5 w-5 text-gray-600" />Add to list
         </Button>
       </div>

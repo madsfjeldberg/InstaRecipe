@@ -3,7 +3,7 @@
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
   import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipeList } from "$lib/api/recipelistApi";
+  import recipeListApi from "$lib/api/recipelistApi";
   import { toast } from "svelte-sonner";
 
   let { selectedList = $bindable(), recipeLists = $bindable(), isSheetDialogOpen = $bindable() } = $props();
@@ -11,7 +11,7 @@
 
   const handleDelete = async () => {
   try {
-    await deleteRecipeList(selectedList.id);
+    await recipeListApi.deleteRecipeList(selectedList.id);
     toast.success('List deleted successfully!');
     isDialogOpen = false;
     isSheetDialogOpen = false;

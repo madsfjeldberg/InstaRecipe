@@ -9,8 +9,8 @@
   import AddRecipeDialog from "$lib/components/AddRecipeDialog/AddRecipeDialog.svelte";
   import DeleteListDialog from "$lib/components/DeleteListDialog/DeleteListDialog.svelte";
   import EditListDialog from "$lib/components/EditListDialog/EditListDialog.svelte";
-  import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
-  import { getCategories } from "$lib/api/categoryApi.js";
+  import recipeListApi from "$lib/api/recipelistApi.js";
+  import categoryApi from "$lib/api/categoryApi.js";
   import tagsApi from "$lib/api/tagsApi.js";
   import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
@@ -31,8 +31,8 @@
 
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
-    recipeLists = await getRecipeListsByUserId(userId);
-    categories = await getCategories();
+    recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
+    categories = await categoryApi.getCategories();
     tags = await tagsApi.getRecipeTags();
 
     // Set the selected list to the first one if available

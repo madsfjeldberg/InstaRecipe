@@ -17,6 +17,8 @@ const scrapeLink = async (link) => {
   }
 }
 
-export {
+const scrapeApi = {
   scrapeLink,
 };
+
+export default scrapeApi;

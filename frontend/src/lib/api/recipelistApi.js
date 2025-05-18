@@ -57,22 +57,6 @@ const getRecipeListsByUserId = async (userId) => {
   return data;
 }
 
-const getRecipelistByListId = async (listId) => {
-  const response = await fetchWithAuth(`${BASE_URL}/${listId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch recipe lists');
-  }
-  const data = await response.json();
-  return data;
-}
-
 const deleteRecipeList = async (listId) => {
   const response = await fetchWithAuth(`${BASE_URL}/${listId}`, {
     method: 'DELETE',
@@ -108,13 +92,14 @@ const updateRecipeList = async (listId, name, isPrivate) => {
   return data;
 }
 
-export {
+const recipeListApi = {
   addRecipeList,
   addRecipeToFavoritesRecipeList,
   getRecipeListsByUserId,
-  getRecipelistByListId,
+  // getRecipelistByListId,
   deleteRecipeList,
   removeRecipeFromFavoritesList,
   updateRecipeList,
 };
+export default recipeListApi;
 

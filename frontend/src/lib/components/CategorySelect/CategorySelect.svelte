@@ -1,6 +1,5 @@
 <script>
   import * as Select from "$lib/components/ui/select/index.js";
-  import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
   import { Check } from "lucide-svelte";
   import { createEventDispatcher, onMount } from "svelte";
 

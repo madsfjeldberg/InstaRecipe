@@ -246,14 +246,14 @@ const sendCommentReplyNotification = (originalComment, commentReply) => {
   return sendEmail(originalComment.user.email, subject, html);
 }
 
-
-
-export default {
+const email = {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendGroceryListEmail,
   sendCommentNotification,
   sendCommentReplyNotification,
-};
+}
+
+export default email;
 

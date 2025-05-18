@@ -1,12 +1,12 @@
 import { Router } from "express";
 import prisma from "../database/prismaClient.js";
 import macroService from "../service/macroService.js";
-import { authenticateToken } from "../middleware/authenticateToken.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 import b2 from "../service/b2FileUploadService.js";
 
 const router = Router();
 
-router.get("/api/recipes", authenticateToken, async (req, res) => {
+router.get("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
   const { partialName } = req.query;
 
   if (partialName) {
@@ -15,58 +15,60 @@ router.get("/api/recipes", authenticateToken, async (req, res) => {
         where: {
           name: {
             contains: partialName,
-            mode: "insensitive"
+            mode: "insensitive",
           },
           recipeLists: {
             some: {
-              isPrivate: false
-            }
-          }
+              isPrivate: false,
+            },
+          },
         },
       });
       return res.status(200).json(recipes);
     } catch (error) {
-      console.error(error.message)
+      console.error(error.message);
       return res.status(500).json({ message: error.message });
     }
   } else {
     try {
-    const recipes = await prisma.recipe.findMany({
-      where: {
-        recipeLists: {
-          some: {
-            isPrivate: false
-          }
-        }
-      },
-      include: {
-        category: true,
-        tags: true,
-        ingredientsList: true,
-        recipeLists: true
-      },
-      orderBy: {
-        likes: "desc"
-      }
-    });
-    res.status(200).json(recipes);
-  } catch (error) {
-    console.error(error.message)
-    return res.status(500).json({ message: error.message });
+      const recipes = await prisma.recipe.findMany({
+        where: {
+          recipeLists: {
+            some: {
+              isPrivate: false,
+            },
+          },
+        },
+        include: {
+          category: true,
+          tags: true,
+          ingredientsList: true,
+          recipeLists: true,
+        },
+        orderBy: {
+          likes: "desc",
+        },
+      });
+      res.status(200).json(recipes);
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({ message: error.message });
     }
   }
 });
 
-router.get("/api/recipes/:id", authenticateToken, async (req, res) => {
+router.get("/api/recipes/:id", authMiddleware.authenticateToken, async (req, res) => {
   const id = req.params.id;
   if (!id) {
-    return res.status(400).send({ errorMessage: "Recipe id missing in request" })
+    return res
+      .status(400)
+      .send({ errorMessage: "Recipe id missing in request" });
   }
 
   try {
     const recipe = await prisma.recipe.findUnique({
       where: {
-        id
+        id,
       },
       include: {
         category: true,
@@ -76,21 +78,22 @@ router.get("/api/recipes/:id", authenticateToken, async (req, res) => {
           include: {
             user: {
               select: {
-                username: true
-              }
-            }
-          }
-        }
-      }
-    })
-    
-    res.send({ data: recipe });
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
+    res.send({ data: recipe });
   } catch (error) {
-    console.error(error)
-    res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" })
+    console.error(error);
+    res
+      .status(500)
+      .send({ errorMessage: "Something went wrong fetching the recipe" });
   }
-})
+});
 
 router.get("/api/recipes/categories", async (req, res) => {
   try {
@@ -101,17 +104,34 @@ router.get("/api/recipes/categories", async (req, res) => {
   }
 });
 
-router.post("/api/recipes", authenticateToken, async (req, res) => {
-  const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId } = req.body;
-  if (!name || !description || !ingredients || !instructions || !category || !tags) {
+router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
+  const {
+    name,
+    description,
+    ingredients,
+    ingredientsInGrams,
+    instructions,
+    category,
+    tags,
+    image,
+    recipeListId,
+  } = req.body;
+  if (
+    !name ||
+    !description ||
+    !ingredients ||
+    !instructions ||
+    !category ||
+    !tags
+  ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const ingredientsWithMacros = await macroService.getMacros(ingredientsInGrams);
- 
+  const ingredientsWithMacros =
+    await macroService.getMacros(ingredientsInGrams);
+
   try {
-    const result = await prisma.$transaction( async (transaction) => {
-      
+    const result = await prisma.$transaction(async (transaction) => {
       const newRecipe = await transaction.recipe.create({
         data: {
           name,
@@ -119,20 +139,19 @@ router.post("/api/recipes", authenticateToken, async (req, res) => {
           ingredients,
           instructions,
           category: { connect: { name: category } },
-          tags: { connect: tags.map( (tag) => ({name: tag}))},
+          tags: { connect: tags.map((tag) => ({ name: tag })) },
           recipeLists: { connect: { id: recipeListId } },
           image,
         },
         include: {
           category: true,
           tags: true,
-          comments: true
-        }
+          comments: true,
+        },
       });
-  
+
       const createdIngredients = await Promise.all(
-        
-        ingredientsWithMacros.map( async (ingredient) => {
+        ingredientsWithMacros.map(async (ingredient) => {
           return await transaction.ingredient.create({
             data: {
               name: ingredient.name,
@@ -141,12 +160,12 @@ router.post("/api/recipes", authenticateToken, async (req, res) => {
               protein: ingredient.protein,
               fat: ingredient.fat,
               carbs: ingredient.carbs,
-              recipeId: newRecipe.id
-            }
-          })
+              recipeId: newRecipe.id,
+            },
+          });
         })
       );
-  
+
       await transaction.recipeList.update({
         where: { id: recipeListId },
         data: {
@@ -156,19 +175,23 @@ router.post("/api/recipes", authenticateToken, async (req, res) => {
         },
       });
 
-      return {recipe: newRecipe, ingredients: createdIngredients};
+      return { recipe: newRecipe, ingredients: createdIngredients };
+    });
 
-    })
-
-    res.status(201).json({ status: 201, data: {recipe: result.recipe, ingredients: result.ingredients } });
+    res
+      .status(201)
+      .json({
+        status: 201,
+        data: { recipe: result.recipe, ingredients: result.ingredients },
+      });
   } catch (error) {
-    console.error(error.message)
-    console.error(error)
+    console.error(error.message);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 });
 
-router.delete("/api/recipes/:id", authenticateToken, async (req, res) => {
+router.delete("/api/recipes/:id", authMiddleware.authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
@@ -194,7 +217,9 @@ router.delete("/api/recipes/:id", authenticateToken, async (req, res) => {
       const fileName = imageurl.split("/").pop();
       await b2.deleteFile(fileName);
     }
-    res.status(200).json({ status: 200, message: "Recipe deleted successfully" });
+    res
+      .status(200)
+      .json({ status: 200, message: "Recipe deleted successfully" });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: error.message });
