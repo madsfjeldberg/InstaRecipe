@@ -2,13 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { page } from "$app/stores";
 
-    import { LoaderCircle } from "lucide-svelte";
-    import CircleUser from "lucide-svelte/icons/circle-user";
     import { Separator } from "$lib/components/ui/separator";
-
-    import { avatarStore } from "../../../stores/avatarStore.js";
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
     import userApi from "$lib/api/userApi.js";
     import recipeListApi from "$lib/api/recipelistApi.js";
     import FollowButton from "$lib/components/Follow/FollowButton.svelte";
@@ -16,6 +10,12 @@
     import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
     import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
     import FollowModal from "$lib/components/Follow/FollowModal.svelte";
+
+    import { LoaderCircle, CircleUser } from "lucide-svelte";
+
+    import { avatarStore } from "../../../stores/avatarStore.js";
+    import { user } from "../../../stores/authStore.js";
+    import { socket } from "../../../stores/socketStore.js";
 
     const currentUserId = $page.params.id;
     let currentUser = $state(null);

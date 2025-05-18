@@ -1,20 +1,22 @@
 <script>
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import UploadAvatarButton from "$lib/components/UploadAvatarButton/UploadAvatarButton.svelte";
-  import { avatarStore } from "../../../stores/avatarStore.js";
   import { onMount } from "svelte";
-  import { z } from "zod";
-  import userApi from "$lib/api/userApi.js";
-  import { toast } from "svelte-sonner";
+
+  import * as Card from "$lib/components/ui/card/index.js";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import UploadAvatarButton from "$lib/components/UploadAvatarButton/UploadAvatarButton.svelte";
   import DeleteAccountDialog from "$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte";
-  import { CircleUser, LoaderCircle } from "lucide-svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
-  // import { user } from "../../../stores/authStore.js";
+  
+  import { CircleUser, LoaderCircle } from "lucide-svelte";
+
+  import { z } from "zod";
+  import { toast } from "svelte-sonner";
+
+  import { avatarStore } from "../../../stores/avatarStore.js";
+
+  import userApi from "$lib/api/userApi.js";
 
   const { data } = $props();
   let { user } = data;

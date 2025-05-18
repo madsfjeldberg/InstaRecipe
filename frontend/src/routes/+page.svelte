@@ -1,9 +1,9 @@
 <script>
-  import { isAuthenticated } from "../stores/authStore";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
 
-
+  import { isAuthenticated } from "../stores/authStore";
+  
   onMount(() => {
     // Check if the user is authenticated
     if ($isAuthenticated) {

@@ -1,14 +1,14 @@
 <script>
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { LoaderCircle } from "lucide-svelte";
-  import recipeApi from "$lib/api/recipeApi";
+  import { blur } from "svelte/transition";
 
   import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
-
-  import { blur } from "svelte/transition";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { LoaderCircle } from "lucide-svelte";
+  
+  import recipeApi from "$lib/api/recipeApi";
   import recipeListApi from "$lib/api/recipelistApi.js";
 
   const { data } = $props();

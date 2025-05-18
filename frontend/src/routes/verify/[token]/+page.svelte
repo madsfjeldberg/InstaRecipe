@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+  
   import { updateAuthState } from '../../../stores/authStore';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL + '/auth' : '/auth';
