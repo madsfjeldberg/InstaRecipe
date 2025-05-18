@@ -1,11 +1,11 @@
 <script>
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
+  import * as Card from '$lib/components/ui/card/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
 
-  import LoginForm from "../LoginForm/LoginForm.svelte";
-  import RegisterForm from "../RegisterForm/RegisterForm.svelte";
+  import LoginForm from '../LoginForm/LoginForm.svelte';
+  import RegisterForm from '../RegisterForm/RegisterForm.svelte';
 
   let loginMode = true;
 

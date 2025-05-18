@@ -1,40 +1,44 @@
-import { isAuthenticated } from "../../stores/authStore.js";
+import { isAuthenticated, user } from "../../stores/authStore.js";
 import { makeOption } from "./util.js";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
-// const BASE_URL = '/api/auth';
 
 const login = async (username, password) => {
-  const response = await fetch(`${BASE_URL}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ username, password }),
-  });
+  const postOption = makeOption("POST", {username, password});
 
-  if (response.status === 200) {
+  try{
+    const response = await fetch(BASE_URL + "/login", postOption);
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+    
     isAuthenticated.set(true);
+    return result.data;
+    
+  } catch (error) {
+    throw error;
   }
-
-  const data = await response.json();
-  return data;
 }
 
 const register = async (username, email, password) => {
-  const response = await fetch(`${BASE_URL}/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ username, email, password })
-  });
+  const postOption = makeOption("POST", { username, email, password });
 
-  const data = await response.json();
-  return data;
-}
+  try {
+    const response = await fetch(BASE_URL + "/register", postOption);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.errorMessage || 'Registration failed');
+    }
+
+    return result.data;
+
+  } catch (error) {
+    throw error;
+  }
+};
 
 const logout = async () => {
   const response = await fetch(`${BASE_URL}/logout`, {
@@ -81,7 +85,7 @@ async function resetPassword(newPassword, resetToken) {
 
 
 
-export const authService = {
+export default {
   login,
   register,
   logout,

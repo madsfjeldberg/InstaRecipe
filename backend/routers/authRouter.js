@@ -1,12 +1,18 @@
 import 'dotenv/config';
+
 import { Router } from 'express';
 
-import auth from '../service/authService.js';
+import { isAuthenticated } from '../middleware/authenticateToken.js';
+
+import authService from '../service/authService.js';
 import emailService from '../service/emailService.js';
+
+import recipeListRepository from '../repository/recipeListRepository.js';
+
 import prisma from '../database/prismaClient.js';
 import redis from '../database/redisClient.js';
-import { isAuthenticated } from '../middleware/authenticateToken.js';
-import recipeListRepository from '../repository/recipeListRepository.js';
+
+
 
 const router = Router();
 
@@ -18,28 +24,25 @@ const cookieOptions = {
   path: "/"
 }
 
-router.post("/api/auth/register", async (req, res) => {
-  // extract user data from request body
-  const { username, email, password } = req.body;
 
-  // validate user data
+router.post("/api/auth/register", async (req, res) => {
+  const { username, email, password } = req.body;
   if (!username || !email || !password) {
-    return res.status(400).send({ status: 400, message: "All fields are required" });
+    return res.status(400).send({  errorMessage: "All fields are required" });
   }
 
   try {
-    // check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
-      return res.status(400).send({ status: 400, message: "Username already exists" });
-    }
-    // check if email already exists
-    const existingEmail = await prisma.user.findUnique({ where: { email } });
-    if (existingEmail) {
-      return res.status(400).send({ status: 400, message: "Email already exists" });
+      return res.status(400).send({ errorMessage: "Username already exists" });
     }
 
-    const hashedPassword = await auth.hashPassword(password);
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).send({ errorMessage: "Email already exists" });
+    }
+
+    const hashedPassword = await authService.hashPassword(password);
     const newUser = await prisma.user.create({
       data: {
         username,
@@ -47,15 +50,16 @@ router.post("/api/auth/register", async (req, res) => {
         password: hashedPassword,
       },
     });
-
     await recipeListRepository.createFavoritesList(newUser.id);
-
-    // send verification mail with uuid
+    
     const uuid = newUser.id;
     await emailService.sendVerificationEmail(newUser.email, uuid);
-    res.send({ message: "User registered successfully.", status: 200 });
+
+    const { password: _, ...newUserWithoutPassword } = newUser; 
+    res.send({ data: newUserWithoutPassword});
 
   } catch (error) {
+    console.error(error)
     res.status(500).send({ errorMessage: "Server error. Error registering user" });
   }
 });
@@ -64,42 +68,32 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    console.log("All fields are required");
-    return res.status(400).send({ message: "All fields are required" });
+    return res.status(400).send({ errorMessage: "All fields are required" });
   }
-
-  const user = await prisma.user.findUnique({ where: { username } });
-
-  if (!user) {
-    console.log("User not found");
-    return res.status(401).send({ message: "Wrong username or password." });
-  }
-  if (!user.isConfirmed) {
-    console.log("User not confirmed");
-    return res.status(401).send({ message: "Please confirm your email first." });
-  }
-  const isValidPassword = await auth.verifyPassword(password, user.password);
-
+  
   try {
-    if (isValidPassword) {
-      const token = await auth.generateToken(user);
-      
-      res
-        .status(200)
-        .cookie("jwt", token, cookieOptions)
-        .send({
-          id: user.id,
-          message: "Login successful.",
-          status: 200,
-        });
-    } else {
-      console.log("Wrong username or password.");
-      return res.status(401).send({ message: "Wrong username or password." });
+    const foundUser = await prisma.user.findUnique({ where: { username } });
+    if (!foundUser) {
+      return res.status(401).send({ errorMessage: "Wrong username or password." });
     }
-  } catch (e) {
+
+    if (!foundUser.isConfirmed) {
+      return res.status(401).send({ errorMessage: "Please confirm your email first." });
+    }
+
+    const isValidPassword = await authService.verifyPassword(password, foundUser.password);
+    if (!isValidPassword) {
+      return res.status(401).send({ errorMessage: "Wrong username or password." });
+    }
+
+    const token = await authService.generateToken(foundUser);
+    const { password: _, ...userWithoutPassword } = foundUser; 
+
     res
-      .status(500)
-      .send({ message: "An error occurred during login.", error: e.message });
+      .cookie("jwt", token, cookieOptions)
+      .send({data: userWithoutPassword});
+  } catch (error) {
+    res.status(500).send({ errorMessage: "An error occurred during login." });
   }
 });
 
@@ -112,7 +106,7 @@ router.get("/api/auth/logout", async (req, res) => {
   }
 
 
-  const isDestroyed = await auth.destroyToken(jwt);
+  const isDestroyed = await authService.destroyToken(jwt);
   if (!isDestroyed) {
     return res.status(404).send({ errorMessage: "error occurred during logout" })
   }
@@ -132,14 +126,14 @@ router.post("/api/auth/change-password", async (req, res) => {
   }
 
   const token = req.cookies.jwt;
-  const decoded = auth.decodeToken(token);
+  const decoded = authService.decodeToken(token);
   const dbUser = await prisma.user.findUnique({ where: { id: decoded.id } });
   if (!dbUser) {
     return res.status(401).send({ message: "User not found" });
   }
 
   try {
-    const hashedPassword = await auth.hashPassword(newPassword);
+    const hashedPassword = await authService.hashPassword(newPassword);
     await editUser(dbUser._id, dbUser.username, dbUser.email, hashedPassword);
     res.status(200).send({ message: "Password changed successfully" });
   } catch (e) {
@@ -229,7 +223,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       }
     }
 
-    const newHashedPassword = await auth.hashPassword(newPassword);
+    const newHashedPassword = await authService.hashPassword(newPassword);
     await prisma.user.update({
       where: {
         email: email
@@ -271,8 +265,8 @@ router.get("/api/auth/verify/:id", async (req, res) => {
       }
     });
 
-    
-    const token = await auth.generateToken(user);
+
+    const token = await authService.generateToken(user);
 
     return res.cookie("jwt", token, cookieOptions).status(200).send({
       status: 200,
