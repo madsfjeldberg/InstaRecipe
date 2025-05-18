@@ -9,7 +9,7 @@
   import Label from "../ui/label/label.svelte";
   import Input from "../ui/input/input.svelte";
   import Switch from "../ui/switch/switch.svelte";
-  import DeleteListDialog from "../delete-list-dialog/delete-list-dialog.svelte";
+  import DeleteListDialog from "../DeleteListDialog/DeleteListDialog.svelte";
   import { z } from "zod";
 
   let { selectedList = $bindable(), recipeLists = $bindable() } = $props();

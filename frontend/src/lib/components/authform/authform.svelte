@@ -4,8 +4,8 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
-  import LoginForm from "../loginform/loginform.svelte";
-  import RegisterForm from "../registerform/registerform.svelte";
+  import LoginForm from "../LoginForm/LoginForm.svelte";
+  import RegisterForm from "../RegisterForm/RegisterForm.svelte";
 
   let loginMode = true;
 

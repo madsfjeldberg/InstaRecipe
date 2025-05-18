@@ -11,7 +11,7 @@
   import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
-  import CategorySelect from "$lib/components/category-select/category-select.svelte";
+  import CategorySelect from "$lib/components/CategorySelect/CategorySelect.svelte";
   import MultiSelect from "../MultiSelect/MultiSelect.svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
 
