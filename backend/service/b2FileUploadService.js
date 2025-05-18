@@ -109,8 +109,40 @@ const handleB2Upload = async (imageUrl) => {
   return b2ImagePath;
 }
 
+const deleteFile = async (fileName) => {
+  try {
+    await authorize();
+    const bucketId = process.env.BACKBLAZE_BUCKET_ID;
+
+    // List file versions to get the fileId
+    const listResponse = await b2Client.listFileNames({
+      bucketId,
+      prefix: fileName,
+      maxFileCount: 1
+    });
+
+    const file = listResponse.data.files.find(f => f.fileName === fileName);
+    if (!file) {
+      throw new Error('File not found in Backblaze B2');
+    }
+
+    // Delete the file version
+    await b2Client.deleteFileVersion({
+      fileName: file.fileName,
+      fileId: file.fileId
+    });
+
+    console.log('File deleted successfully:', fileName);
+    return true;
+  } catch (error) {
+    console.error('Error deleting file from Backblaze B2:', error);
+    throw error;
+  }
+};
+
 const b2 = {
-  handleB2Upload
+  handleB2Upload,
+  deleteFile
 }
 
 export default b2;
