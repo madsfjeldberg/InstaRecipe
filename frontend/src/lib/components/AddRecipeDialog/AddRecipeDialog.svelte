@@ -19,7 +19,6 @@
   import scrapeApi from "$lib/api/scrapeApi";
 
   import { LoaderCircle } from "lucide-svelte";
-  // import { recipeTags } from "../../../stores/tagsStore.js";
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
@@ -27,7 +26,6 @@
 
   let selectedTags = $state([]);
   let counter = $state(0);
-  // let tags = $state($recipeTags);
 
   let isLoading = $state(false);
   let isDialogOpen = $state(false); // control state of the dialog/sheet
