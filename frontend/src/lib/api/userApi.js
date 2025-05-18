@@ -1,24 +1,27 @@
 import { isAuthenticated } from "../../stores/authStore.js";
 import { makeOption, fetchWithAuth } from "./util.js";
 
-// const BASE_URL = import.meta.env.VITE_BASE_URL + "/users" || "/users";
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users` : '/api/users';
 
 
 
 const getUserById = async (userId) => {
-  const getOption = makeOption("GET");
-  const response = await fetch(BASE_URL + "/" + userId, getOption);
+  
+  try {
+    const getOption = makeOption("GET");
+    const response = await fetch(BASE_URL + "/" + userId, getOption);
+    const result = await response.json();
+    
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+    
+    return result.data;
 
-  if(!response.ok) {
-    throw new Error(`Could not get user with id: ${userId}`);
+  } catch(error) {
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
-
-
 
 const getUsersByPartialUsername = async (query) => {
   const option = makeOption("GET", null);
@@ -30,6 +33,23 @@ const getUsersByPartialUsername = async (query) => {
   
   const data = await response.json();
   return data;
+}
+
+const getUserAvatar = async (userId) => {
+  
+  try{
+    const getOption = makeOption("GET");
+    const response = await fetch(BASE_URL + "/" + userId + "/avatar", getOption);
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+
+    return await response.blob();
+
+  }catch(error) {
+    throw error;
+  }
 }
 
 const updateUser = async (user) => {
@@ -78,8 +98,9 @@ const deleteUser = async (userId) => {
   return data;
 }
 
-export {
+export default {
   getUserById,
+  getUserAvatar,
   getUsersByPartialUsername,
   updateUser,
   changeUsername,

@@ -63,11 +63,11 @@ router.get('/api/users', authenticateToken, async (req, res) => {
 router.get('/api/users/:id/avatar', authenticateToken, async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || !user.avatar) {
-    return res.status(404).json({ message: 'Avatar not found' });
+  if (!user) {
+    return res.status(404).send({ errorMessage: 'Could not get avatar, since user not found with id: ' + userId });
   }
 
-  res.set('Content-Type', user.avatarMime ?? 'image/png').send(user.avatar);
+  res.set('Content-Type', user.avatarMime || 'image/png').send(user.avatar);
 });
 
 router.post('/api/users/:id/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
