@@ -14,7 +14,7 @@
   import Separator from "../ui/separator/separator.svelte";
   import Navlink from "./NavLink.svelte";
   import { goto } from "$app/navigation";
-  import { authService } from "$lib/api/authApi.js";
+  import authApi from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { blur } from "svelte/transition";
@@ -38,7 +38,7 @@
   };
 
   const handleLogout = async () => {
-    await authService.logout();
+    await authApi.logout();
     toast.success("Logged out successfully");
     avatarStore.set(null); // Clear the avatar store
     goto("/");

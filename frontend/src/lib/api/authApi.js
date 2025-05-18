@@ -79,12 +79,11 @@ async function resetPassword(newPassword, resetToken) {
   }
 }
 
-
-
-export const authService = {
+const authApi = {
   login,
   register,
   logout,
   sendRestPasswordRequest,
   resetPassword
 };
+export default authApi;

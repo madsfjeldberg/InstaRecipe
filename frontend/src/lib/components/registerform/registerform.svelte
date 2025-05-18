@@ -9,7 +9,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
-  import { authService } from '$lib/api/authApi.js';
+  import authApi from '$lib/api/authApi.js';
 
   let { onToggleAuthMode } = $props();
   let isLoading = $state(false);
@@ -47,7 +47,7 @@
       isLoading = true; // Set loading to true when the request starts
       //TODO ADD A LOADING SPINNER
       RegisterRequest.parse({ username, email, password});
-      response = await authService.register(username, email, password);
+      response = await authApi.register(username, email, password);
       console.log("REGISTER RESPONSE", response)
       
 

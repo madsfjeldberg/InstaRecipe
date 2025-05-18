@@ -5,7 +5,7 @@
   import { Label } from "$lib/components/ui/label/index.js";
   import { z } from 'zod';
   import { goto } from '$app/navigation';
-  import { authService } from '$lib/api/authApi.js';
+  import authApi from '$lib/api/authApi.js';
   import { toast } from 'svelte-sonner';
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { user } from "../../../stores/authStore.js";
@@ -46,7 +46,7 @@
       loading = true;
      
       LoginRequest.parse({ username, password });
-      response = await authService.login(username, password);
+      response = await authApi.login(username, password);
      
       if (response.status === 200) {
         

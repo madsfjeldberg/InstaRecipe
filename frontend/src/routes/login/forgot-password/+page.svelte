@@ -3,7 +3,7 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import { authService } from "$lib/api/authApi";
+    import authApi from "$lib/api/authApi";
     import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
     import { Stretch } from 'svelte-loading-spinners'; 
@@ -17,7 +17,7 @@
 
         try {
             isLoading = true;
-            const response = await authService.sendRestPasswordRequest(email);
+            const response = await authApi.sendRestPasswordRequest(email);
             if (response.status !== 200) {
                 toast.error(response.errorMessage);
                 return;
