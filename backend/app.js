@@ -14,12 +14,15 @@ import recipesRouter from "./routers/recipesRouter.js";
 import scrapeRouter from "./routers/scrapeRouter.js";
 import tagsRouter from "./routers/tagsRouter.js";
 import usersRouter from "./routers/usersRouter.js";
+
 import rateLimiter from "./middleware/rateLimiter.js";
 import logger from "./middleware/logger.js";
 import cors from "./middleware/cors.js";
 import authMiddleware from "./middleware/authMiddleware.js";
+import globalErrorHandler from './middleware/globalErrorHandler.js';
 
 import { registerSocketHandlers } from "./sockets/registerSocketHandlers.js";
+
 
 const app = express();
 
@@ -40,6 +43,7 @@ app.use(authRouter);
 
 // authentication jwt token for all routes except authRouter
 app.use(authMiddleware.authenticateToken);
+app.use(globalErrorHandler);
 
 app.use(categoriesRouter);
 app.use(commentsRouter);
@@ -49,6 +53,7 @@ app.use(recipesRouter);
 app.use(scrapeRouter);
 app.use(tagsRouter);
 app.use(usersRouter);
+
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
