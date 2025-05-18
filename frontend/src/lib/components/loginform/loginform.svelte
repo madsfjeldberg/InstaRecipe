@@ -54,7 +54,7 @@
       LoginRequest.parse({ username, password });
       const loggedInUser = await authApi.login(username, password);
 
-      const userAva2tarBlob = await userApi.getUserAvatar(loggedInUser.id);
+      const userAvatarBlob = await userApi.getUserAvatar(loggedInUser.id);
       const reader = new FileReader();
       reader.readAsDataURL(userAvatarBlob);
       reader.onload = () => avatarStore.set(reader.result);
