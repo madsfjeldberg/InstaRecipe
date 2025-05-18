@@ -5,7 +5,7 @@ import auth from "../service/authService.js";
 import emailService from "../service/emailService.js";
 import prisma from "../database/prismaClient.js";
 import redis from '../database/redisClient.js';
-import { authenticateToken, isAuthenticated } from '../middleware/authenticateToken.js';
+import { isAuthenticated } from '../middleware/authenticateToken.js';
 import recipeListRepository from '../repository/recipeListRepository.js';
 
 const router = Router();

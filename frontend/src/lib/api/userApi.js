@@ -33,7 +33,9 @@ const getUsersByPartialUsername = async (query) => {
 }
 
 const updateUser = async (user) => {
-  const option = makeOption("PUT", user);
+  // remove avatar and avatarMime from user object
+  const { avatar, avatarMime, followers, following, ...userWithoutAvatar } = user.user;
+  const option = makeOption("PUT", { user: userWithoutAvatar });
   const response = await fetchWithAuth(`${BASE_URL}`, option);
   const data = await response.json();
   return data;

@@ -21,14 +21,10 @@ router.get("/api/users/:id", async (req, res) => {
   try {
     const foundUser = await usersRepository.getUserById(req.params.id);
     if(!foundUser) {
-      res.status(404).send({ data: {} })
-      return;
+      return res.status(404).send({ data: {} });
     }
 
-    // Exclude avatar from the response
-    const { avatar, avatarMime, ...userWithoutAvatar } = foundUser;
-
-    res.send({ data: userWithoutAvatar });
+    res.send({ data: foundUser });
 
   }catch(error) {
     console.error(error);
@@ -92,6 +88,7 @@ router.post('/api/users/:id/avatar', authenticateToken, upload.single('avatar'),
 
 router.put('/api/users', authenticateToken, async (req, res) => {
   const { user } = req.body;
+  
   if (!user) {
     return res.status(400).json({ message: 'User data is required' });
   }
@@ -108,6 +105,7 @@ router.put('/api/users', authenticateToken, async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
+
     const token = await auth.generateToken(updatedUser);
     res
       .status(200)
@@ -120,91 +118,6 @@ router.put('/api/users', authenticateToken, async (req, res) => {
       });
   } catch (error) {
     console.error('Error updating user:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// PATCH route to update the username/password
-router.patch('/api/users', authenticateToken, async (req, res) => {
-  const { userId, newUsername, newPassword, emailNotifications } = req.body;
-  console.log('Received request to update username:', req.body);
-
-  if (!userId && !newUsername && !newPassword && emailNotifications === undefined) {
-    console.log('Missing userId or newUsername or newPassword or emailNotifications');
-    return res.status(400).json({ message: 'No values provided.' });
-  }
-
-  if (newPassword) {
-    // Update the password
-    try {
-      const user = await prisma.user.findUnique({ where: { id: userId } });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      let hashedPassword = await auth.hashPassword(newPassword);
-      user.password = hashedPassword;
-      await prisma.user.update({
-        where: { id: userId },
-        data: { password: hashedPassword }
-      });
-      const allKeys = await redis.keys("*");
-      for (const key of allKeys) {
-        const value = await redis.get(key);
-        if (value === user.email) {
-          await redis.del(key);
-        }
-      }
-
-      const token = await auth.generateToken(user);
-      return res
-        .status(200)
-        .clearCookie("jwt")
-        .cookie("jwt", token, cookieOptions)
-        .json({
-          id: user._id,
-          message: "Password updated successfully.",
-          status: 200,
-        });
-      //return res.status(200).json({ status: 200, message: 'Password updated successfully' });
-    } catch (error) {
-      console.error('Error updating password:', error);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  }
-
-  try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    // Check if the new username is already taken
-    const existingUser = await prisma.user.findUnique({ where: { username: newUsername } });
-    if (existingUser) {
-      console.log('Username already exists:', newUsername);
-      return res.status(400).json({ message: 'Username already exists' });
-    }
-    // Update the username
-    const updatedUser = await usersRepository.updateUsername(userId, newUsername);
-
-    const jwt = req.cookies.jwt;
-    const isDestroyed = await auth.destroyToken(jwt);
-    if (!isDestroyed) {
-      return res.status(404).send({ errorMessage: "error occurred during logout" })
-    }
-
-    const token = await auth.generateToken(updatedUser);
-    res
-        .status(200)
-        .clearCookie("jwt")
-        .cookie("jwt", token, cookieOptions)
-        .json({
-          id: updatedUser._id,
-          message: "Username updated successfully.",
-          status: 200,
-        });
-
-  } catch (error) {
-    console.error('Error updating username:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });

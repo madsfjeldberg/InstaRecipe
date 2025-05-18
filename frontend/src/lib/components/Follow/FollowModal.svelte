@@ -11,6 +11,7 @@
     import UnfollowButton from "./UnfollowButton.svelte";
     import FollowButton from "./FollowButton.svelte";
     import { user } from "../../../stores/authStore.js";
+    import { avatarStore } from "../../../stores/avatarStore";
 
     const { noOfUsers, label, parentUserList, viewerFollowingList } = $props();
     let searchValue = $state("");
@@ -57,10 +58,10 @@
             {#each parentUserList as user (user.id)}
                 <div class="flex justify-between items-center gap-4">
                     <button class="flex gap-3" onclick={ () => vistUser(user.id)}>
-                        {#if user.avatar === null || user.avatarMime === null}
-                            <CircleUser/>
+                        {#if $avatarStore}
+                            <CircleUser />
                         {:else}
-                            <img src="" alt={user.username + "' avatar"}>
+                            <img src={$avatarStore} alt={user.username + "' avatar"}>
                         {/if}
                      
                         <p>{user.username}</p>
