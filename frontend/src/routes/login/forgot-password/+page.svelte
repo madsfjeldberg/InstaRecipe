@@ -3,10 +3,11 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import { authService } from "$lib/api/authApi";
+    import authApi from "$lib/api/authApi";
     import { Toaster } from "$lib/components/ui/sonner";
     import { toast } from "svelte-sonner";
     import { Stretch } from 'svelte-loading-spinners'; 
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
     
     let email = $state("");
     let isLoading = $state(false);
@@ -17,7 +18,7 @@
 
         try {
             isLoading = true;
-            const response = await authService.sendRestPasswordRequest(email);
+            const response = await authApi.sendRestPasswordRequest(email);
             if (response.status !== 200) {
                 toast.error(response.errorMessage);
                 return;
@@ -26,7 +27,7 @@
             success = true;
             email = "";
             toast.success(response.message);
-            console.log("called");
+
         } catch (error) {
             console.error(error);
 
@@ -80,6 +81,9 @@
                     {/if}
                 </Button>
             </form>
+        <Button variant="ghost" class="flex items-center hover:bg-primary hover:text-secondary mt-3" onclick={() => history.back()}>
+            <ArrowLeft class="mr-2" />Back
+        </Button>
         </Card.Content>
     </Card.Root>
 </div>
