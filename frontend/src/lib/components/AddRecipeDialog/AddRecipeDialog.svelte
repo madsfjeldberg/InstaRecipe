@@ -1,25 +1,22 @@
 <script>
   import { onMount } from "svelte";
 
-  import { z } from "zod";
-  import { toast } from "svelte-sonner";
-
   import { Button } from "$lib/components/ui/button/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-
   import CategorySelect from "$lib/components/CategorySelect/CategorySelect.svelte";
   import MultiSelect from "../MultiSelect/MultiSelect.svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
-
-  import { addRecipe, getCategories } from "$lib/api/recipeApi";
-  import { scrapeLink } from "$lib/api/scrapeApi";
-
   import { LoaderCircle } from "lucide-svelte";
-  // import { recipeTags } from "../../../stores/tagsStore.js";
+
+  import { z } from "zod";
+  import { toast } from "svelte-sonner";
+  
+  import recipeApi from "$lib/api/recipeApi";
+  import scrapeApi from "$lib/api/scrapeApi";
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
@@ -27,7 +24,6 @@
 
   let selectedTags = $state([]);
   let counter = $state(0);
-  // let tags = $state($recipeTags);
 
   let isLoading = $state(false);
   let isDialogOpen = $state(false); // control state of the dialog/sheet
@@ -82,8 +78,8 @@
       let success = linkRequest.parse({ url });
       
       isLoading = true;
-      
-      let generatedRecipe = await scrapeLink(url);
+
+      let generatedRecipe = await scrapeApi.scrapeLink(url);
 
       if (generatedRecipe.status !== 200) {
         errors = { ...errors, form: generatedRecipe.data.message };
@@ -91,7 +87,7 @@
       }
 
       let { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
-      response = await addRecipe(
+      response = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
@@ -169,7 +165,7 @@
       });
       
       isLoading = true;
-      response = await addRecipe(
+      response = await recipeApi.addRecipe(
         name,
         description,
         ingredients,

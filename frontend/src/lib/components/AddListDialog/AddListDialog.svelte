@@ -4,9 +4,12 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import { Plus } from "lucide-svelte";
+
   import { z } from "zod";
+
   import { isAuthenticated, user } from "../../../stores/authStore.js";
-  import { addRecipeList } from "$lib/api/recipelistApi.js";
+  
+  import recipeListApi from "$lib/api/recipelistApi.js";
 
   let { recipeLists = $bindable(), selectedList = $bindable() } = $props();
 
@@ -35,7 +38,7 @@
       let response;
 
       AddListRequest.parse({ name });
-      response = await addRecipeList(name, userId); // Call the addRecipeList function
+      response = await recipeListApi.addRecipeList(name, userId); // Call the addRecipeList function
       selectedList = response.data;
 
       if (response.status !== 201) {

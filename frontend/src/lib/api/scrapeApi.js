@@ -4,9 +4,9 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const scrapeLink = async (link) => {
   try {
-    const getOption = makeOption("POST", { url: link });
+    const option = makeOption("POST", { url: link });
 
-    const response = await fetchWithAuth(BASE_URL, getOption);
+    const response = await fetchWithAuth(BASE_URL, option);
     const result = await response.json();
     console.log("frontend Scrape result:", result);
     return result;
@@ -17,6 +17,8 @@ const scrapeLink = async (link) => {
   }
 }
 
-export {
+const scrapeApi = {
   scrapeLink,
 };
+
+export default scrapeApi;

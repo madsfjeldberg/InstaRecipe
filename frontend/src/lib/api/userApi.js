@@ -24,7 +24,7 @@ const getUserById = async (userId) => {
 }
 
 const getUsersByPartialUsername = async (query) => {
-  const option = makeOption("GET", null);
+  const option = makeOption("GET");
   const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
 
   if (response.status === 200) {
@@ -53,34 +53,10 @@ const getUserAvatar = async (userId) => {
 }
 
 const updateUser = async (user) => {
-  // remove avatar and avatarMime from user object
+  // remove avatar, avatarMime, followers, following from user object
   const { avatar, avatarMime, followers, following, ...userWithoutAvatar } = user.user;
   const option = makeOption("PUT", { user: userWithoutAvatar });
   const response = await fetchWithAuth(`${BASE_URL}`, option);
-  const data = await response.json();
-  return data;
-}
-
-const changeUsername = async (userId, newUsername) => {
-  const option = makeOption("PATCH", { userId, newUsername });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
-
-  if (response.status === 200) {
-    isAuthenticated.set(true);
-  }
-  
-  const data = await response.json();
-  return data;
-}
-
-const changePassword = async (userId, newPassword) => {
-  const option = makeOption("PATCH", { userId, newPassword });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
-
-  if (response.status === 200) {
-    isAuthenticated.set(true);
-  }
-  
   const data = await response.json();
   return data;
 }
@@ -98,12 +74,11 @@ const deleteUser = async (userId) => {
   return data;
 }
 
-export default {
+const userApi = {
   getUserById,
   getUserAvatar,
   getUsersByPartialUsername,
   updateUser,
-  changeUsername,
-  changePassword,
   deleteUser,
 };
+export default userApi;

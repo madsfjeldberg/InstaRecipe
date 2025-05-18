@@ -1,18 +1,14 @@
-import 'dotenv/config';
-
 import { Router } from 'express';
-
-import { isAuthenticated } from '../middleware/authenticateToken.js';
+import prisma from '../database/prismaClient.js';
+import redis from '../database/redisClient.js';
+import 'dotenv/config';
 
 import authService from '../service/authService.js';
 import emailService from '../service/emailService.js';
 
+import authMiddleware from '../middleware/authMiddleware.js';
+
 import recipeListRepository from '../repository/recipeListRepository.js';
-
-import prisma from '../database/prismaClient.js';
-import redis from '../database/redisClient.js';
-
-
 
 const router = Router();
 
@@ -21,9 +17,8 @@ const cookieOptions = {
   secure: process.env.NODE_ENV === "production", // Set to true in production
   sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // Set to None in production for cross-site cookies
   maxAge: 604800000, // 7 days
-  path: "/"
-}
-
+  path: "/",
+};
 
 router.post("/api/auth/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -64,7 +59,7 @@ router.post("/api/auth/register", async (req, res) => {
   }
 });
 
-router.post("/api/auth/login", isAuthenticated, async (req, res) => {
+router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -97,24 +92,21 @@ router.post("/api/auth/login", isAuthenticated, async (req, res) => {
   }
 });
 
-
 router.get("/api/auth/logout", async (req, res) => {
-
   const jwt = req.cookies.jwt;
   if (!jwt) {
-    return res.status(404).send({ errorMessage: "no tokens found on request" })
+    return res.status(404).send({ errorMessage: "no tokens found on request" });
   }
 
 
   const isDestroyed = await authService.destroyToken(jwt);
   if (!isDestroyed) {
-    return res.status(404).send({ errorMessage: "error occurred during logout" })
+    return res
+      .status(404)
+      .send({ errorMessage: "error occurred during logout" });
   }
 
-  res
-    .clearCookie("jwt")
-    .status(200)
-    .send({ message: "Logout successful." });
+  res.clearCookie("jwt").status(200).send({ message: "Logout successful." });
 });
 
 //TODO
@@ -137,25 +129,26 @@ router.post("/api/auth/change-password", async (req, res) => {
     await editUser(dbUser._id, dbUser.username, dbUser.email, hashedPassword);
     res.status(200).send({ message: "Password changed successfully" });
   } catch (e) {
-    res.status(500).send({ message: `An error occurred during password change.` });
+    res
+      .status(500)
+      .send({ message: `An error occurred during password change.` });
   }
 });
-
-
 
 router.post("/api/auth/forgot-password", async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.status(401).send({ errorMessage: "Email must be included in the request" });
+    return res
+      .status(401)
+      .send({ errorMessage: "Email must be included in the request" });
   }
 
   try {
-
     const user = await prisma.user.findUnique({
       where: {
-        email: email
-      }
+        email: email,
+      },
     });
     if (!user) {
       return res.status(401).send({ errorMessage: "Invalid email" });
@@ -167,7 +160,12 @@ router.post("/api/auth/forgot-password", async (req, res) => {
         await redis.del(email);
       } catch (error) {
         console.error(error);
-        return res.status(500).send({ errorMessage: "Error occurred during token reset password token deletion" })
+        return res
+          .status(500)
+          .send({
+            errorMessage:
+              "Error occurred during token reset password token deletion",
+          });
       }
     }
 
@@ -175,43 +173,61 @@ router.post("/api/auth/forgot-password", async (req, res) => {
     const FIFTEEN_MINUTES = 900;
     const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
     if (!isSet) {
-      return res.status(500).send({ errorMessage: "Something went wrong generating reset password token" });
+      return res
+        .status(500)
+        .send({
+          errorMessage: "Something went wrong generating reset password token",
+        });
     }
 
     await emailService.sendPasswordResetEmail(email, resetToken);
-    res.send({ status: 200, message: "Forgot password request processed successfully" });
-
+    res.send({
+      status: 200,
+      message: "Forgot password request processed successfully",
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: "Something went wrong processing forgot-password request" })
+    res
+      .status(500)
+      .send({
+        errorMessage: "Something went wrong processing forgot-password request",
+      });
   }
 });
-
-
 
 router.patch("/api/auth/reset-password/:token", async (req, res) => {
   const resetToken = req.params.token;
   if (!resetToken) {
-    return res.status(401).send({ errorMessage: "Reset token must be included in the request" });
+    return res
+      .status(401)
+      .send({ errorMessage: "Reset token must be included in the request" });
   }
-
 
   const { newPassword } = req.body;
   if (!newPassword) {
-    return res.status(401).send({ errorMessage: "must include a new password" });
+    return res
+      .status(401)
+      .send({ errorMessage: "must include a new password" });
   }
 
   try {
     const doesExists = await redis.exists(resetToken);
     if (!doesExists) {
-      return res.status(401).send({ errorMessage: "No reset token found, send a new forgot password request" })
+      return res
+        .status(401)
+        .send({
+          errorMessage:
+            "No reset token found, send a new forgot password request",
+        });
     }
 
     const email = await redis.get(resetToken);
 
     const isDeleted = await redis.del(resetToken);
     if (!isDeleted) {
-      return res.status(500).send({ errorMessage: "Error occurred when deleting reset token" });
+      return res
+        .status(500)
+        .send({ errorMessage: "Error occurred when deleting reset token" });
     }
 
     // Find and delete all tokens in Redis that have this email as their value
@@ -226,60 +242,63 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
     const newHashedPassword = await authService.hashPassword(newPassword);
     await prisma.user.update({
       where: {
-        email: email
+        email: email,
       },
       data: {
-        password: newHashedPassword
-      }
+        password: newHashedPassword,
+      },
     });
 
     res.send({ status: 200, message: "Password has been reset" });
-
-
   } catch (error) {
-    res.status(500).send({ errorMessage: "Unexpected error occurred during password reset" })
+    res
+      .status(500)
+      .send({
+        errorMessage: "Unexpected error occurred during password reset",
+      });
     console.error(error);
   }
 });
-
-
 
 router.get("/api/auth/verify/:id", async (req, res) => {
   const id = req.params.id;
   const user = req.user;
 
   try {
-
     await prisma.user.update({
       where: {
-        id: id
+        id: id,
       },
       data: {
-        isConfirmed: true
-      }
+        isConfirmed: true,
+      },
     });
 
     const user = await prisma.user.findUnique({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
 
 
     const token = await authService.generateToken(user);
 
-    return res.cookie("jwt", token, cookieOptions).status(200).send({
-      status: 200,
-      user: {
-        id: user.id,
-        username: user.username,
-      },
-      message: "Account verified successfully."
-    });
-
+    return res
+      .cookie("jwt", token, cookieOptions)
+      .status(200)
+      .send({
+        status: 200,
+        user: {
+          id: user.id,
+          username: user.username,
+        },
+        message: "Account verified successfully.",
+      });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: "Something went wrong confirming the email" })
+    res
+      .status(500)
+      .send({ errorMessage: "Something went wrong confirming the email" });
   }
 });
 

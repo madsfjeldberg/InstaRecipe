@@ -62,4 +62,8 @@ const removeRecipeFromStaredList = async (recipeListId, recipeId) => {
     }
 }
 
-export default { createFavoritesList, addRecipeToStaredList, removeRecipeFromStaredList }
+export default {
+  createFavoritesList,
+  addRecipeToStaredList,
+  removeRecipeFromStaredList
+}

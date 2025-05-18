@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300 // limit each IP to 100 requests per windowMs
+  max: 300 // limit each IP to 300 requests per windowMs
 });
 
 const authLimiter = rateLimit({
@@ -10,4 +10,9 @@ const authLimiter = rateLimit({
   max: 5, // limit each IP to 5 requests per windowMs
 });
 
-export { limiter, authLimiter };
+const rateLimiter = {
+  limiter,
+  authLimiter,
+}
+
+export default rateLimiter;

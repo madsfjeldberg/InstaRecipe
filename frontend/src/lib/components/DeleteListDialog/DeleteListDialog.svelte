@@ -1,17 +1,19 @@
 <script>
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipeList } from "$lib/api/recipelistApi";
+  import { X } from "lucide-svelte";
+  
   import { toast } from "svelte-sonner";
+
+  import recipeListApi from "$lib/api/recipelistApi";
 
   let { selectedList = $bindable(), recipeLists = $bindable(), isSheetDialogOpen = $bindable() } = $props();
   let isDialogOpen = $state(false);
 
   const handleDelete = async () => {
   try {
-    await deleteRecipeList(selectedList.id);
+    await recipeListApi.deleteRecipeList(selectedList.id);
     toast.success('List deleted successfully!');
     isDialogOpen = false;
     isSheetDialogOpen = false;

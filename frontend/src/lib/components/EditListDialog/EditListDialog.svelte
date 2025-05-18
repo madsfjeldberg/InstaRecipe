@@ -1,16 +1,19 @@
 <script>
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import { Pencil } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { updateRecipeList } from "$lib/api/recipelistApi";
-  import { toast } from "svelte-sonner";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import Label from "../ui/label/label.svelte";
   import Input from "../ui/input/input.svelte";
   import Switch from "../ui/switch/switch.svelte";
   import DeleteListDialog from "../DeleteListDialog/DeleteListDialog.svelte";
+  import { Pencil } from "lucide-svelte";
+
+  import { toast } from "svelte-sonner";
+
   import { z } from "zod";
+
+  import recipeListApi from "$lib/api/recipelistApi";
 
   let { selectedList = $bindable(), recipeLists = $bindable() } = $props();
   let isSheetDialogOpen = $state(false);
@@ -45,7 +48,7 @@
 
     try {
       editListRequest.parse({ name });
-      const response = await updateRecipeList(selectedList.id, name, isPrivate);
+      const response = await recipeListApi.updateRecipeList(selectedList.id, name, isPrivate);
       selectedList = response.data;
 
       if (response.status !== 200) {

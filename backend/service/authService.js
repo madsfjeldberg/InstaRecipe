@@ -1,7 +1,7 @@
-import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import redis from '../database/redisClient.js';
+import 'dotenv/config';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -88,7 +88,7 @@ const decodeToken = (token) => {
   }
 }
 
-export default {
+const auth = {
   hashPassword,
   verifyPassword,
   generateToken,
@@ -96,3 +96,5 @@ export default {
   verifyToken,
   destroyToken
 };
+
+export default auth;

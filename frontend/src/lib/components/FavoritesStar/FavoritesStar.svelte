@@ -1,12 +1,12 @@
 <script>
-    import { Star } from "lucide-svelte";
-    import { toast } from "svelte-sonner";
     import Button from "../ui/button/button.svelte";
 
-    import { addRecipeToFavoritesRecipeList, removeRecipeFromFavoritesList } from "$lib/api/recipelistApi.js";
-  
+    import { Star } from "lucide-svelte";
 
-
+    import { toast } from "svelte-sonner";
+    
+    import recipelistApi from "$lib/api/recipelistApi.js";
+    
     const { favoritesRecipeList = $bindable(), recipe } = $props();
 
 
@@ -21,7 +21,7 @@
                 return;
             }
 
-            await addToFavoritesRecipeList(recipe);
+            await recipelistApi.addRecipeToFavoritesRecipeList(recipe);
             toast.success(recipe.name + " was added to your favorites list");
         } catch (error) {
             console.error(error);
@@ -36,7 +36,7 @@
         ];
 
         try {
-            await addRecipeToFavoritesRecipeList(
+            await recipelistApi.addRecipeToFavoritesRecipeList(
                 favoritesRecipeList.id,
                 newRecipe.id,
             );
@@ -53,7 +53,7 @@
 
         try{
 
-            await removeRecipeFromFavoritesList(
+            await recipelistApi.removeRecipeFromFavoritesList(
                 favoritesRecipeList.id,
                 recipeToRemove.id,
             );

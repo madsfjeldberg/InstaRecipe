@@ -152,4 +152,9 @@ const postCommentReply = async (userId, text, recipeId, commentParentId) => {
 
 
 
-export default { getCommentsByRecipeId, getCommentById, postComment, postCommentReply }
+export default {
+  getCommentsByRecipeId,
+  getCommentById,
+  postComment,
+  postCommentReply
+}

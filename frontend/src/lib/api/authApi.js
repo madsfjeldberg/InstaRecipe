@@ -83,12 +83,11 @@ async function resetPassword(newPassword, resetToken) {
   }
 }
 
-
-
-export default {
+const authApi = {
   login,
   register,
   logout,
   sendRestPasswordRequest,
   resetPassword
 };
+export default authApi;

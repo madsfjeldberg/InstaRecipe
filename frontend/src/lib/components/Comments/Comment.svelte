@@ -9,15 +9,11 @@
     import CommentReply from "./CommentReply.svelte";
     import { socket } from "../../../stores/socketStore.js";
 
-
-
     let { comments = $bindable(), recipeId } = $props();
 
     let commentToReplyToId = $state("");
     let isDisplayingReplyDialog = $state(false);
-    
-    
-    
+        
     const disconnect = socket.on("new-comment-reply", (commentReply) => {
         if(recipeId === commentReply.recipeId) {
             comments = comments.map( (comment) => {

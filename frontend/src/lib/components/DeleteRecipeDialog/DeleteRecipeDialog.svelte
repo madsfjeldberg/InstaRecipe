@@ -1,18 +1,21 @@
 <script>
+  import { stopPropagation } from "svelte/legacy";
+
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipe } from "$lib/api/recipeApi";
+  import { X } from "lucide-svelte";
+  
   import { toast } from "svelte-sonner";
-  import { stopPropagation } from "svelte/legacy";
+  
+  import recipeApi from "$lib/api/recipeApi";
 
   let { recipeId, selectedList = $bindable() } = $props();
   let isDialogOpen = $state(false);
 
   const handleDelete = async () => {
   try {
-    await deleteRecipe(recipeId);
+    await recipeApi.deleteRecipe(recipeId);
     // Remove the recipe from the selected list
     selectedList.recipes = selectedList.recipes.filter(recipe => recipe.id !== recipeId);
     toast.success('Recipe deleted successfully!');

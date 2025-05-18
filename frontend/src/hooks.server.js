@@ -14,7 +14,6 @@ import { JWT_SECRET, COOKIE_OPTIONS } from '$lib/config/env.server';
 
 const validateUser = (token) => {
   if (!token) {
-    console.log('No token found');
     throw redirect(303, '/login');
   }
   try {
@@ -38,8 +37,6 @@ export const handle = async ({ event, resolve }) => {
     const token = event.cookies.get('jwt');
     const user = validateUser(token);
     // If token is valid, save user info in event.locals for later use
-    // also save in authStore
-    updateAuthState(user);
     event.locals.user = user;
   }
   const response = await resolve(event);
