@@ -1,4 +1,6 @@
 import { isAuthenticated, user } from "../../stores/authStore.js";
+import { avatarStore } from "../../stores/avatarStore.js";
+
 import { makeOption } from "./util.js";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
@@ -41,20 +43,22 @@ const register = async (username, email, password) => {
 };
 
 const logout = async () => {
-  const response = await fetch(`${BASE_URL}/logout`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
+  try {
+    const getOption = makeOption("GET");
+    const response = await fetch(BASE_URL + "/logout", getOption);
+    const result = await response.json();
 
-  if (!response.ok) {
-    throw new Error('Logout failed');
+    if (!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+    
+    isAuthenticated.set(false);
+    user.set(null);
+    avatarStore.set(null);
+  
+  }catch(error) {
+    throw error;
   }
-
-  isAuthenticated.set(false);
-  return true;
 }
 
 

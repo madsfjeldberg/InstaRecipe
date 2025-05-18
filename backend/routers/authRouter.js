@@ -98,18 +98,19 @@ router.get("/api/auth/logout", async (req, res) => {
     return res.status(404).send({ errorMessage: "no tokens found on request" });
   }
 
+  try {
+    const isDestroyed = await authService.destroyToken(jwt);
+    if (!isDestroyed) {
+      return res.status(404).send({ errorMessage: "could not destroy token" });
+    }
+    
+    res.clearCookie("jwt").status(200).send({ });
 
-  const isDestroyed = await authService.destroyToken(jwt);
-  if (!isDestroyed) {
-    return res
-      .status(404)
-      .send({ errorMessage: "error occurred during logout" });
+  }catch(error) {
+    res.status(500).send({ errorMessage: "Could not logout error occurred on the server.."});
   }
-
-  res.clearCookie("jwt").status(200).send({ message: "Logout successful." });
 });
 
-//TODO
 router.post("/api/auth/change-password", async (req, res) => {
   const { newPassword } = req.body;
 

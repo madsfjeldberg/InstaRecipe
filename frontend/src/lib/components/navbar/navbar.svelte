@@ -16,7 +16,7 @@
 
   import { toast } from "svelte-sonner";
 
-  import { isAuthenticated, user } from "../../../stores/authStore";
+  import { isAuthenticated, user } from "../../../stores/authStore.js";
   import { avatarStore } from "../../../stores/avatarStore.js";
 
   import authApi from "$lib/api/authApi.js";
@@ -40,10 +40,14 @@
   };
 
   const handleLogout = async () => {
-    await authApi.logout();
-    toast.success("Logged out successfully");
-    avatarStore.set(null); // Clear the avatar store
-    goto("/");
+    try {
+      await authApi.logout();
+      toast.success("Logged out successfully");
+      goto("/");
+
+    }catch(error) {
+      toast.error(error.message);
+    }
   };
 
   $effect(() => {
