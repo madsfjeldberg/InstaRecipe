@@ -3,7 +3,7 @@
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
   import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipe } from "$lib/api/recipeApi";
+  import recipeApi from "$lib/api/recipeApi";
   import { toast } from "svelte-sonner";
   import { stopPropagation } from "svelte/legacy";
 
@@ -12,7 +12,7 @@
 
   const handleDelete = async () => {
   try {
-    await deleteRecipe(recipeId);
+    await recipeApi.deleteRecipe(recipeId);
     // Remove the recipe from the selected list
     selectedList.recipes = selectedList.recipes.filter(recipe => recipe.id !== recipeId);
     toast.success('Recipe deleted successfully!');

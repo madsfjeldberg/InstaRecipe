@@ -3,9 +3,8 @@
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
   import { X } from "lucide-svelte";
   import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { deleteRecipe } from "$lib/api/recipeApi";
   import { toast } from "svelte-sonner";
-  import { deleteUser } from "$lib/api/userApi";
+  import userApi from "$lib/api/userApi";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   
@@ -14,7 +13,7 @@
   
   const handleDelete = async () => {
   try {
-    await deleteUser(user.id);
+    await userApi.deleteUser(user.id);
     toast.success('Account deleted successfully!');
     goto('/');
   } catch (error) {

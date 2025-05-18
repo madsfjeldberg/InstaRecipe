@@ -22,4 +22,8 @@ async function sendGroceryList(recipeName, ingredients) {
     }
 }
 
-export default { sendGroceryList }
+const groceryListApi = {
+    sendGroceryList
+};
+
+export default groceryListApi;

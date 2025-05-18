@@ -15,8 +15,8 @@
   import MultiSelect from "../MultiSelect/MultiSelect.svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
 
-  import { addRecipe, getCategories } from "$lib/api/recipeApi";
-  import { scrapeLink } from "$lib/api/scrapeApi";
+  import recipeApi from "$lib/api/recipeApi";
+  import scrapeApi from "$lib/api/scrapeApi";
 
   import { LoaderCircle } from "lucide-svelte";
   // import { recipeTags } from "../../../stores/tagsStore.js";
@@ -82,8 +82,8 @@
       let success = linkRequest.parse({ url });
       
       isLoading = true;
-      
-      let generatedRecipe = await scrapeLink(url);
+
+      let generatedRecipe = await scrapeApi.scrapeLink(url);
 
       if (generatedRecipe.status !== 200) {
         errors = { ...errors, form: generatedRecipe.data.message };
@@ -91,7 +91,7 @@
       }
 
       let { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
-      response = await addRecipe(
+      response = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
@@ -169,7 +169,7 @@
       });
       
       isLoading = true;
-      response = await addRecipe(
+      response = await recipeApi.addRecipe(
         name,
         description,
         ingredients,

@@ -17,6 +17,8 @@ const getCategories = async () => {
   return data;
 }
 
-export {
+const categoryApi = {
   getCategories,
 };
+
+export default categoryApi;

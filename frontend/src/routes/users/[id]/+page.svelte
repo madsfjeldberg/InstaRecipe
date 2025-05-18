@@ -9,8 +9,8 @@
     import { avatarStore } from "../../../stores/avatarStore.js";
     import { user } from "../../../stores/authStore.js";
     import { socket } from "../../../stores/socketStore.js";
-    import { getUserById } from "$lib/api/userApi.js";
-    import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
+    import userApi from "$lib/api/userApi.js";
+    import recipeListApi from "$lib/api/recipelistApi.js";
     import FollowButton from "$lib/components/Follow/FollowButton.svelte";
     import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
     import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
@@ -39,13 +39,13 @@
 
     onMount(async () => {
         try {
-            currentUser = await getUserById(currentUserId);
+            currentUser = await userApi.getUserById(currentUserId);
             console.log("currentUser", currentUser);
-            currentUserRecipeLists = await getRecipeListsByUserId(currentUserId);
+            currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
-            
-            viewer = await getUserById($user.id);
-            const viewerRecipeLists = await getRecipeListsByUserId(viewer.id);
+
+            viewer = await userApi.getUserById($user.id);
+            const viewerRecipeLists = await recipeListApi.getRecipeListsByUserId(viewer.id);
             viewerFavoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
             viewerFollowingList = viewer.following;
             
@@ -73,7 +73,7 @@
 
         // Update my own profile page when follow/unfollow users on my own list
         if(viewer) {
-            currentUser = await getUserById(viewer.id)
+            currentUser = await userApi.getUserById(viewer.id)
             viewerFollowingList = currentUser.following;
         }
     })
@@ -85,7 +85,7 @@
         }
 
         if(viewer) {
-            currentUser = await getUserById(viewer.id)
+            currentUser = await userApi.getUserById(viewer.id)
             viewerFollowingList = currentUser.following;
         }
     });

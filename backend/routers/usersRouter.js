@@ -89,6 +89,8 @@ router.post(
 router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   const { user } = req.body;
 
+  const hashedPassword = await auth.hashPassword(user.password);
+
   if (!user) {
     return res.status(400).json({ message: "User data is required" });
   }
@@ -98,7 +100,7 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
       data: {
         username: user.username,
         email: user.email,
-        password: user.password,
+        password: hashedPassword,
         emailNotifications: user.emailNotifications,
       },
     });

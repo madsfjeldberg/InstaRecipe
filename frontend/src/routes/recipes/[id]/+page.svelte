@@ -14,7 +14,7 @@
 
     import Comment from "$lib/components/Comments/Comment.svelte";
     import CommentInput from "$lib/components/Comments/CommentInput.svelte";
-    import { getRecipeById } from "$lib/api/recipeApi.js";
+    import recipeApi from "$lib/api/recipeApi.js";
     import groceryListApi from "$lib/api/groceryListApi.js";
     import commentsApi from "$lib/api/commentsApi.js";
     import { user } from "../../../stores/authStore.js";
@@ -44,7 +44,7 @@
 
       isLoading = true;
       try {
-        recipe = await getRecipeById(recipeId);
+        recipe = await recipeApi.getRecipeById(recipeId);
         console.log($state.snapshot(recipe));
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
