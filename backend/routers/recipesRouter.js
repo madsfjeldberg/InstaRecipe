@@ -2,6 +2,7 @@ import { Router } from "express";
 import prisma from "../database/prismaClient.js";
 import macroService from "../service/macroService.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
+import b2 from "../service/b2FileUploadService.js";
 
 const router = Router();
 
@@ -169,7 +170,6 @@ router.post("/api/recipes", authenticateToken, async (req, res) => {
 
 router.delete("/api/recipes/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  console.log("ID:", id);
 
   if (!id) {
     return res.status(400).json({ message: "Recipe ID is required" });
@@ -180,10 +180,20 @@ router.delete("/api/recipes/:id", authenticateToken, async (req, res) => {
         recipeId: id,
       },
     });
+    await prisma.comment.deleteMany({
+      where: {
+        recipeId: id,
+      },
+    });
 
-    await prisma.recipe.delete({
+    let recipe = await prisma.recipe.delete({
       where: { id: id },
     });
+    let imageurl = recipe.image;
+    if (imageurl) {
+      const fileName = imageurl.split("/").pop();
+      await b2.deleteFile(fileName);
+    }
     res.status(200).json({ status: 200, message: "Recipe deleted successfully" });
   } catch (error) {
     console.error(error.message);
