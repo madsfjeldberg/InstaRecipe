@@ -9,12 +9,12 @@
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
-  import { changeUsername, changePassword } from "$lib/api/userApi.js";
+  import { changeUsername, changePassword, getUserById, updateUser } from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
   import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
-  import { passive } from "svelte/legacy";
   import { CircleUser, LoaderCircle } from "lucide-svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
+  // import { user } from "../../../stores/authStore.js";
 
   const { data } = $props();
   let { user } = data;
@@ -55,16 +55,21 @@
     event.preventDefault();
     errors = resetErrors();
     changeUsernameLoading = true;
+
     const formData = new FormData(event.target);
     const username = formData.get("username");
 
     try {
       let response;
       changeUsernameRequest.parse({ username });
-      response = await changeUsername(user.id, username);
+      let fetchedUser = await getUserById(user.id);
+      let updatedUser = {
+        ...fetchedUser,
+        username: username,
+      };
+      response = await updateUser({ user: updatedUser });
       if (response.status === 200) {
         await toast.success("Username updated!");
-        
       } else {
         await toast.error("Error updating username: " + response.message);
         errors = resetErrors();
@@ -103,7 +108,12 @@
         errors.confirmPassword = "Passwords do not match";
         return;
       }
-      response = await changePassword(user.id, passwordData);
+      let fetchedUser = await getUserById(user.id);
+      let updatedUser = {
+        ...fetchedUser,
+        password: passwordData,
+      };
+      response = await updateUser({ user: updatedUser });
       if (response.status === 200) {
         await toast.success("Password updated!");
         // reset password fields
