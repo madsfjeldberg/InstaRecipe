@@ -7,7 +7,6 @@
   import { z } from "zod";
   import { isAuthenticated, user } from "../../../stores/authStore.js";
   import { addRecipeList } from "$lib/api/recipelistApi.js";
-  import Recipetable from "../recipetable/recipetable.svelte";
 
   let { recipeLists = $bindable(), selectedList = $bindable() } = $props();
 

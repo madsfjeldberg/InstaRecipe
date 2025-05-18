@@ -5,13 +5,13 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import UploadAvatarButton from "$lib/components/upload-avatar-button/upload-avatar-button.svelte";
+  import UploadAvatarButton from "$lib/components/UploadAvatarButton/UploadAvatarButton.svelte";
   import { avatarStore } from "../../../stores/avatarStore.js";
   import { onMount } from "svelte";
   import { z } from "zod";
   import { changeUsername, changePassword, getUserById, updateUser } from "$lib/api/userApi.js";
   import { toast } from "svelte-sonner";
-  import DeleteAccountDialog from "$lib/components/delete-account-dialog/delete-account-dialog.svelte";
+  import DeleteAccountDialog from "$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte";
   import { CircleUser, LoaderCircle } from "lucide-svelte";
   import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
   // import { user } from "../../../stores/authStore.js";

@@ -8,11 +8,11 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import ThemeToggle from "../theme-toggle/theme-toggle.svelte";
+  import ThemeToggle from "../ThemeToggle/ThemeToggle.svelte";
   import { page } from "$app/stores";
   import { isAuthenticated, user } from "../../../stores/authStore";
   import Separator from "../ui/separator/separator.svelte";
-  import Navlink from "./navlink.svelte";
+  import Navlink from "./NavLink.svelte";
   import { goto } from "$app/navigation";
   import { authService } from "$lib/api/authApi.js";
   import { toast } from "svelte-sonner";

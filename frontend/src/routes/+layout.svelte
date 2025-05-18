@@ -6,7 +6,7 @@
   import { onMount } from 'svelte';
   import * as transition from 'svelte/transition';
 	import { goto } from '$app/navigation';
-  import Navbar from '$lib/components/navbar/navbar.svelte';
+  import Navbar from '$lib/components/Navbar/Navbar.svelte';
   import Footer from '$lib/components/ui/footer/footer.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
 

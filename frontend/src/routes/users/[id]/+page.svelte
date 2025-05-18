@@ -13,7 +13,7 @@
     import { getRecipeListsByUserId } from "$lib/api/recipelistApi.js";
     import FollowButton from "$lib/components/Follow/FollowButton.svelte";
     import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
-    import RecipeListSelect from "$lib/components/recipe-list-select/recipe-list-select.svelte";
+    import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
     import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
     import FollowModal from "$lib/components/Follow/FollowModal.svelte";
 
