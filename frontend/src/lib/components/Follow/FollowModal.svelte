@@ -1,15 +1,15 @@
 <script>
     import { goto } from "$app/navigation";
 
-    import { Search, LoaderCircle, CircleUser } from "lucide-svelte";
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
     import { Separator } from "$lib/components/ui/separator";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
-
     import UnfollowButton from "./UnfollowButton.svelte";
     import FollowButton from "./FollowButton.svelte";
+    import { Search, LoaderCircle, CircleUser } from "lucide-svelte";
+
     import { user } from "../../../stores/authStore.js";
     import { avatarStore } from "../../../stores/avatarStore";
 

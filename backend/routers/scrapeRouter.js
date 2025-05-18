@@ -1,10 +1,13 @@
 import { Router } from "express";
 import puppeteer from "puppeteer";
+import "dotenv/config";
+
 import ai from "../service/aiService.js";
+import b2 from "../service/b2FileUploadService.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
-import "dotenv/config";
-import b2 from "../service/b2FileUploadService.js";
+
+
 
 const router = new Router();
 

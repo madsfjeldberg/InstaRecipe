@@ -3,7 +3,6 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-
   import LoginForm from "../LoginForm/LoginForm.svelte";
   import RegisterForm from "../RegisterForm/RegisterForm.svelte";
 

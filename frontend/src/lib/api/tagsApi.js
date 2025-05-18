@@ -4,8 +4,8 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const getRecipeTags = async () => {
     try {
-        const getOption = makeOption("GET");
-        const response = await fetch(BASE_URL, getOption);
+        const option = makeOption("GET");
+        const response = await fetch(BASE_URL, option);
 
         if(!response.ok) {
             const error = await response.json();

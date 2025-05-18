@@ -1,26 +1,28 @@
 <script>
-  import CircleUser from "lucide-svelte/icons/circle-user";
-  import Menu from "lucide-svelte/icons/menu";
-  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle } from "lucide-svelte";
-  import Search from "@lucide/svelte/icons/search";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { blur } from "svelte/transition";
 
   import { Input } from "$lib/components/ui/input/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import ThemeToggle from "../ThemeToggle/ThemeToggle.svelte";
-  import { page } from "$app/stores";
-  import { isAuthenticated, user } from "../../../stores/authStore";
   import Separator from "../ui/separator/separator.svelte";
+  import Label from "../ui/label/label.svelte";
   import Navlink from "./NavLink.svelte";
-  import { goto } from "$app/navigation";
-  import authApi from "$lib/api/authApi.js";
+
+  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle, CircleUser, Menu, Search } from "lucide-svelte";
+
   import { toast } from "svelte-sonner";
+
+  import { isAuthenticated, user } from "../../../stores/authStore";
   import { avatarStore } from "../../../stores/avatarStore.js";
-  import { blur } from "svelte/transition";
+
+  import authApi from "$lib/api/authApi.js";
   import userApi from "$lib/api/userApi";
   import recipeApi from "$lib/api/recipeApi";
-  import Label from "../ui/label/label.svelte";
+  
 
   let searchValue = $state("");
   let searchFocused = $state(false);

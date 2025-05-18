@@ -1,8 +1,10 @@
 <script>
-  import { avatarStore } from '../../../stores/avatarStore.js'; // your localStorage-backed store
-  import { toast } from 'svelte-sonner';
   import Button from '../ui/button/button.svelte';
   import { LoaderCircle } from 'lucide-svelte';
+
+  import { toast } from 'svelte-sonner';
+
+  import { avatarStore } from '../../../stores/avatarStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 

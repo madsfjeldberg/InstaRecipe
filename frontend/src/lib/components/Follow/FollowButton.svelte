@@ -1,6 +1,7 @@
 <script>
-    import { UserRoundPlus } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button/index.js";
+    import { UserRoundPlus } from "lucide-svelte";
+
     import { toast } from "svelte-sonner";
 
     import { user } from "../../../stores/authStore.js";

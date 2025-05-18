@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 import commentsRepository from "../repository/commentsRepository.js";
 
 const router = Router();
