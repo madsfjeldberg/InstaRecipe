@@ -136,7 +136,8 @@ const postCommentReply = async (userId, text, recipeId, commentParentId) => {
             include: {
                 user: {
                     select: {
-                        username: true
+                      username: true,
+                      emailNotifications: true
                     }
                 }
             }

@@ -32,6 +32,13 @@ const getUsersByPartialUsername = async (query) => {
   return data;
 }
 
+const updateUser = async (user) => {
+  const option = makeOption("PUT", user);
+  const response = await fetchWithAuth(`${BASE_URL}`, option);
+  const data = await response.json();
+  return data;
+}
+
 const changeUsername = async (userId, newUsername) => {
   const option = makeOption("PATCH", { userId, newUsername });
   const response = await fetchWithAuth(`${BASE_URL}`, option);
@@ -72,6 +79,7 @@ const deleteUser = async (userId) => {
 export {
   getUserById,
   getUsersByPartialUsername,
+  updateUser,
   changeUsername,
   changePassword,
   deleteUser,

@@ -15,18 +15,21 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  username    String    @unique
-  email       String    @unique
+  id          String   @id @default(uuid())
+  username    String   @unique
+  email       String   @unique
   password    String
   avatar      Bytes?
   avatarMime  String?
-  isConfirmed Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  following  User[]  @relation("UserFollows")
-  followers  User[]  @relation("UserFollows")
+  isConfirmed Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  emailNotifications Boolean @default(true)
+  alertNotifications Boolean @default(true)
+
+  following User[] @relation("UserFollows")
+  followers User[] @relation("UserFollows")
 
   comments    Comment[]
   recipeLists RecipeList[]
