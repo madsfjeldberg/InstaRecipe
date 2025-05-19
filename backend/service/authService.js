@@ -48,25 +48,23 @@ const generateToken = async (user) => {
 
 async function verifyToken(token) {
   try {
-    const exists = await redis.exists(token);
+    const decodedPayload = jwt.verify(token, JWT_SECRET);
+    const exists = await redis.sIsMember(decodedPayload.email, token);
     if (!exists) {
       return null;
     }
 
-    // error thrown if verification fails 
-    // also checks exp by default
-    const decodedPayload = jwt.verify(token, JWT_SECRET);
     return decodedPayload;
-
+    
   } catch (error) {
-    throw new Error(`Invalid token: ${error.message}`);
+    throw error;
   }
 }
 
-async function destroyToken(token) {
+async function destroyToken(userEmail, token) {
 
   try {
-    const keysDeleted = await redis.del(token);
+    const keysDeleted = await redis.sRem(userEmail, token);
     if(keysDeleted === 0) {
       return false;
     }

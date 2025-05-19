@@ -23,24 +23,7 @@ const cookieOptions = {
   path: "/",
 };
 
-router.get("/api/auth/logout", async (req, res) => {
-  const jwt = req.cookies.jwt;
-  if (!jwt) {
-    return res.status(404).send({ errorMessage: "No tokens found on request." });
-  }
 
-  try {
-    const isDestroyed = await authService.destroyToken(jwt);
-    if (!isDestroyed) {
-      return res.status(404).send({ errorMessage: "Could not destroy token." });
-    }
-    
-    res.clearCookie("jwt").status(200).send({ });
-
-  }catch(error) {
-    res.status(500).send({ errorMessage: "Could not logout error occurred on the server."});
-  }
-});
 
 router.post("/api/auth/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -81,6 +64,8 @@ router.post("/api/auth/register", async (req, res) => {
   }
 });
 
+
+
 router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
 
@@ -112,6 +97,33 @@ router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) 
     res.status(500).send({ errorMessage: "An error occurred during login." });
   }
 });
+
+
+
+router.post("/api/auth/logout", async (req, res) => {
+  const jwt = req.cookies.jwt;
+  if (!jwt) {
+    return res.status(404).send({ errorMessage: "No tokens found on request." });
+  }
+
+  const { email } = req.body;
+  if(!email) {
+    return res.status(404).send({ errorMessage: "Email must be included in request." });
+  }
+
+  try {
+    const isDestroyed = await authService.destroyToken(email, jwt);
+    if (!isDestroyed) {
+      return res.status(404).send({ errorMessage: "Could not destroy token." });
+    }
+    
+    res.clearCookie("jwt").status(200).send({ });
+
+  }catch(error) {
+    res.status(500).send({ errorMessage: "Could not logout error occurred on the server."});
+  }
+});
+
 
 
 router.post("/api/auth/forgot-password", async (req, res) => {

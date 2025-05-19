@@ -10,7 +10,7 @@
   let popping = $state(false);
 
   const handleColor = () => {
-    if (dislikes.includes($user.id)) {
+    if ($user && dislikes.includes($user.id)) {
       return "fill-current text-red-500 hover:text-red-700";
     }
     return "";

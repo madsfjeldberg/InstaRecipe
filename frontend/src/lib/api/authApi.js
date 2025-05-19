@@ -6,9 +6,9 @@ import { makeOption } from "./util.js";
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 
 const login = async (username, password) => {
-  const postOption = makeOption("POST", {username, password});
-
+  
   try{
+    const postOption = makeOption("POST", {username, password});
     const response = await fetch(BASE_URL + "/login", postOption);
     const result = await response.json();
     
@@ -42,9 +42,9 @@ const register = async (username, email, password) => {
   }
 };
 
-const logout = async () => {
+const logout = async (email) => {
   try {
-    const getOption = makeOption("GET");
+    const getOption = makeOption("POST", {email});
     const response = await fetch(BASE_URL + "/logout", getOption);
     const result = await response.json();
 

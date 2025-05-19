@@ -41,7 +41,7 @@
 
   const handleLogout = async () => {
     try {
-      await authApi.logout();
+      await authApi.logout($user.email);
       toast.success("Logged out successfully");
       goto("/");
 

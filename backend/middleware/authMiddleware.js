@@ -1,3 +1,4 @@
+import usersRepository from '../repository/usersRepository.js';
 import auth from '../service/authService.js';
 
 async function authenticateToken(req, res, next) {
@@ -31,15 +32,9 @@ async function isAuthenticated(req, res, next) {
         }
 
         const decodedJwt = await auth.verifyToken(jwt);
-        const userId = decodedJwt.id;
+        const user = await usersRepository.getUserById(decodedJwt.id)
 
-        res
-        .status(200)
-        .send({
-          id: userId,
-          message: "Login successful.",
-          status: 200,
-        });
+        res.send({ data: user});
 
     } catch (error) {
         console.error(error);

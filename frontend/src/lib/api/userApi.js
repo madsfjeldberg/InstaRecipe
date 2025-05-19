@@ -40,8 +40,9 @@ const getUserAvatar = async (userId) => {
   try{
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + userId + "/avatar", getOption);
-
+    
     if(!response.ok) {
+      const result = await response.json();
       throw new Error(result.errorMessage);
     }
 

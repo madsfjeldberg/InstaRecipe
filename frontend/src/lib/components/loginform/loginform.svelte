@@ -65,6 +65,7 @@
       goto('/dashboard');
       
     } catch (error) {
+      console.error(error)
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {
