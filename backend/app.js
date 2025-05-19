@@ -43,7 +43,6 @@ app.use(authRouter);
 
 // authentication jwt token for all routes except authRouter
 app.use(authMiddleware.authenticateToken);
-app.use(globalErrorHandler);
 
 app.use(categoriesRouter);
 app.use(commentsRouter);
@@ -54,6 +53,7 @@ app.use(scrapeRouter);
 app.use(tagsRouter);
 app.use(usersRouter);
 
+app.use(globalErrorHandler);
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {

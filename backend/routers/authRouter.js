@@ -203,10 +203,9 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
 
 router.get("/api/auth/verify/:id", async (req, res) => {
   const id = req.params.id;
-  const user = req.user;
 
   try {
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
         id: id,
       },
@@ -215,31 +214,14 @@ router.get("/api/auth/verify/:id", async (req, res) => {
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    const token = await authService.generateToken(userWithoutPassword);
 
+    return res.cookie("jwt", token, cookieOptions).send({ data: userWithoutPassword });
 
-    const token = await authService.generateToken(user);
-
-    return res
-      .cookie("jwt", token, cookieOptions)
-      .status(200)
-      .send({
-        status: 200,
-        user: {
-          id: user.id,
-          username: user.username,
-        },
-        message: "Account verified successfully.",
-      });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .send({ errorMessage: "Something went wrong confirming the email." });
+    res.status(500).send({ errorMessage: "Something went wrong confirming the email." });
   }
 });
 

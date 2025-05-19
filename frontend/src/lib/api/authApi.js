@@ -63,7 +63,7 @@ const logout = async (email) => {
 
 
 
-async function sendRestPasswordRequest(email) {
+const sendRestPasswordRequest = async (email) => {
   try{
     const postOption = makeOption("POST", {email})
     const response = await fetch(BASE_URL + "/forgot-password", postOption);
@@ -80,7 +80,7 @@ async function sendRestPasswordRequest(email) {
 
 
 
-async function resetPassword(newPassword, resetToken) {
+const resetPassword = async (newPassword, resetToken) => {
   try{
     const patchOption = makeOption("PATCH", {newPassword});
     const response = await fetch(`${BASE_URL}/reset-password/${resetToken}`, patchOption);
@@ -98,9 +98,30 @@ async function resetPassword(newPassword, resetToken) {
   }
 }
 
+
+
+const verifyEmail = async (userId) => {
+  try {
+    const response = await fetch(BASE_URL + "/verify/" + userId);
+    const result = await response.json();
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+
+    return result.data;
+
+  }catch(error) {
+    throw error;
+  }
+}
+
+
+
 const authApi = {
   login,
   register,
+  verifyEmail,
   logout,
   sendRestPasswordRequest,
   resetPassword
