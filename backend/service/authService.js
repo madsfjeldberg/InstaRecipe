@@ -37,9 +37,8 @@ const generateToken = async (user) => {
     exp: exp
   }, JWT_SECRET);
 
-  // store token in redis
   try {
-    await redis.setEx(token, JWT_EXPIRATION, user.email);
+    await redis.sAdd(user.email, token);
     return token;
     
   } catch (error) {

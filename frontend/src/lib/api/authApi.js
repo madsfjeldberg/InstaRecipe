@@ -66,11 +66,15 @@ const logout = async () => {
 async function sendRestPasswordRequest(email) {
   try{
     const postOption = makeOption("POST", {email})
-    const response = await fetch(`${BASE_URL}/forgot-password`, postOption);
-    return await response.json();
+    const response = await fetch(BASE_URL + "/forgot-password", postOption);
+    const result = await response.json();
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
 
   } catch(error) {
-    console.error(error);
+    throw error;
   }  
 }
 
