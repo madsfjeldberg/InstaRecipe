@@ -31,16 +31,11 @@
     let isShowingFollowersModal = $state(false);
     let isShowingFollowingModal = $state(false);
 
-    const avatarUrl = (userId) => {
-    return import.meta.env.VITE_API_URL
-      ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
-      : `/api/users/${currentUserId}/avatar`;
-  };
+    
 
     onMount(async () => {
         try {
             currentUser = await userApi.getUserById(currentUserId);
-            console.log("currentUser", currentUser);
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
 
@@ -100,6 +95,15 @@
     const handleToggleFollowButton = () => {
         isFollowing = !isFollowing;
     }
+
+
+
+    const avatarUrl = () => {
+        return import.meta.env.VITE_API_URL
+        ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
+        : `/api/users/${currentUserId}/avatar`;
+    };
+
 </script>
 
 {#if isLoading}
@@ -113,15 +117,13 @@
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
-         
-<!-- TODO ENABLE COSTUME AVATAR -->
-{#if $avatarStore}
-        <img class="rounded-full w-28 h-28 object-cover" src={avatarUrl(currentUserId)} alt="User Avatar"> 
+        {#if currentUser.avatar}
+            <img class="rounded-full w-28 h-28 object-cover" src={avatarUrl()} alt="User Avatar"> 
         {:else}
-        <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
-    {/if}
+            <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
+        {/if}
+
         <div class="flex flex-col items-center">
-            
             <h1 class="text-3xl font-semibold mt-4">{currentUser.username}</h1>
         </div>
 

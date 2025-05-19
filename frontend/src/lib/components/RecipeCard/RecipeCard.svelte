@@ -84,7 +84,7 @@
   }}
   >
   
-  {#if parentUser}
+  {#if parentUser && $user}
     {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
       <DeleteRecipeDialog recipeId={id} bind:selectedList />
     {/if}
