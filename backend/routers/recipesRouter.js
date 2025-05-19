@@ -9,7 +9,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.get("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
+router.get("/api/recipes", async (req, res) => {
   const { partialName } = req.query;
 
   if (partialName) {
@@ -60,7 +60,7 @@ router.get("/api/recipes", authMiddleware.authenticateToken, async (req, res) =>
   }
 });
 
-router.get("/api/recipes/:id", authMiddleware.authenticateToken, async (req, res) => {
+router.get("/api/recipes/:id", async (req, res) => {
   const id = req.params.id;
   if (!id) {
     return res

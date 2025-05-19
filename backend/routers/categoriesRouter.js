@@ -4,7 +4,7 @@ import prisma from '../database/prismaClient.js';
 
 const router = Router();
 
-router.get('/api/categories', async (req, res) => {
+router.get("/api/categories", async (req, res) => {
   try {
     const categories = await prisma.category.findMany({
       cacheStrategy: {

@@ -47,7 +47,6 @@
       isLoading = true;
       try {
         recipe = await recipeApi.getRecipeById(recipeId);
-        console.log($state.snapshot(recipe));
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
@@ -56,10 +55,9 @@
         totalViews = recipe.totalViews;
         
       } catch (error) {
-        toast.error("Could not load recipe, try again later");
+        toast.error("Could not load recipe, try again later. " + error.meesage );
 
       } finally {
-        
         isLoading = false;
       }
     });

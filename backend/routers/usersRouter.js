@@ -31,7 +31,7 @@ router.get("/api/users/:id", async (req, res) => {
   }
 });
 
-router.get("/api/users", authMiddleware.authenticateToken, async (req, res) => {
+router.get("/api/users", async (req, res) => {
   const { partialUsername } = req.query;
   if (partialUsername) {
     const foundUsers = await prisma.user.findMany({
@@ -55,7 +55,7 @@ router.get("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/api/users/:id/avatar", authMiddleware.authenticateToken, async (req, res) => {
+router.get("/api/users/:id/avatar", async (req, res) => {
   let userId = req.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
