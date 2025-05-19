@@ -76,6 +76,18 @@ async function destroyToken(userEmail, token) {
   }
 }
 
+
+
+const invalidateOtherTokens = async (email) => {
+  try{
+    await redis.del(email);
+  }catch(error) {
+    throw error;
+  }
+}
+
+
+
 const decodeToken = (token) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -91,7 +103,8 @@ const auth = {
   generateToken,
   decodeToken,
   verifyToken,
-  destroyToken
+  destroyToken,
+  invalidateOtherTokens
 };
 
 export default auth;

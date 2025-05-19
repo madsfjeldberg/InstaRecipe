@@ -61,23 +61,17 @@
         try {
             isLoading = true;
             const resetToken = getResetTokenFromHref();
-            const response = await authApi.resetPassword(newPassword, resetToken);
+            await authApi.resetPassword(newPassword, resetToken);
 
-            if (response.status !== 200) {
-                console.log("Reset failed:", response.errorMessage);
-                toast.error(response.errorMessage || "Something went wrong");
-                return;
-            }
-
-            toast.success(response.message);
             success = true;
             newPassword = "";
             confirmPassword = "";
+            toast.success("Password has been reset.");
             setTimeout(async () => await goto("/login"), 5000); //5 seconds
 
         } catch (error) {
             console.error("Unexpected error:", error);
-            toast.error("An error occurred while resetting password");
+            toast.error(error.message);
 
         } finally {
             isLoading = false;

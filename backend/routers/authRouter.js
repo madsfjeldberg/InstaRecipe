@@ -158,48 +158,30 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 router.patch("/api/auth/reset-password/:token", async (req, res) => {
   const resetToken = req.params.token;
   if (!resetToken) {
-    return res
-      .status(401)
-      .send({ errorMessage: "Reset token must be included in the request." });
+    return res.status(401).send({ errorMessage: "Reset token must be included in the request." });
   }
   
   try {
     const doesExists = await redis.exists(resetToken);
     if (!doesExists) {
-      return res
-      .status(401)
-      .send({
-        errorMessage:
-        "No reset token found, send a new forgot password request.",
-      });
+      return res.status(401).send({ errorMessage: "No reset token found, send a new forgot password request." });
     }
     
     const email = await redis.get(resetToken);
-    
+    await authService.invalidateOtherTokens(email);
+
     const isDeleted = await redis.del(resetToken);
     if (!isDeleted) {
-      return res
-      .status(500)
-      .send({ errorMessage: "Error occurred when deleting reset token." });
-    }
-
-    // Find and delete all tokens in Redis that have this email as their value
-    const allKeys = await redis.keys("*");
-    for (const key of allKeys) {
-      const value = await redis.get(key);
-      if (value === email) {
-        await redis.del(key);
-      }
+      return res.status(500).send({ errorMessage: "Error occurred when deleting reset token." });
     }
     
     const { newPassword } = req.body;
     if (!newPassword) {
-      return res
-        .status(401)
-        .send({ errorMessage: "must include a new password." });
+      return res.status(401).send({ errorMessage: "Must include a new password." });
     }
+
     const newHashedPassword = await authService.hashPassword(newPassword);
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
         email: email,
       },
@@ -208,13 +190,13 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       },
     });
 
-    res.send({ status: 200, message: "Password has been reset." });
+    emailService.sendConfirmationPasswordResetEmail(email);
+
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    res.send({ data: userWithoutPassword });
+
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        errorMessage: "Unexpected error occurred during password reset.",
-      });
+    res.status(500).send({ errorMessage: "Unexpected error occurred during password reset." });
     console.error(error);
   }
 });

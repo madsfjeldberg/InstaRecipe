@@ -84,10 +84,17 @@ async function resetPassword(newPassword, resetToken) {
   try{
     const patchOption = makeOption("PATCH", {newPassword});
     const response = await fetch(`${BASE_URL}/reset-password/${resetToken}`, patchOption);
-    return await response.json();
+    const result = await response.json();
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+
+    return result.data;
 
   }catch(error) {
     console.error(error);
+    throw error;
   }
 }
 

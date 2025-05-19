@@ -42,6 +42,18 @@ const sendPasswordResetEmail = (to, token) => {
 
 
 
+const sendConfirmationPasswordResetEmail = (to) => {
+  const subject = 'Password has been reset';
+  const html = `
+    <h1>Your password has now been reset</h1>
+    <p>Click the link below to visit InstaRecipe</p>
+    <a href="${FRONTEND_URL}">Visit</a>
+  `;
+  return sendEmail(to, subject, html);
+}
+
+
+
 const sendGroceryListEmail = (to, groceryList) => {
   const subject = "Grocery list - " + groceryList.name;
 
@@ -250,6 +262,7 @@ const email = {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendConfirmationPasswordResetEmail,
   sendGroceryListEmail,
   sendCommentNotification,
   sendCommentReplyNotification,
