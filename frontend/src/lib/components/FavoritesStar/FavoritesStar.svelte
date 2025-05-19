@@ -23,6 +23,7 @@
 
             await recipelistApi.addRecipeToFavoritesRecipeList(recipe);
             toast.success(recipe.name + " was added to your favorites list");
+            
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong interacting with favorites list");
