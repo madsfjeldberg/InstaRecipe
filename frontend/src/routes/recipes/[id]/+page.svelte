@@ -90,12 +90,8 @@
 
       try {
         isGroceryListGenerating = true;
-
-        const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
-        if(response.errorMessage) {
-          toast.error(response.errorMessage)
-          return;
-        }
+        
+        await groceryListApi.sendGroceryList(recipe.name, groceryList);
 
         toast.success("Grocery list has been generated and sent to your email");
 
