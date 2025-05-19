@@ -88,12 +88,12 @@ router.post(
 
 router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   const { user } = req.body;
+  if (!user) {
+    return res.status(400).json({ errorMessage: "User data is required" });
+  }
 
   const hashedPassword = await auth.hashPassword(user.password);
 
-  if (!user) {
-    return res.status(400).json({ message: "User data is required" });
-  }
   try {
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
@@ -104,8 +104,9 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
         emailNotifications: user.emailNotifications,
       },
     });
+
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
     }
 
     const token = await auth.generateToken(updatedUser);
@@ -113,7 +114,7 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
       .status(200)
       .clearCookie("jwt")
       .cookie("jwt", token, cookieOptions)
-      .json({
+      .send({
         id: updatedUser._id,
         message: "User updated successfully.",
         status: 200,

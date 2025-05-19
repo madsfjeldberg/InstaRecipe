@@ -37,7 +37,30 @@ const getUserById = async (userId) => {
 
     } catch (error) {
         console.error(error);
-        throw new Error("Could not get user with id:", userId);
+        throw error;
+    }
+}
+
+
+
+const getUserByEmail = async (userEmail) => {
+    try {
+        const foundUser = await prisma.user.findUnique({
+            where: {
+                email: userEmail
+            }
+        });
+
+        if (!foundUser) {
+            return null;
+        }
+        
+        const { password, ...userWithoutPassword } = foundUser;
+        return userWithoutPassword;
+
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }
 
@@ -57,7 +80,7 @@ const updateUsername = async (userId, newUsername) => {
 
     } catch (error) {
         console.error(error);
-        throw new Error("Could not update username");
+        throw error;
     }
 }
 
@@ -101,7 +124,7 @@ const follow = async (parentId, childId) => {
 
     }catch(error) {
         console.error(error);
-        throw new Error("Could not follow user with id:", parentId)
+        throw error;
     }
 }
 
@@ -145,12 +168,13 @@ const unfollow = async (parentId, childId) => {
 
     }catch(error) {
         console.error(error);
-        throw new Error("Could not unfollow user with id:", parentId);
+        throw error;
     }
 }
 
 export default {
   getUserById,
+  getUserByEmail,
   updateUsername,
   follow,
   unfollow
