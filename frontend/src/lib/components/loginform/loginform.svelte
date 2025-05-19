@@ -14,7 +14,7 @@
   import userApi from '$lib/api/userApi.js';
 
   import { avatarStore } from '../../../stores/avatarStore.js';
-  import { user } from '../../../stores/authStore.js';
+  import { user, isAuthenticated } from '../../../stores/authStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
@@ -59,7 +59,9 @@
       reader.readAsDataURL(userAvatarBlob);
       reader.onload = () => avatarStore.set(reader.result);
 
+      isAuthenticated.set(true);
       user.set(loggedInUser);
+
       toast.success('Login successful!');
    
       goto('/dashboard');

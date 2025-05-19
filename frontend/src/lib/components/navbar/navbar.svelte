@@ -344,6 +344,7 @@
         </div>
         <!-- END SEARCH INPUT AND DROPDOWN -->
       {/if}
+      
       {#if $isAuthenticated}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger let:props>
@@ -352,7 +353,7 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if $avatarStore === "null"}
+            {#if $user.avatar === null}
               <CircleUser class="h-8 w-8" />
             {:else}
               <img
