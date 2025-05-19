@@ -77,25 +77,20 @@
   });
 
   const handleUserSearch = async (query) => {
-    console.log("Searching for users with query:", query);
     if (query.length > 2) {
       const results = await userApi.getUsersByPartialUsername(query);
       userSearchResults = results;
-      console.log("User search results:", $state.snapshot(userSearchResults));
+      
     } else {
       userSearchResults = [];
     }
   };
 
   const handleRecipeSearch = async (query) => {
-    console.log("Searching for recipes with query:", query);
     if (query.length > 2) {
       const results = await recipeApi.getRecipesByPartialName(query);
       recipeSearchResults = results;
-      console.log(
-        "Recipe search results:",
-        $state.snapshot(recipeSearchResults),
-      );
+
     } else {
       recipeSearchResults = [];
     }
@@ -285,11 +280,16 @@
                             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded transition-colors duration-150"
                           >
                             <div class="flex-shrink-0">
-                              <img
-                                src={avatarUrl(usr.id)}
-                                alt={usr.username}
-                                class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
-                              />
+                              {#if usr.avatar}
+                                <img
+                                  src={avatarUrl(usr.id)}
+                                  alt={usr.username}
+                                  class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
+                                />
+                              
+                              {:else}
+                                <CircleUser class="h-10 w-10"/>
+                              {/if}
                             </div>
                             <div class="flex-1 min-w-0">
                               <p
@@ -344,8 +344,8 @@
         </div>
         <!-- END SEARCH INPUT AND DROPDOWN -->
       {/if}
-      
-      {#if $isAuthenticated}
+
+      {#if $isAuthenticated && $user}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger let:props>
           {#snippet child({props})}

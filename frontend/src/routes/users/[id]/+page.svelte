@@ -31,7 +31,7 @@
     let isShowingFollowersModal = $state(false);
     let isShowingFollowingModal = $state(false);
 
-    
+
 
     onMount(async () => {
         try {
@@ -65,6 +65,11 @@
             currentUser = updatedUser;
             return;
         }
+
+        // if(updatedUser.username !== viewer.username && viewer) {
+        //     currentUser = userApi.getUserById(currentUser.id);
+        //     return;
+        // }
 
         // Update my own profile page when follow/unfollow users on my own list
         if(viewer) {
