@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import prisma from '../database/prismaClient.js';
 
 const router = Router();
@@ -10,9 +11,9 @@ router.get('/api/categories', async (req, res) => {
         ttl: 3600,
       }
     });
-    res.status(200).json(categories);
+    res.send( {data: categories});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send({ errorMessage: "Could not retrieve the categories from database." });
   }
 });
 
