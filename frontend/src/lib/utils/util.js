@@ -8,7 +8,7 @@ import { isAuthenticated } from "../../stores/authStore.js";
 function makeOption(httpMethod, body) {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
-    if(!methods.includes(httpMethod)) {
+    if (!methods.includes(httpMethod)) {
         throw Error(httpMethod + " is not a valid http method / verb")
     }
 
@@ -24,7 +24,7 @@ function makeOption(httpMethod, body) {
     if (body) {
         option.body = JSON.stringify(body);
     }
-    
+
     return option;
 }
 
@@ -41,12 +41,14 @@ async function fetchWithAuth(url, options) {
     return response;
 }
 
-const ifResponseOk = (response, result) => {
-  if(!response.ok) {
-    throw new Error(result.errorMessage)
-  }
+const ifResponseOk = async (response) => {
+    const result = await response.json();
 
-  return result.data;
+    if (!response.ok) {
+        throw new Error(result.errorMessage)
+    }
+
+    return result.data;
 }
 
 export { makeOption, fetchWithAuth, ifResponseOk };
