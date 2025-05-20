@@ -1,21 +1,22 @@
 <script>
-    import { onMount, onDestroy } from "svelte";
-    import { page } from "$app/stores";
+    import { onMount, onDestroy } from 'svelte';
+    import { page } from '$app/stores';
 
-    import { Separator } from "$lib/components/ui/separator";
-    import userApi from "$lib/api/userApi.js";
-    import recipeListApi from "$lib/api/recipelistApi.js";
-    import FollowButton from "$lib/components/Follow/FollowButton.svelte";
-    import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
-    import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
-    import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
-    import FollowModal from "$lib/components/Follow/FollowModal.svelte";
+    import { LoaderCircle, CircleUser } from 'lucide-svelte';
+    import { Separator } from '$lib/components/ui/separator';
+    import FollowButton from '$lib/components/Follow/FollowButton.svelte';
+    import UnfollowButton from '$lib/components/Follow/UnfollowButton.svelte';
+    import FollowModal from '$lib/components/Follow/FollowModal.svelte';
+    import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
+    import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+    
+    import { avatarStore } from '../../../stores/avatarStore.js';
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
+    
+    import userApi from '$lib/api/userApi.js';
+    import recipeListApi from '$lib/api/recipelistApi.js';
 
-    import { LoaderCircle, CircleUser } from "lucide-svelte";
-
-    import { avatarStore } from "../../../stores/avatarStore.js";
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
 
     const currentUserId = $page.params.id;
     let currentUser = $state(null);
@@ -31,16 +32,11 @@
     let isShowingFollowersModal = $state(false);
     let isShowingFollowingModal = $state(false);
 
-    const avatarUrl = (userId) => {
-    return import.meta.env.VITE_API_URL
-      ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
-      : `/api/users/${currentUserId}/avatar`;
-  };
+
 
     onMount(async () => {
         try {
             currentUser = await userApi.getUserById(currentUserId);
-            console.log("currentUser", currentUser);
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
 
@@ -71,6 +67,11 @@
             return;
         }
 
+        // if(updatedUser.username !== viewer.username && viewer) {
+        //     currentUser = userApi.getUserById(currentUser.id);
+        //     return;
+        // }
+
         // Update my own profile page when follow/unfollow users on my own list
         if(viewer) {
             currentUser = await userApi.getUserById(viewer.id)
@@ -100,6 +101,15 @@
     const handleToggleFollowButton = () => {
         isFollowing = !isFollowing;
     }
+
+
+
+    const avatarUrl = () => {
+        return import.meta.env.VITE_API_URL
+        ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
+        : `/api/users/${currentUserId}/avatar`;
+    };
+
 </script>
 
 {#if isLoading}
@@ -113,15 +123,13 @@
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
-         
-<!-- TODO ENABLE COSTUME AVATAR -->
-{#if $avatarStore}
-        <img class="rounded-full w-28 h-28 object-cover" src={avatarUrl(currentUserId)} alt="User Avatar"> 
+        {#if currentUser.avatar}
+            <img class="rounded-full w-28 h-28 object-cover" src={avatarUrl()} alt="User Avatar"> 
         {:else}
-        <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
-    {/if}
+            <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
+        {/if}
+
         <div class="flex flex-col items-center">
-            
             <h1 class="text-3xl font-semibold mt-4">{currentUser.username}</h1>
         </div>
 

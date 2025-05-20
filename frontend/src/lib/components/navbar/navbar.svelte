@@ -1,27 +1,27 @@
 <script>
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { blur } from "svelte/transition";
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { blur } from 'svelte/transition';
+  
+  import { toast } from 'svelte-sonner';
 
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import ThemeToggle from "../ThemeToggle/ThemeToggle.svelte";
-  import Separator from "../ui/separator/separator.svelte";
-  import Label from "../ui/label/label.svelte";
-  import Navlink from "./NavLink.svelte";
+  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle, CircleUser, Menu, Search } from 'lucide-svelte';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import Separator from '../ui/separator/separator.svelte';
+  import Label from '../ui/label/label.svelte';
+  
+  import Navlink from './NavLink.svelte';
+  import ThemeToggle from '../ThemeToggle/ThemeToggle.svelte';
 
-  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle, CircleUser, Menu, Search } from "lucide-svelte";
+  import { isAuthenticated, user } from '../../../stores/authStore.js';
+  import { avatarStore } from '../../../stores/avatarStore.js';
 
-  import { toast } from "svelte-sonner";
-
-  import { isAuthenticated, user } from "../../../stores/authStore";
-  import { avatarStore } from "../../../stores/avatarStore.js";
-
-  import authApi from "$lib/api/authApi.js";
-  import userApi from "$lib/api/userApi";
-  import recipeApi from "$lib/api/recipeApi";
+  import authApi from '$lib/api/authApi.js';
+  import userApi from '$lib/api/userApi';
+  import recipeApi from '$lib/api/recipeApi';
   
 
   let searchValue = $state("");
@@ -32,19 +32,6 @@
   let searchLoading = $state(false);
 
   let debounceTimeout;
-
-  const avatarUrl = (userId) => {
-    return import.meta.env.VITE_API_URL
-      ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
-      : `/api/users/${userId}/avatar`;
-  };
-
-  const handleLogout = async () => {
-    await authApi.logout();
-    toast.success("Logged out successfully");
-    avatarStore.set(null); // Clear the avatar store
-    goto("/");
-  };
 
   $effect(() => {
     if (searchValue) {
@@ -61,6 +48,8 @@
             handleUserSearch(searchValue),
             handleRecipeSearch(searchValue),
           ]);
+        } catch(error) {
+
         } finally {
           // Ensure loading is set to false even if there are errors
           searchLoading = false;
@@ -72,26 +61,42 @@
     }
   });
 
+  const avatarUrl = (userId) => {
+    return import.meta.env.VITE_API_URL
+      ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
+      : `/api/users/${userId}/avatar`;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout($user.email);
+      toast.success("Logged out successfully");
+      goto("/");
+
+    }catch(error) {
+      toast.error(error.message);
+    }
+  };
+
+
   const handleUserSearch = async (query) => {
-    console.log("Searching for users with query:", query);
     if (query.length > 2) {
-      const results = await userApi.getUsersByPartialUsername(query);
-      userSearchResults = results;
-      console.log("User search results:", $state.snapshot(userSearchResults));
+      try {
+        const results = await userApi.getUsersByPartialUsername(query);
+        userSearchResults = results;
+      } catch (error) {
+      }
+      
     } else {
       userSearchResults = [];
     }
   };
 
   const handleRecipeSearch = async (query) => {
-    console.log("Searching for recipes with query:", query);
     if (query.length > 2) {
       const results = await recipeApi.getRecipesByPartialName(query);
       recipeSearchResults = results;
-      console.log(
-        "Recipe search results:",
-        $state.snapshot(recipeSearchResults),
-      );
+
     } else {
       recipeSearchResults = [];
     }
@@ -281,11 +286,16 @@
                             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded transition-colors duration-150"
                           >
                             <div class="flex-shrink-0">
-                              <img
-                                src={avatarUrl(usr.id)}
-                                alt={usr.username}
-                                class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
-                              />
+                              {#if usr.avatar}
+                                <img
+                                  src={avatarUrl(usr.id)}
+                                  alt={usr.username}
+                                  class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
+                                />
+                              
+                              {:else}
+                                <CircleUser class="h-10 w-10"/>
+                              {/if}
                             </div>
                             <div class="flex-1 min-w-0">
                               <p
@@ -340,7 +350,8 @@
         </div>
         <!-- END SEARCH INPUT AND DROPDOWN -->
       {/if}
-      {#if $isAuthenticated}
+
+      {#if $isAuthenticated && $user}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger let:props>
           {#snippet child({props})}
@@ -348,7 +359,7 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if $avatarStore === "null"}
+            {#if avatarUrl($user.id) === null}
               <CircleUser class="h-8 w-8" />
             {:else}
               <img

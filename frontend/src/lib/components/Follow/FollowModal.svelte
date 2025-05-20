@@ -1,17 +1,18 @@
 <script>
-    import { goto } from "$app/navigation";
+    import { goto } from '$app/navigation';
 
-    import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-    import { Separator } from "$lib/components/ui/separator";
-    import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import UnfollowButton from "./UnfollowButton.svelte";
-    import FollowButton from "./FollowButton.svelte";
-    import { Search, LoaderCircle, CircleUser } from "lucide-svelte";
+    import { Search, LoaderCircle, CircleUser } from 'lucide-svelte';
+    import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+    import { Separator } from '$lib/components/ui/separator';
+    import * as Dialog from '$lib/components/ui/dialog/index.js';
+    import { Input } from '$lib/components/ui/input/index.js';
+    import { Label } from '$lib/components/ui/label/index.js';
 
-    import { user } from "../../../stores/authStore.js";
-    import { avatarStore } from "../../../stores/avatarStore";
+    import UnfollowButton from './UnfollowButton.svelte';
+    import FollowButton from './FollowButton.svelte';
+    
+    import { user } from '../../../stores/authStore.js';
+    import { avatarStore } from '../../../stores/avatarStore';
 
     const { noOfUsers, label, parentUserList, viewerFollowingList } = $props();
     let searchValue = $state("");
@@ -26,6 +27,12 @@
     const vistUser = (userId) => {
         goto("/users/" + userId);
     }
+
+    const avatarUrl = (userId) => {
+        return import.meta.env.VITE_API_URL
+        ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
+        : `/api/users/${userId}/avatar`;
+    };
 
 </script>
 
@@ -58,10 +65,10 @@
             {#each parentUserList as user (user.id)}
                 <div class="flex justify-between items-center gap-4">
                     <button class="flex gap-3" onclick={ () => vistUser(user.id)}>
-                        {#if $avatarStore}
-                            <CircleUser />
+                        {#if user.avatar}
+                            <img class="rounded-full w-7 h-7" src={avatarUrl(user.id)} alt={user.username + "' avatar"}>
                         {:else}
-                            <img src={$avatarStore} alt={user.username + "' avatar"}>
+                            <CircleUser class="w-7 h-7"/>
                         {/if}
                      
                         <p>{user.username}</p>

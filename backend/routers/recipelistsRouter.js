@@ -1,57 +1,15 @@
-import { Router } from "express";
-import prisma from "../database/prismaClient.js";
+import { Router } from 'express';
 
-import authMiddleware from "../middleware/authMiddleware.js";
-import recipeListRepository from "../repository/recipeListRepository.js";
+import recipeListRepository from '../repository/recipeListRepository.js';
+
+import prisma from '../database/prismaClient.js';
 
 const router = Router();
 
-router.get("/api/recipelists", authMiddleware.authenticateToken, async (req, res) => {
-  try {
-    const recipeLists = await prisma.recipeList.findMany({
-      include: {
-        recipes: true,
-        user: true,
-      },
-    });
-    res.status(200).json(recipeLists);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.get("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
-  const { listId } = req.params;
-
-  if (!listId) {
-    return res.status(400).json({ message: "List ID is required" });
-  }
-
-  try {
-    const recipes = await prisma.recipe.findMany({
-      where: {
-        recipeLists: {
-          some: { id: listId },
-        },
-      },
-      include: {
-        category: true,
-        recipeLists: true, // use recipeLists, not recipeList
-      },
-    });
-    res.status(200).json(recipes);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: error.message });
-  }
-});
-
 // Get all recipe lists for a specific user
-router.get(
-  "/api/recipelists/user/:userId",
-  authMiddleware.authenticateToken,
-  async (req, res) => {
+router.get("/api/recipelists/user/:userId", async (req, res) => {
     const { userId } = req.params;
+
     try {
       const recipeLists = await prisma.recipeList.findMany({
         where: { userId: userId },
@@ -65,21 +23,21 @@ router.get(
           },
         },
       });
-      res.status(200).json(recipeLists);
+      res.send({ data: recipeLists });
+
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error)
+      res.status(500).send({ errorMessage: "Could not get all recipe list for user" });
     }
   }
 );
 
-router.post("/api/recipelists", authMiddleware.authenticateToken, async (req, res) => {
-  console.log("Received request to add recipe list:", req.body);
+router.post("/api/recipelists", async (req, res) => {
   const { name, userId } = req.body;
-  console.log("Name:", name);
-  console.log("User ID:", userId);
   if (!name || !userId) {
-    return res.status(400).send({ message: "All fields are required" });
+    return res.status(400).send({ errorMessage: "All fields are required" });
   }
+
   try {
     const recipeList = await prisma.recipeList.create({
       data: {
@@ -91,103 +49,84 @@ router.post("/api/recipelists", authMiddleware.authenticateToken, async (req, re
       },
     });
 
-    res.status(201).send({ status: 201, data: recipeList });
+    res.send({ data: recipeList });
   } catch (error) {
     console.error("Error adding recipe list:", error);
-    res.status(500).send({ message: error.message });
+    res.status(500).send({ errorMessage: "Server error. Error creating recipe list." });
   }
 });
 
-router.post(
-  "/api/recipelists/:listId/recipe/:recipeId",
-  authMiddleware.authenticateToken,
-  async (req, res) => {
-    try {
-      const updatedList = await recipeListRepository.addRecipeToStaredList(
-        req.params.listId,
-        req.params.recipeId
-      );
-      res.send({ data: updatedList });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .send({
-          errorMessage: "Server Error. Error adding recipe to stared list",
-        });
-    }
-  }
-);
+router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+  try {
+    const updatedList = await recipeListRepository.addRecipeToFavoritesList(req.params.listId, req.params.recipeId);
+    res.send({ data: updatedList });
 
-router.put("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Server Error. Error adding recipe to stared list" });
+  }  
+});
+
+router.put("/api/recipelists/:listId", async (req, res) => {
   const { listId } = req.params;
   const { name, isPrivate } = req.body;
 
   if (!listId || !name || isPrivate === undefined) {
-    return res
-      .status(400)
-      .send({ errorMessage: "List ID, name, and visibility are required" });
+    return res.status(400).send({ errorMessage: "List ID, name, and visibility are required" });
   }
 
   try {
     const updatedRecipeList = await prisma.recipeList.update({
       where: { id: listId },
       data: { name, isPrivate },
+      include: {
+        recipes: true
+      }
     });
-    res.status(200).send({ status: 200, data: updatedRecipeList });
+
+    res.send({ data: updatedRecipeList });
   } catch (error) {
     console.error("Error updating recipe list:", error);
-    res.status(500).send({ message: error.message });
+    res.status(500).send({ errorMessage: "Could not update name/privacy settings on recipe list with id: " + listId });
   }
 });
 
-router.delete(
-  "/api/recipelists/:listId/recipe/:recipeId",
-  authMiddleware.authenticateToken,
-  async (req, res) => {
-    try {
-      const updatedList = await recipeListRepository.removeRecipeFromStaredList(
-        req.params.listId,
-        req.params.recipeId
-      );
-      res.send({ data: updatedList });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .send({
-          errorMessage: `Server Error. Error removing recipe from stared list: ${error.message}`,
-        });
-    }
-  }
-);
+router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+  try {
+    const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
+    res.send({ data: updatedList });
 
-router.delete(
-  "/api/recipelists/:listId",
-  authMiddleware.authenticateToken,
-  async (req, res) => {
-    const { listId } = req.params;
-    if (!listId) {
-      return res.status(400).send({ errorMessage: "List ID is required" });
-    }
-    try {
-      await prisma.recipe.deleteMany({
-        where: {
-          recipeLists: {
-            some: { id: listId },
-          },
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({errorMessage: "Server Error. Error removing recipe from favorites list" });
+  }
+});
+
+router.delete("/api/recipelists/:listId", async (req, res) => {
+  const { listId } = req.params;
+  if (!listId) {
+    return res.status(400).send({ errorMessage: "List ID is required" });
+  }
+
+  try {
+    await prisma.recipe.deleteMany({
+      where: {
+        recipeLists: {
+          some: { id: listId },
         },
-      });
+      },
+    });
 
-      const deletedRecipeList = await prisma.recipeList.delete({
-        where: { id: listId },
-      });
-      res.status(200).send({ status: 200, data: deletedRecipeList });
-    } catch (error) {
-      console.error("Error deleting recipe list:", error);
-      res.status(500).send({ message: error.message });
-    }
+    const deletedRecipeList = await prisma.recipeList.delete({
+      where: { id: listId },
+    });
+
+    res.send({ data: deletedRecipeList });
+    
+  } catch (error) {
+    console.error("Error deleting recipe list:", error);
+    res.status(500).send({ errorMessage: "Could not delete recipe list along with the recipes" });
   }
-);
+});
 
 export default router;

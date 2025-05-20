@@ -1,4 +1,4 @@
-import likeDislikeRepository from "../../repository/likeDislikeRepository.js";
+import likeDislikeRepository from '../../repository/likeDislikeRepository.js';
 
 // all of these emit the same event "update-like-dislike" to the client
 // containg a recipe object

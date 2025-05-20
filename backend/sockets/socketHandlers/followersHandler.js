@@ -1,4 +1,4 @@
-import usersRepository from "../../repository/usersRepository.js";
+import usersRepository from '../../repository/usersRepository.js';
 
 export const followersHandler = (socket, io) => {
     socket.on("following", async (data) => {

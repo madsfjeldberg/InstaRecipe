@@ -1,32 +1,33 @@
 <script>
-    import { onDestroy, onMount } from "svelte";
-    import { page } from "$app/stores";
+    import { onDestroy, onMount } from 'svelte';
+    import { page } from '$app/stores';
 
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Root } from "$lib/components/ui/button";
-    import { Separator } from "$lib/components/ui/separator";    
-    import Button from "$lib/components/ui/button/button.svelte";
-    import Badge from "$lib/components/ui/badge/badge.svelte";
-    import Comment from "$lib/components/Comments/Comment.svelte";
-    import CommentInput from "$lib/components/Comments/CommentInput.svelte";
-    import RecipeViews from "$lib/components/RecipePopularity/RecipeViews.svelte";
-    import LikeButton from "$lib/components/RecipePopularity/LikeButton.svelte";
-    import DislikeButton from "$lib/components/RecipePopularity/DislikeButton.svelte";
-    import DoughnutChart from "$lib/components/ChartJs/DoughnutChart.svelte";
-    import BarChart from "$lib/components/ChartJs/BarChart.svelte";
+    import { toast } from 'svelte-sonner';
+
+    import { Stretch } from 'svelte-loading-spinners';
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from 'lucide-svelte';
+    import * as Card from '$lib/components/ui/card/index.js';
+    import { Root } from '$lib/components/ui/button';
+    import { Separator } from '$lib/components/ui/separator';    
+    import Button from '$lib/components/ui/button/button.svelte';
+    import Badge from '$lib/components/ui/badge/badge.svelte';
+
+    import Comment from '$lib/components/Comments/Comment.svelte';
+    import CommentInput from '$lib/components/Comments/CommentInput.svelte';
+    import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
+    import LikeButton from '$lib/components/RecipePopularity/LikeButton.svelte';
+    import DislikeButton from '$lib/components/RecipePopularity/DislikeButton.svelte';
+    import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
+    import BarChart from '$lib/components/ChartJs/BarChart.svelte';
     
-    import { Stretch } from "svelte-loading-spinners";
-    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
-    
-    import { toast } from "svelte-sonner";
-    import { handleLike, handleDislike } from "$lib/utils/recipeLikes.js";
+    import { handleLike, handleDislike } from '$lib/utils/recipeLikes.js';
 
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
 
-    import recipeApi from "$lib/api/recipeApi.js";
-    import groceryListApi from "$lib/api/groceryListApi.js";
-    import commentsApi from "$lib/api/commentsApi.js";
+    import recipeApi from '$lib/api/recipeApi.js';
+    import groceryListApi from '$lib/api/groceryListApi.js';
+    import commentsApi from '$lib/api/commentsApi.js';
 
     let recipe = $state(null);
     let comments = $state([]);
@@ -47,7 +48,6 @@
       isLoading = true;
       try {
         recipe = await recipeApi.getRecipeById(recipeId);
-        console.log($state.snapshot(recipe));
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
@@ -56,10 +56,9 @@
         totalViews = recipe.totalViews;
         
       } catch (error) {
-        toast.error("Could not load recipe, try again later");
+        toast.error("Could not load recipe, try again later. " + error.meesage );
 
       } finally {
-        
         isLoading = false;
       }
     });
@@ -92,12 +91,8 @@
 
       try {
         isGroceryListGenerating = true;
-
-        const response = await groceryListApi.sendGroceryList(recipe.name, groceryList);
-        if(response.errorMessage) {
-          toast.error(response.errorMessage)
-          return;
-        }
+        
+        await groceryListApi.sendGroceryList(recipe.name, groceryList);
 
         toast.success("Grocery list has been generated and sent to your email");
 
@@ -355,3 +350,4 @@
       <p class="text-gray-700 dark:text-gray-300">No recipe data available.</p>
     {/if}
   </div>
+  

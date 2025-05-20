@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
   import {
     Chart,
     BarController,
@@ -8,7 +8,7 @@
     LinearScale,
     Tooltip,
     Legend,
-  } from "chart.js";
+  } from 'chart.js';
 
   let canvas;
 

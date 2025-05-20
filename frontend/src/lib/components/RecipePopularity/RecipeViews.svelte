@@ -1,12 +1,12 @@
 <script>
-    import { onDestroy } from "svelte";
+    import { onDestroy } from 'svelte';
     import { page } from '$app/stores';
-    import { get } from "svelte/store";
+    import { get } from 'svelte/store';
 
-    import { Eye } from "lucide-svelte";
+    import { Eye } from 'lucide-svelte';
 
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
 
     let { totalViews = $bindable(), recipeId } = $props();
 

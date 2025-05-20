@@ -1,16 +1,16 @@
 <script>
-  import { tick } from "svelte";
+  import { tick } from 'svelte';
 
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { ThumbsUp } from "lucide-svelte";
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { ThumbsUp } from 'lucide-svelte';
 
-  import { user } from "../../../stores/authStore";
+  import { user } from '../../../stores/authStore.js';
   
   let { onLike, likes } = $props();
   let popping = $state(false);
 
   const handleColor = () => {
-    if (likes.includes($user.id)) {
+    if ($user && likes.includes($user.id)) {
       return "fill-current text-green-500 hover:text-green-700";
     }
     return "";

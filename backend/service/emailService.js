@@ -1,5 +1,6 @@
-import { Resend } from 'resend';
 import 'dotenv/config';
+
+import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,6 +14,7 @@ const sendEmail = async (to, subject, html) => {
       subject,
       html,
     });
+    console.log("Email sent", subject);
     return response;
   } catch (error) {
     console.error('Error sending email:', error);
@@ -20,7 +22,7 @@ const sendEmail = async (to, subject, html) => {
   }
 }
 
-const sendVerificationEmail = async (to, token) => {
+const sendVerificationEmail = (to, token) => {
   const subject = 'Verify your email address';
   const html = `
     <h1>Verify your email address</h1>
@@ -30,7 +32,7 @@ const sendVerificationEmail = async (to, token) => {
   return sendEmail(to, subject, html);
 }
 
-const sendPasswordResetEmail = async (to, token) => {
+const sendPasswordResetEmail = (to, token) => {
   const subject = 'Reset your password';
   const html = `
     <h1>Reset your password</h1>
@@ -42,7 +44,19 @@ const sendPasswordResetEmail = async (to, token) => {
 
 
 
-const sendGroceryListEmail = async (to, groceryList) => {
+const sendConfirmationPasswordResetEmail = (to) => {
+  const subject = 'Password has been reset';
+  const html = `
+    <h1>Your password has now been reset</h1>
+    <p>Click the link below to visit InstaRecipe</p>
+    <a href="${FRONTEND_URL}">Visit</a>
+  `;
+  return sendEmail(to, subject, html);
+}
+
+
+
+const sendGroceryListEmail = (to, groceryList) => {
   const subject = "Grocery list - " + groceryList.name;
 
   let groceries = groceryList.items.map((item) => {
@@ -250,10 +264,10 @@ const email = {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendConfirmationPasswordResetEmail,
   sendGroceryListEmail,
   sendCommentNotification,
   sendCommentReplyNotification,
 }
 
 export default email;
-

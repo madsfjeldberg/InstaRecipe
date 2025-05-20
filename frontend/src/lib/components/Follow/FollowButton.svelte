@@ -1,11 +1,11 @@
 <script>
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { UserRoundPlus } from "lucide-svelte";
+    import { toast } from 'svelte-sonner';
 
-    import { toast } from "svelte-sonner";
+    import { Button } from '$lib/components/ui/button/index.js';
+    import { UserRoundPlus } from 'lucide-svelte';
 
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
 
     const { parentUser = $bindable(), onToggleFollowButton } = $props();
     const viewer = $user;

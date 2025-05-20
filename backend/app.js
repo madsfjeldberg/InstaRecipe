@@ -40,10 +40,10 @@ app.use(rateLimiter.limiter);
 app.use(["/auth/login", "/auth/register"], rateLimiter.authLimiter);
 
 app.use(authRouter);
+app.use(usersRouter);
 
 // authentication jwt token for all routes except authRouter
 app.use(authMiddleware.authenticateToken);
-app.use(globalErrorHandler);
 
 app.use(categoriesRouter);
 app.use(commentsRouter);
@@ -52,8 +52,8 @@ app.use(recipelistsRouter);
 app.use(recipesRouter);
 app.use(scrapeRouter);
 app.use(tagsRouter);
-app.use(usersRouter);
 
+app.use(globalErrorHandler);
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {

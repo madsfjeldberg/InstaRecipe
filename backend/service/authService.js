@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+
 import redis from '../database/redisClient.js';
-import 'dotenv/config';
 
 const SALT = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -37,9 +38,8 @@ const generateToken = async (user) => {
     exp: exp
   }, JWT_SECRET);
 
-  // store token in redis
   try {
-    await redis.setEx(token, JWT_EXPIRATION, user.email);
+    await redis.sAdd(user.email, token);
     return token;
     
   } catch (error) {
@@ -49,25 +49,23 @@ const generateToken = async (user) => {
 
 async function verifyToken(token) {
   try {
-    const exists = await redis.exists(token);
+    const decodedPayload = jwt.verify(token, JWT_SECRET);
+    const exists = await redis.sIsMember(decodedPayload.email, token);
     if (!exists) {
       return null;
     }
 
-    // error thrown if verification fails 
-    // also checks exp by default
-    const decodedPayload = jwt.verify(token, JWT_SECRET);
     return decodedPayload;
-
+    
   } catch (error) {
-    throw new Error(`Invalid token: ${error.message}`);
+    throw error;
   }
 }
 
-async function destroyToken(token) {
+async function destroyToken(userEmail, token) {
 
   try {
-    const keysDeleted = await redis.del(token);
+    const keysDeleted = await redis.sRem(userEmail, token);
     if(keysDeleted === 0) {
       return false;
     }
@@ -78,6 +76,18 @@ async function destroyToken(token) {
     throw new Error(`Error deleting token: ${error.message}`);
   }
 }
+
+
+
+const invalidateOtherTokens = async (email) => {
+  try{
+    await redis.del(email);
+  }catch(error) {
+    throw error;
+  }
+}
+
+
 
 const decodeToken = (token) => {
   try {
@@ -94,7 +104,8 @@ const auth = {
   generateToken,
   decodeToken,
   verifyToken,
-  destroyToken
+  destroyToken,
+  invalidateOtherTokens
 };
 
 export default auth;

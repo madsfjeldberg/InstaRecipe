@@ -1,26 +1,25 @@
 <script>
   import { goto } from '$app/navigation';
 
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { LoaderCircle } from "lucide-svelte";
-
   import { z } from 'zod';
   import { toast } from 'svelte-sonner';
 
-  import { avatarStore } from "../../../stores/avatarStore.js";
-  import { user } from "../../../stores/authStore.js";
+  import { LoaderCircle } from 'lucide-svelte';
+  import * as Card from '$lib/components/ui/card/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
 
   import authApi from '$lib/api/authApi.js';
-  
+  import userApi from '$lib/api/userApi.js';
+
+  import { avatarStore } from '../../../stores/avatarStore.js';
+  import { user, isAuthenticated } from '../../../stores/authStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
-  let props = $props();
-  let { onToggleAuthMode } = props;
-  let loading = $state(false);
+  let { onToggleAuthMode } = $props();
+  let isLoading = $state(false);
 
   let errors = $state({
     username: '',
@@ -30,11 +29,10 @@
 
   const LoginRequest = z.object({
     username: z.string()
-    .min(3, 'Username must be at least 3 characters long')
-    .max(20, 'Username must be at most 20 characters long'),
+    .min(1, 'Username can not be empty'),
+
     password: z.string()
-    .min(5, 'Password must be at least 5 characters long')
-    .max(100, 'Password must be at most 100 characters long'),
+    .min(1, 'Password can not be empty')
   });
 
 
@@ -47,40 +45,30 @@
     const password = formData.get('password');
 
     try {
-      let response;
-      loading = true;
+      isLoading = true;
+
+      errors.form = "";
+      errors.username = "";
+      errors.password = "";
      
       LoginRequest.parse({ username, password });
-      response = await authApi.login(username, password);
-     
-      if (response.status === 200) {
-        
-        // handle avatar
-        const data = await response; // Await the JSON response
-        const avatarResponse = await fetch(`${BASE_URL}/users/${data.id}/avatar`, { // Use BASE_URL for the avatar fetch
-          credentials: 'include'
-        });
-        if (avatarResponse.ok) {
-          const avatarBlob = await avatarResponse.blob(); // blob = binary large object
-          const reader = new FileReader(); // Create a FileReader to read the blob
-          reader.readAsDataURL(avatarBlob); // Read the blob as a base64 data URL
-          reader.onload = () => avatarStore.set(reader.result); // This is the base64 image
-        } 
-        // Set the user data in store
-        user.set(data); // Store the user data
-        await toast.success('Login successful!');
-        loading = false;
-        //redirect to dashboard
-        await goto('/dashboard');
-      } else {
-        errors = { ...errors, form: response.message };
-        loading = false;
-      }
+      const loggedInUser = await authApi.login(username, password);
+
+      const userAvatarBlob = await userApi.getUserAvatar(loggedInUser.id);
+      const reader = new FileReader();
+      reader.readAsDataURL(userAvatarBlob);
+      reader.onload = () => avatarStore.set(reader.result);
+
+      isAuthenticated.set(true);
+      user.set(loggedInUser);
+
+      toast.success('Login successful!');
+   
+      goto('/dashboard');
       
     } catch (error) {
-      loading = false;
+      console.error(error)
       if (error instanceof z.ZodError) {
-        // Map Zod errors to form fields
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {
             errors[err.path[0]] = err.message;
@@ -89,6 +77,9 @@
       } else {
         errors.form = error.message || 'An unexpected error occurred';
       }
+
+    } finally {
+      isLoading = false;
     }
   };
 
@@ -99,41 +90,45 @@
     <Card.Title class="text-2xl">Login</Card.Title>
     <Card.Description>Enter your email below to login to your account.</Card.Description>
   </Card.Header>
+
   <Card.Content>
     <form onsubmit={handleSubmit}>
       {#if errors.form}
         <div class="mb-4 text-red-500">{errors.form}</div>
       {/if}
-    <div class="grid gap-4">
-      <div class="grid gap-2">
-        <Label for="username">Username</Label>
-        <Input id="username" type="text" placeholder="username" name="username" required />
-        {#if errors.username}
-          <span class="text-red-500 text-sm">{errors.username}</span>
-        {/if}
-      </div>
-      <div class="grid gap-2">
-        <div class="flex items-center">
-          <Label for="password">Password</Label>
+
+      <div class="grid gap-4">
+        <div class="grid gap-2">
+          {#if errors.username}
+            <span class="text-red-500 text-sm">{errors.username}</span>
+          {/if}
+          <Label for="username">Username</Label>
+          <Input id="username" type="text" placeholder="username" name="username"/>
         </div>
-        <Input id="password" type="password" placeholder="******" name="password" required />
-        {#if errors.password}
-          <span class="text-red-500 text-sm">{errors.password}</span>
+
+        <div class="grid gap-2">
+          {#if errors.password}
+            <span class="text-red-500 text-sm">{errors.password}</span>
+          {/if}
+          <Label for="password">Password</Label>
+          <Input id="password" type="password" placeholder="******" name="password"/>
+
+          <a href="/login/forgot-password" class="ml-auto inline-block text-sm underline">
+            Forgot your password?
+          </a>
+        </div>
+
+        {#if isLoading}
+          <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
+        {:else}
+          <Button type="submit" class="w-full">Login</Button>
         {/if}
-        <a href="/login/forgot-password" class="ml-auto inline-block text-sm underline">
-          Forgot your password?
-        </a>
       </div>
-      {#if loading}
-      <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
-      {:else}
-      <Button type="submit" class="w-full">Login</Button>
-      {/if}
-    </div>
+    </form>
+
     <div class="mt-4 text-center text-sm">
       Don&apos;t have an account?
       <Button variant="link" onclick={onToggleAuthMode}>Sign up</Button>
     </div>
-  </form>
   </Card.Content>
 </Card.Root>

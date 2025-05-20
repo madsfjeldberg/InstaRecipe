@@ -1,22 +1,23 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
+  import { z } from 'zod';
+  import { toast } from 'svelte-sonner';
+
+  import { LoaderCircle } from 'lucide-svelte';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-  import CategorySelect from "$lib/components/CategorySelect/CategorySelect.svelte";
-  import MultiSelect from "../MultiSelect/MultiSelect.svelte";
-  import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
-  import { LoaderCircle } from "lucide-svelte";
+  import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 
-  import { z } from "zod";
-  import { toast } from "svelte-sonner";
-  
-  import recipeApi from "$lib/api/recipeApi";
-  import scrapeApi from "$lib/api/scrapeApi";
+  import CategorySelect from '$lib/components/CategorySelect/CategorySelect.svelte';
+  import MultiSelect from '../MultiSelect/MultiSelect.svelte';
+  import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
+
+  import recipeApi from '$lib/api/recipeApi';
+  import scrapeApi from '$lib/api/scrapeApi';
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
@@ -74,20 +75,13 @@
     const recipeListId = selectedList.id;
 
     try {
-      let response;
-      let success = linkRequest.parse({ url });
-      
       isLoading = true;
+      
+      linkRequest.parse({ url }); 
 
-      let generatedRecipe = await scrapeApi.scrapeLink(url);
-
-      if (generatedRecipe.status !== 200) {
-        errors = { ...errors, form: generatedRecipe.data.message };
-        return;
-      }
-
-      let { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
-      response = await recipeApi.addRecipe(
+      const generatedRecipe = await scrapeApi.scrapeLink(url);
+      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
+      const newRecipe = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
@@ -99,27 +93,18 @@
         recipeListId
       );
 
-      if (response.status === 201) {
-        const newRecipe = response.data.recipe;
-        newRecipe.ingredientsList = response.data.ingredients;
+      newRecipe.ingredientsList = newRecipe.ingredients;
 
-        selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList};
-        selectedList.recipes.push(newRecipe);
-        
-        errors = resetErrors();
-        selectedTags = [];
-        isDialogOpen = false; // Close the dialog
-        await toast.success("Recipe added successfully!");
-        
-      } else {
-        errors = { ...errors, form: response.message };
-      }
+      selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
+      selectedList = { ...selectedList};
+      selectedList.recipes.push(newRecipe.recipe);
       
-      isLoading = false;
-      
+      errors = resetErrors();
+      selectedTags = [];
+      isDialogOpen = false;
+      toast.success("Recipe added successfully!");
+
     } catch (error) {
-
       if (error instanceof z.ZodError) {
         errors = resetErrors();
         error.errors.forEach((err) => {
@@ -127,6 +112,7 @@
             errors[err.path[0]] = err.message;
           }
         });
+
       } else {
         errors = {
           ...resetErrors(),
@@ -153,10 +139,11 @@
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
-    
+
     try {
-      let response;
-      let success = addRecipeRequest.parse({
+      isLoading = true;
+      
+      addRecipeRequest.parse({
         name,
         description,
         ingredients,
@@ -164,11 +151,13 @@
         category,
       });
       
-      isLoading = true;
-      response = await recipeApi.addRecipe(
+      const ingredientsArray = ingredients.split(",");
+
+      const newRecipe = await recipeApi.addRecipe(
         name,
         description,
-        ingredients,
+        ingredientsArray,
+        ingredientsArray,
         instructions,
         category,
         selectedTags,
@@ -176,22 +165,16 @@
         recipeListId
       );
 
-      if (response.status === 201) {
-        const newRecipe = response.data.recipe;
-        newRecipe.ingredientsList = response.data.ingredients;
+      newRecipe.ingredientsList = newRecipe.ingredients;
 
-        selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList};
-        selectedList.recipes.push(newRecipe)
+      selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
+      selectedList = { ...selectedList};
+      selectedList.recipes.push(newRecipe.recipe)
 
-        errors = resetErrors();
-        selectedTags = [];
-        isDialogOpen = false; // Close the dialog
-        await toast.success("Recipe added successfully!");
-        
-      } else {
-        errors = { ...errors, form: response.message };
-      }
+      errors = resetErrors();
+      selectedTags = [];
+      isDialogOpen = false; // Close the dialog
+      toast.success("Recipe added successfully!");
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -273,17 +256,17 @@
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="recipeName" class="text-right">Name</Label>
-            <Input id="recipeName" placeholder="Grandma's lasagna" name="recipeName" class="col-span-3"/>
+            <Input id="recipeName" placeholder="Grandma's lasagna" name="recipeName" class="col-span-3" value="Grandmas' Lasagne"/>
             <ErrorMessage message={errors.name} className="col-span-3 col-end-5" />
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="description" class="text-right">Description</Label>
-            <Textarea id="description" placeholder="The best recipe to ever do it." name="description" class="col-span-3" />
+            <Textarea id="description" placeholder="The best recipe to ever do it." name="description" class="col-span-3" value="The best to ever do it!" />
             <ErrorMessage message={errors.description} className="col-span-3 col-end-5" />
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="ingredients" class="text-right">Ingredients</Label>
-            <Textarea id="ingredients" placeholder="200g minced beef, 100g carrots, 50g butter" name="ingredients" class="col-span-3" />
+            <Textarea id="ingredients" placeholder="200g minced beef, 100g carrots, 50g butter" name="ingredients" class="col-span-3" value="212g minced beef, 32g carrots, 1 onion"/>
             <ErrorMessage message={errors.ingredients} className="col-span-3 col-end-5" />
           </div>
         </div>
@@ -291,7 +274,7 @@
         <div class="grid gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="instructions" class="text-right">Instructions</Label>
-            <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" />
+            <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" value="Chops carrots, put in pot, and stir stir stir"/>
             <ErrorMessage message={errors.instructions} className="col-span-3 col-end-5" />
           </div>
 

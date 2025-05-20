@@ -1,19 +1,20 @@
 <script>
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import Label from "../ui/label/label.svelte";
-  import Input from "../ui/input/input.svelte";
-  import Switch from "../ui/switch/switch.svelte";
-  import DeleteListDialog from "../DeleteListDialog/DeleteListDialog.svelte";
-  import { Pencil } from "lucide-svelte";
+  import { z } from 'zod';
 
-  import { toast } from "svelte-sonner";
+  import { toast } from 'svelte-sonner';
 
-  import { z } from "zod";
+  import { Pencil } from 'lucide-svelte';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import AlertDialogAction from '../ui/alert-dialog/alert-dialog-action.svelte';
+  import Label from '../ui/label/label.svelte';
+  import Input from '../ui/input/input.svelte';
+  import Switch from '../ui/switch/switch.svelte';
+  
+  import DeleteListDialog from '../DeleteListDialog/DeleteListDialog.svelte';
 
-  import recipeListApi from "$lib/api/recipelistApi";
+  import recipeListApi from '$lib/api/recipelistApi';
 
   let { selectedList = $bindable(), recipeLists = $bindable() } = $props();
   let isSheetDialogOpen = $state(false);
@@ -43,28 +44,24 @@
     const formData = new FormData(event.target);
     const name = formData.get("listName");
     const isPrivate = formData.get("visibility") === "on" ? true : false;
-    console.log("isPrivate", isPrivate);
-    console.log("name", name);
 
     try {
       editListRequest.parse({ name });
-      const response = await recipeListApi.updateRecipeList(selectedList.id, name, isPrivate);
-      selectedList = response.data;
-
-      if (response.status !== 200) {
-        errors = { ...errors, form: response.message };
-        return;
-      }
-
+      const updatedRecipeList = await recipeListApi.updateRecipeList(selectedList.id, name, isPrivate);
+      selectedList = updatedRecipeList;
+      
       errors = { ...errors, form: "" };
+
       recipeLists = recipeLists.map((list) => {
         if (list.id === selectedList.id) {
           return { ...list, name, isPrivate };
         }
         return list;
       });
+
       toast.success('List updated successfully!'); // Update success message
       isSheetDialogOpen = false;
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Map Zod errors to form fields
@@ -73,6 +70,8 @@
             errors[err.path[0]] = err.message;
           }
         });
+      } else {
+        errors = { ...errors, form: error.message };
       }
     }
   };
@@ -81,8 +80,16 @@
   
  <Sheet.Root bind:open={isSheetDialogOpen}>
   <Sheet.Trigger>
-  <Button variant="link" class="text-2xl font-semibold transition-all">{selectedList.name}</Button>
+    <Button variant="link" class="text-2xl font-semibold transition-all">{selectedList.name}</Button>
+    <div class="flex justify-start ml-4">
+      {#if selectedList.isPrivate}
+        <p>(Private)</p>
+      {:else}
+        <p>(Public)</p>
+      {/if}
+    </div>
   </Sheet.Trigger>
+  
   <Sheet.Content side="left">
    <Sheet.Header>
     <Sheet.Title>Edit</Sheet.Title>

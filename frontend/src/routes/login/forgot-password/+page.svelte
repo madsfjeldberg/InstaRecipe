@@ -1,13 +1,14 @@
 <script>
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Stretch } from 'svelte-loading-spinners';
+    import { toast } from 'svelte-sonner';
     
-    import { toast } from "svelte-sonner";
-    
-    import authApi from "$lib/api/authApi";
+    import * as Card from '$lib/components/ui/card/index.js';
+    import { Input } from '$lib/components/ui/input/index.js';
+    import { Label } from '$lib/components/ui/label/index.js';
+    import { Button } from '$lib/components/ui/button/index.js';
+    import authApi from '$lib/api/authApi';
+    import { Toaster } from '$lib/components/ui/sonner';
+    import { Stretch } from 'svelte-loading-spinners'; 
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from 'lucide-svelte';
     
     let email = $state("");
     let isLoading = $state(false);
@@ -18,18 +19,15 @@
 
         try {
             isLoading = true;
-            const response = await authApi.sendRestPasswordRequest(email);
-            if (response.status !== 200) {
-                toast.error(response.errorMessage);
-                return;
-            }
+            await authApi.sendRestPasswordRequest(email);
 
-            success = true;
             email = "";
-            toast.success(response.message);
-            console.log("called");
+            success = true;
+            toast.success("Reset password link has been sent to your email");
+
         } catch (error) {
-            console.error(error);
+            toast.error(error.message)
+            console.error(error.message);
 
         } finally {
             isLoading = false;
@@ -52,9 +50,7 @@
     <Card.Root class="w-full max-w-md p-4 shadow-lg rounded-2x">
         <Card.Header>
             <Card.Title>Reset password</Card.Title>
-            <Card.Description
-                >Enter your email address to send reset password request</Card.Description
-            >
+            <Card.Description>Enter your email address to send reset password request</Card.Description>
         </Card.Header>
 
         <Card.Content>
@@ -81,6 +77,11 @@
                     {/if}
                 </Button>
             </form>
+            
+        <Button variant="ghost" class="flex items-center hover:bg-primary hover:text-secondary mt-3" onclick={() => history.back()}>
+            <ArrowLeft class="mr-2" />Back
+        </Button>
+
         </Card.Content>
     </Card.Root>
 </div>

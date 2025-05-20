@@ -1,6 +1,7 @@
-import emailService from "../../service/emailService.js";
-import commentsRepository from "../../repository/commentsRepository.js";
-import recipeRepository from "../../repository/recipeRepository.js";
+import emailService from '../../service/emailService.js';
+
+import commentsRepository from '../../repository/commentsRepository.js';
+import recipeRepository from '../../repository/recipeRepository.js';
 
 export const commentsHandler = (socket, io) => {
     socket.on("new-comment", async (newComment) => {
@@ -35,12 +36,12 @@ export const commentsHandler = (socket, io) => {
         } else {
             const foundRecipe = await recipeRepository.getRecipeById(newReply.recipeId);
             const recipeName = foundRecipe.name;
-          newReply.replyParent.recipe = { name: recipeName };
+            newReply.replyParent.recipe = { name: recipeName };
           
             const emailsNotificationEnabled = postedCommentReply.user.emailNotifications;
             if (emailsNotificationEnabled) {
               emailService.sendCommentReplyNotification(newReply.replyParent, postedCommentReply);    
-          };
+            };
             
         }
 

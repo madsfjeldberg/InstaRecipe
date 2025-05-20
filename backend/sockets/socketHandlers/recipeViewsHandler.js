@@ -1,4 +1,4 @@
-import recipeRepository from "../../repository/recipeRepository.js"
+import recipeRepository from '../../repository/recipeRepository.js'
 
 export const recipeViewsHandler = (socket, io) => {
 

@@ -33,6 +33,8 @@ model User {
 
   comments    Comment[]
   recipeLists RecipeList[]
+  
+  isDeleted   Boolean  @default(false)
 }
 
 model RecipeList {

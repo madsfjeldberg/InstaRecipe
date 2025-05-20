@@ -1,5 +1,6 @@
-import cors from 'cors';
 import 'dotenv/config';
+
+import cors from 'cors';
 
 // Set up CORS options
 const corsOptions = {

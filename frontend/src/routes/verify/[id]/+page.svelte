@@ -3,46 +3,31 @@
   import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
   
-  import { updateAuthState } from '../../../stores/authStore';
+  import authApi from '$lib/api/authApi.js';
+
+  import { updateAuthState } from '../../../stores/authStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL + '/auth' : '/auth';
 
-  let status = 'verifying'; // 'verifying' | 'success' | 'error'
-  let message = '';
+  let status = "verifying";
+  let message = "";
 
   onMount(async () => {
-    const token = $page.params.token;
+    const userId = $page.params.id;
     
     try {
-      const response = await fetch(`${BASE_URL}/verify/${token}`, {
-        method: 'GET',
-        credentials: "include",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        status = 'success';
-        message = data.message;
-        let user = {
-          id: data.user.id,
-          username: data.user.username
-        }
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          updateAuthState(user);
-          goto('/dashboard');
-        }, 3000);
-      } else {
-        status = 'error';
-        message = data.message;
-      }
+      const user = await authApi.verifyEmail(userId);
+      status = "success";
+      message = "Email verified."
+      
+      setTimeout(() => {
+        updateAuthState(user);
+        goto("/dashboard");
+      }, 3000);
+     
     } catch (error) {
-      status = 'error';
-      message = 'An error occurred during verification';
+      status = "error";
+      message = error.message;
     }
   });
 </script>
@@ -54,6 +39,7 @@
 <div class="flex flex-col items-center justify-center min-h-screen p-4">
   {#if status === 'verifying'}
     <h1 class="font-bold text-3xl text-center dark:text-gray-200">Verifying your email...</h1>
+
   {:else if status === 'success'}
     <h1 class="font-bold text-3xl text-center text-green-600">Email verified successfully!</h1>
     <p class="mt-4 text-center dark:text-gray-200">{message}</p>

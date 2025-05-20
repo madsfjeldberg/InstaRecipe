@@ -1,21 +1,23 @@
 <script>
-  import { onMount } from "svelte";
-  import { blur } from "svelte/transition";
-
-  import Button from "$lib/components/ui/button/button.svelte";
-  import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
-  import AddListDialog from "$lib/components/AddListDialog/AddListDialog.svelte";
-  import AddRecipeDialog from "$lib/components/AddRecipeDialog/AddRecipeDialog.svelte";
-  import DeleteListDialog from "$lib/components/DeleteListDialog/DeleteListDialog.svelte";
-  import EditListDialog from "$lib/components/EditListDialog/EditListDialog.svelte";
-  import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
-  import Separator from "$lib/components/ui/separator/separator.svelte";
+  import { onMount } from 'svelte';
+  import { blur } from 'svelte/transition';
   
-  import { Plus, ScrollText, ExternalLink, LoaderCircle } from "lucide-svelte";
+  import { toast } from 'svelte-sonner';
 
-  import recipeListApi from "$lib/api/recipelistApi.js";
-  import categoryApi from "$lib/api/categoryApi.js";
-  import tagsApi from "$lib/api/tagsApi.js";
+  import { Plus, ScrollText, ExternalLink, LoaderCircle } from 'lucide-svelte';
+  import Button from '$lib/components/ui/button/button.svelte';
+  import Separator from '$lib/components/ui/separator/separator.svelte';
+
+  import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
+  import AddListDialog from '$lib/components/AddListDialog/AddListDialog.svelte';
+  import AddRecipeDialog from '$lib/components/AddRecipeDialog/AddRecipeDialog.svelte';
+  import DeleteListDialog from '$lib/components/DeleteListDialog/DeleteListDialog.svelte';
+  import EditListDialog from '$lib/components/EditListDialog/EditListDialog.svelte';
+  import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+
+  import recipeListApi from '$lib/api/recipelistApi.js';
+  import categoryApi from '$lib/api/categoryApi.js';
+  import tagsApi from '$lib/api/tagsApi.js';
   
 
   const { data } = $props();
@@ -24,18 +26,27 @@
   let isInitialLoad = $state(true); // Flag to track if it's the initial load
 
   let userId = user.id;
+
   let recipeLists = $state([]);
   let selectedList = $state(null);
   let favoritesRecipeList = $state(null);
+
   let categories = $state([]);
   let tags = $state([]);
+
   let loading = $state(true);
 
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
-    recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
-    categories = await categoryApi.getCategories();
-    tags = await tagsApi.getRecipeTags();
+    try {
+      recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
+      categories = await categoryApi.getCategories();
+      tags = await tagsApi.getRecipeTags();
+      
+    } catch(error) {
+      toast.error(error.message + "\nTry again later");
+      return;
+    }
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
@@ -87,9 +98,12 @@
             <AddRecipeDialog bind:selectedList {categories} {tags}/>
           </div>
         {:else}
-          <div class="group flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
-          </div>
+          <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
+          {#if selectedList.isPrivate}
+            <p>(Private)</p>
+          {:else}
+            <p>(Public)</p>
+          {/if}
         {/if}
         
         <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">

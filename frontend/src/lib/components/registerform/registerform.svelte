@@ -1,17 +1,18 @@
 <script>
   import { goto } from '$app/navigation';
   
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { LoaderCircle } from "lucide-svelte";
-
   import { z } from 'zod';
   import { toast } from 'svelte-sonner';
 
+  import { LoaderCircle } from 'lucide-svelte';
+  import * as Card from '$lib/components/ui/card/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
+
   import authApi from '$lib/api/authApi.js';
 
+  
   let { onToggleAuthMode } = $props();
   let isLoading = $state(false);
   let errors = $state({
@@ -34,7 +35,6 @@
   });
 
   const handleSubmit = async (event) => {
-    console.log('handleSubmit');
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -43,38 +43,28 @@
     const password = formData.get('password');
 
     try {
-      let response;
+      isLoading = true;
       
-      isLoading = true; // Set loading to true when the request starts
-      //TODO ADD A LOADING SPINNER
       RegisterRequest.parse({ username, email, password});
-      response = await authApi.register(username, email, password);
-      console.log("REGISTER RESPONSE", response)
+      await authApi.register(username, email, password);
       
+      toast.success('Registration email sent!');
+      goto('/verify');
 
-      if (response.status === 200) {
-        await toast.success('Registration email sent!');
-        isLoading = false;
-        await goto('/verify');
-
-      } else {
-        isLoading = false;
-        errors = { ...errors, form: response.message };
-      }
-      
     } catch (error) {
       if (error instanceof z.ZodError) {
-        // Map Zod errors to form fields
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {
             errors[err.path[0]] = err.message;
           }
         });
-        isLoading = false;
+
       } else {
         errors.form = error.message || 'An unexpected error occurred';
-        isLoading = false;
       }
+
+    } finally {
+      isLoading = false;
     }
   };
 
@@ -85,44 +75,52 @@
     <Card.Title class="text-xl">Sign Up</Card.Title>
     <Card.Description>Enter your information to create an account.</Card.Description>
   </Card.Header>
+
   <Card.Content>
     <form onsubmit={handleSubmit}>
       {#if errors.form}
         <span class="text-red-500 text-sm">{errors.form}</span>
       {/if}
-    <div class="grid gap-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div class="grid col-span-4 gap-2">
-          <Label for="username">Username</Label>
-          <Input id="username" placeholder="username" name="username" required />
-          {#if errors.username}
-          <span class="text-red-500 text-sm">{errors.username}</span>
-        {/if}
+
+      <div class="grid gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid col-span-4 gap-2">
+            {#if errors.username}
+            <span class="text-red-500 text-sm">{errors.username}</span>
+            {/if}
+            <Label for="username">Username</Label>
+            <Input id="username" placeholder="username" name="username" required />
+          </div>
         </div>
-      </div>
-      <div class="grid gap-2">
-        <Label for="email">Email</Label>
-        <Input id="email" type="email" placeholder="user@example.com" name="email" required />
-        {#if errors.email}
-          <span class="text-red-500 text-sm">{errors.email}</span>
+
+        <div class="grid gap-2">
+          {#if errors.email}
+            <span class="text-red-500 text-sm">{errors.email}</span>
+          {/if}
+          <Label for="email">Email</Label>
+          <Input id="email" type="email" placeholder="user@example.com" name="email" required />
+        </div>
+
+        <div class="grid gap-2">
+          {#if errors.password}
+            <span class="text-red-500 text-sm">{errors.password}</span>
+          {/if}
+          <Label for="password">Password</Label>
+          <Input id="password" type="password" placeholder="******" name="password" required />
+        </div>
+
+        {#if isLoading}
+          <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
+        {:else}
+          <Button type="submit" class="w-full">Sign Up</Button>
         {/if}
       </div>
-      <div class="grid gap-2">
-        <Label for="password">Password</Label>
-        <Input id="password" type="password" placeholder="******" name="password" required />
-        {#if errors.password}
-          <span class="text-red-500 text-sm">{errors.password}</span>
-        {/if}
-      </div>
-      {#if isLoading}
-        <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
-      {:else}
-        <Button type="submit" class="w-full">Sign Up</Button>
-      {/if}
-    </div>
+    </form>
+
     <div class="mt-4 text-center text-sm">
       Already have an account?
       <Button variant="link" onclick={onToggleAuthMode}> Sign in </Button>
     </div>
+
   </Card.Content>
 </Card.Root>
