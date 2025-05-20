@@ -1,9 +1,8 @@
 <script>
-    import Button from "../ui/button/button.svelte";
-
-    import { Star } from "lucide-svelte";
-
     import { toast } from "svelte-sonner";
+    
+    import { Star } from "lucide-svelte";
+    import Button from "../ui/button/button.svelte";
     
     import recipelistApi from "$lib/api/recipelistApi.js";
     
@@ -21,7 +20,7 @@
                 return;
             }
 
-            await recipelistApi.addRecipeToFavoritesRecipeList(recipe);
+            await addToFavoritesRecipeList(recipe);
             toast.success(recipe.name + " was added to your favorites list");
             
         } catch (error) {
