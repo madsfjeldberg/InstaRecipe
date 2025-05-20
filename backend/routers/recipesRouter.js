@@ -107,7 +107,7 @@ router.get("/api/recipes/categories", async (req, res) => {
   }
 });
 
-router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
+router.post("/api/recipes", async (req, res) => {
   const {
     name,
     description,

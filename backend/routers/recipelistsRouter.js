@@ -6,51 +6,10 @@ import recipeListRepository from "../repository/recipeListRepository.js";
 
 const router = Router();
 
-router.get("/api/recipelists", async (req, res) => {
-  try {
-    const recipeLists = await prisma.recipeList.findMany({
-      include: {
-        recipes: true,
-        user: true,
-      },
-    });
-    res.send({data: recipeLists});
-  } catch (error) {
-    res.status(500).send({ errorMessage: "Could not get recipe lists." });
-  }
-});
-
-router.get("/api/recipelists/:listId", async (req, res) => {
-  const { listId } = req.params;
-
-  if (!listId) {
-    return res.status(400).json({ message: "List ID is required" });
-  }
-
-  try {
-    const recipes = await prisma.recipe.findMany({
-      where: {
-        recipeLists: {
-          some: { id: listId },
-        },
-      },
-      include: {
-        category: true,
-        recipeLists: true, // use recipeLists, not recipeList
-      },
-    });
-    res.status(200).json(recipes);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: error.message });
-  }
-});
-
 // Get all recipe lists for a specific user
-router.get(
-  "/api/recipelists/user/:userId",
-  async (req, res) => {
+router.get("/api/recipelists/user/:userId", async (req, res) => {
     const { userId } = req.params;
+
     try {
       const recipeLists = await prisma.recipeList.findMany({
         where: { userId: userId },
@@ -64,9 +23,11 @@ router.get(
           },
         },
       });
-      res.status(200).json(recipeLists);
+      res.send({ data: recipeLists });
+
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error)
+      res.status(500).send({ errorMessage: "Could not get all recipe list for user" });
     }
   }
 );
@@ -118,6 +79,9 @@ router.put("/api/recipelists/:listId", async (req, res) => {
     const updatedRecipeList = await prisma.recipeList.update({
       where: { id: listId },
       data: { name, isPrivate },
+      include: {
+        recipes: true
+      }
     });
 
     res.send({ data: updatedRecipeList });
