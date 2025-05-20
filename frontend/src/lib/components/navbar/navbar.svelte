@@ -33,6 +33,34 @@
 
   let debounceTimeout;
 
+  $effect(() => {
+    if (searchValue) {
+      searchLoading = true;
+      userSearchResults = [];
+      recipeSearchResults = [];
+      clearTimeout(debounceTimeout);
+
+      debounceTimeout = setTimeout(async () => {
+        searchLoading = true;
+        try {
+          // Run searches in parallel
+          await Promise.all([
+            handleUserSearch(searchValue),
+            handleRecipeSearch(searchValue),
+          ]);
+        } catch(error) {
+
+        } finally {
+          // Ensure loading is set to false even if there are errors
+          searchLoading = false;
+        }
+      }, 300); // 300ms debounce delay
+    } else {
+      userSearchResults = [];
+      recipeSearchResults = [];
+    }
+  });
+
   const avatarUrl = (userId) => {
     return import.meta.env.VITE_API_URL
       ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
@@ -50,36 +78,14 @@
     }
   };
 
-  $effect(() => {
-    if (searchValue) {
-      searchLoading = true;
-      userSearchResults = [];
-      recipeSearchResults = [];
-      clearTimeout(debounceTimeout);
-
-      debounceTimeout = setTimeout(async () => {
-        searchLoading = true;
-        try {
-          // Run searches in parallel
-          await Promise.all([
-            handleUserSearch(searchValue),
-            handleRecipeSearch(searchValue),
-          ]);
-        } finally {
-          // Ensure loading is set to false even if there are errors
-          searchLoading = false;
-        }
-      }, 300); // 300ms debounce delay
-    } else {
-      userSearchResults = [];
-      recipeSearchResults = [];
-    }
-  });
 
   const handleUserSearch = async (query) => {
     if (query.length > 2) {
-      const results = await userApi.getUsersByPartialUsername(query);
-      userSearchResults = results;
+      try {
+        const results = await userApi.getUsersByPartialUsername(query);
+        userSearchResults = results;
+      } catch (error) {
+      }
       
     } else {
       userSearchResults = [];
@@ -353,7 +359,7 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if $user.avatar === null}
+            {#if avatarUrl($user.id) === null}
               <CircleUser class="h-8 w-8" />
             {:else}
               <img

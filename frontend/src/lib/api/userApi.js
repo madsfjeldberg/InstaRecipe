@@ -1,21 +1,21 @@
-import { isAuthenticated } from "../../stores/authStore.js";
-import { makeOption, fetchWithAuth } from "../utils/util.js";
+import { isAuthenticated, updateAuthState } from '../../stores/authStore.js';
+
+import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users` : '/api/users';
 
 
 
 const getUserById = async (userId) => {
-  
   try {
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + userId, getOption);
     const result = await response.json();
-    
+
     if(!response.ok) {
-      throw new Error(result.errorMessage);
+      return null;
     }
-    
+
     return result.data;
 
   } catch(error) {
@@ -24,19 +24,18 @@ const getUserById = async (userId) => {
 }
 
 const getUsersByPartialUsername = async (query) => {
-  const option = makeOption("GET");
-  const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
+  try {
+    const option = makeOption("GET");
+    const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
+    
+    return await ifResponseOk(response)
 
-  if (response.status === 200) {
-    isAuthenticated.set(true);
+  }catch(error) {
+    throw error;
   }
-  
-  const data = await response.json();
-  return data;
 }
 
 const getUserAvatar = async (userId) => {
-  
   try{
     const getOption = makeOption("GET");
     const response = await fetch(BASE_URL + "/" + userId + "/avatar", getOption);
@@ -53,33 +52,73 @@ const getUserAvatar = async (userId) => {
   }
 }
 
-const updateUser = async (user) => {
-  // remove avatar, avatarMime, followers, following from user object
-  const { avatar, avatarMime, followers, following, ...userWithoutAvatar } = user.user;
-  const option = makeOption("PUT", { user: userWithoutAvatar });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
-  const data = await response.json();
-  return data;
+const updateUsername = async (id, username, email) => {
+  try {
+    const user = {id, username, email}
+    const option = makeOption("PUT", {user});
+    const response = await fetchWithAuth(`${BASE_URL}`, option);
+    
+    return await ifResponseOk(response);
+
+  }catch(error) {
+    throw error;
+  }
 }
 
-const deleteUser = async (userId) => {
-  const option = makeOption("DELETE", { userId });
-  const response = await fetchWithAuth(`${BASE_URL}`, option);
+const updatePassword = async (id, password, email) => {
+  try {
+    const user = {id, password, email}
+    const option = makeOption("PUT", { user });
+    const response = await fetchWithAuth(`${BASE_URL}`, option);
+    
+    return await ifResponseOk(response);
 
-  if (response.status === 200) {
-    isAuthenticated.set(false);
-
+  }catch(error) {
+    throw error;
   }
-  
-  const data = await response.json();
-  return data;
+}
+
+const updateEmailNotificationsSetting = async (id, notificationSetting, email) => {
+  try {
+    const user = {id, emailNotification: {setting: notificationSetting}, email}
+    const option = makeOption("PUT", { user });
+    const response = await fetchWithAuth(`${BASE_URL}`, option);
+    
+    return await ifResponseOk(response);
+
+  }catch(error) {
+    throw error;
+  }
+}
+
+
+const deleteUser = async (userId, email) => {
+  try {
+    const user = { id: userId, email }
+    const option = makeOption("DELETE", { user });
+    const response = await fetchWithAuth(`${BASE_URL}`, option);
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+    
+    updateAuthState(null);
+    return result.data;
+
+  } catch (error) { 
+    throw error;
+  }
 }
 
 const userApi = {
   getUserById,
   getUserAvatar,
   getUsersByPartialUsername,
-  updateUser,
-  deleteUser,
+  updateUsername,
+  updatePassword,
+  updateEmailNotificationsSetting,
+  deleteUser
 };
+
 export default userApi;

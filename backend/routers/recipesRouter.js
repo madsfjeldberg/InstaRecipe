@@ -54,7 +54,6 @@ router.get("/api/recipes", async (req, res) => {
           likes: "desc",
         },
       });
-      console.log(recipes)
       res.send({ data: recipes });
 
     } catch (error) {

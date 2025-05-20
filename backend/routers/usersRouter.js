@@ -1,11 +1,13 @@
-import { Router } from "express";
-import prisma from "../database/prismaClient.js";
-import multer from "multer";
+import { Router } from 'express';
+import multer from 'multer';
 
-import auth from "../service/authService.js";
+import authMiddleware from '../middleware/authMiddleware.js';
 
-import usersRepository from "../repository/usersRepository.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authService from '../service/authService.js';
+
+import usersRepository from '../repository/usersRepository.js';
+
+import prisma from '../database/prismaClient.js';
 
 const router = Router();
 const upload = multer();
@@ -27,32 +29,29 @@ router.get("/api/users/:id", async (req, res) => {
     res.send({ data: foundUser });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ errorMessage: error.message });
+    res.status(500).send({ errorMessage: "Could not get user by id, server/database error" });
   }
 });
 
 router.get("/api/users", async (req, res) => {
   const { partialUsername } = req.query;
+
   if (partialUsername) {
-    const foundUsers = await prisma.user.findMany({
-      where: {
-        username: {
-          contains: partialUsername,
-          mode: "insensitive",
-        },
-      },
-    });
+    const foundUsers = await usersRepository.searchUser(partialUsername);
     if (foundUsers.length === 0) {
-      return res.status(404).json({ message: "No users found" });
+      return res.status(404).send({ errorMessage: "No users found" });
     }
-    return res.status(200).json(foundUsers);
-  } else {
-    const users = await prisma.user.findMany();
-    if (!users) {
-      return res.status(404).json({ message: "No users found" });
-    }
-    return res.status(200).json(users);
+
+    return res.send({data: foundUsers});
+  } 
+  
+  const users = await usersRepository.getAllUsers();
+  if (!users) {
+    return res.status(404).send({ errorMessage: "No users found" });
   }
+
+  return res.send({ data: users });
+  
 });
 
 router.get("/api/users/:id/avatar", async (req, res) => {
@@ -65,72 +64,86 @@ router.get("/api/users/:id/avatar", async (req, res) => {
   res.set('Content-Type', user.avatarMime || 'image/png').send(user.avatar);
 });
 
-router.post(
-  "/api/users/:id/avatar",
-  authMiddleware.authenticateToken,
-  upload.single("avatar"),
-  async (req, res) => {
+router.post("/api/users/:id/avatar", authMiddleware.authenticateToken, upload.single("avatar"), async (req, res) => {
     let userId = req.params.id;
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).send({ errorMessage: "User not found" });
     }
-    await prisma.user.update({
+
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
         avatar: req.file.buffer,
         avatarMime: req.file.mimetype,
       },
     });
-    res.status(200).json({ message: "Avatar uploaded successfully" });
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    res.send({ data: userWithoutPassword });
   }
 );
 
 router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   const { user } = req.body;
   if (!user) {
-    return res.status(400).json({ errorMessage: "User data is required" });
+    return res.status(400).send({ errorMessage: "User data is required" });
+  }
+  
+
+  
+  const jwt = req.cookies.jwt;
+  if (!jwt) {
+    return res.status(404).send({ errorMessage: "No tokens found on request." });
+  }
+  
+  try {
+  const isDestroyed = await authService.destroyToken(user.email, jwt);
+  if (!isDestroyed) {
+    return res.status(404).send({ errorMessage: "Could not destroy token." });
   }
 
-  const hashedPassword = await auth.hashPassword(user.password);
 
-  try {
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        username: user.username,
-        email: user.email,
-        password: hashedPassword,
-        emailNotifications: user.emailNotifications,
-      },
-    });
 
-    if (!updatedUser) {
-      return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
-    }
+  let updatedUser;
+  if (user.username) {
+    updatedUser = await usersRepository.updateUsername(user.id, user.username);
+  }
 
-    const token = await auth.generateToken(updatedUser);
+  if(user.password) {
+    const hashedPassword = await authService.hashPassword(user.password);
+    updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
+  }
+  
+  if(user.emailNotification) {
+    updatedUser = await usersRepository.updateEmailNotifications(user.id, user.emailNotification.setting);
+  }
+  
+  if (!updatedUser) {
+    return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
+  }
+  const { password: _, ...userWithoutPassword } = updatedUser;
+
+    const token = await authService.generateToken(userWithoutPassword);
     res
-      .status(200)
       .clearCookie("jwt")
       .cookie("jwt", token, cookieOptions)
-      .send({
-        id: updatedUser._id,
-        message: "User updated successfully.",
-        status: 200,
-      });
+      .send({ data: userWithoutPassword});
+
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).send({ errorMessage: "Internal server error" });
   }
 });
 
 // DELETE route to delete a user
 router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) => {
-  const { userId } = req.body;
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+  const { user } = req.body;
+  if (!user) {
+    return res.status(400).send({ errorMessage: "User ID is required" });
   }
+
+  const userId = user.id
+
   try {
     // Fetch all recipelist IDs for this user
     const recipeLists = await prisma.recipeList.findMany({
@@ -152,17 +165,26 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
     await prisma.recipeList.deleteMany({ where: { userId } });
 
     // Delete the user
-    await prisma.user.delete({ where: { id: userId } });
+    await usersRepository.softDeleteUser(userId);
+    
+    const jwt = req.cookies.jwt;
+    if (!jwt) {
+      return res.status(404).send({ errorMessage: "No tokens found on request." });
+    }
+
+    const isDestroyed = await authService.destroyToken(user.email, jwt);
+    if (!isDestroyed) {
+      return res.status(404).send({ errorMessage: "Could not destroy token." });
+    }
 
     // Clear the auth cookie
     res.clearCookie("jwt", cookieOptions);
 
-    return res
-      .status(200)
-      .json({ message: "User and all related data deleted." });
+    return res.send({ data: {} });
+
   } catch (error) {
     console.error("Error deleting user:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).send({ errorMessage: "Internal server error" });
   }
 });
 

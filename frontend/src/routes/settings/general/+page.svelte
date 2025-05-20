@@ -1,22 +1,22 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import UploadAvatarButton from "$lib/components/UploadAvatarButton/UploadAvatarButton.svelte";
-  import DeleteAccountDialog from "$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte";
-  import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
+  import { z } from 'zod';
+  import { toast } from 'svelte-sonner';
   
-  import { CircleUser, LoaderCircle } from "lucide-svelte";
+  import { CircleUser, LoaderCircle } from 'lucide-svelte';
+  import * as Card from '$lib/components/ui/card/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  
+  import UploadAvatarButton from '$lib/components/UploadAvatarButton/UploadAvatarButton.svelte';
+  import DeleteAccountDialog from '$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte';
+  import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
 
-  import { z } from "zod";
-  import { toast } from "svelte-sonner";
+  import { avatarStore } from '../../../stores/avatarStore.js';
 
-  import { avatarStore } from "../../../stores/avatarStore.js";
-
-  import userApi from "$lib/api/userApi.js";
+  import userApi from '$lib/api/userApi.js';
 
   const { data } = $props();
   let { user } = data;
@@ -46,15 +46,15 @@
 
   const changePasswordRequest = z.object({
     password: z.string()
-      .min(5, "Password must be at least 5 characters long")
-      .max(100, "Password must be at most 100 characters long"),
+      .min(8, "Password must be at least 8 characters long"),
+
     confirmPassword: z.string()
-      .min(5, "Confirm Password must be at least 5 characters long")
-      .max(100, "Confirm Password must be at most 100 characters long"),
+      .min(8, "Confirm Password must be at least 8 characters long")
   });
 
   const handleChangeUsername = async (event) => {
     event.preventDefault();
+
     errors = resetErrors();
     changeUsernameLoading = true;
 
@@ -62,20 +62,11 @@
     const username = formData.get("username");
 
     try {
-      let response;
       changeUsernameRequest.parse({ username });
-      let fetchedUser = await userApi.getUserById(user.id);
-      let updatedUser = {
-        ...fetchedUser,
-        username: username,
-      };
-      response = await userApi.updateUser({ user: updatedUser });
-      if (response.status === 200) {
-        await toast.success("Username updated!");
-      } else {
-        await toast.error("Error updating username: " + response.message);
-        errors = resetErrors();
-      }
+
+      const updatedUser = await userApi.updateUsername(user.id, username, user.email);
+      toast.success(`Username updated to ${updatedUser.password}!`);
+      
     } catch (error) {
       if (error instanceof z.ZodError) {
         errors.resetErrors();
@@ -104,28 +95,20 @@
     let confirmPasswordData = formData.get("confirmPassword");
 
     try {
-      let response;
       changePasswordRequest.parse({ password: passwordData, confirmPassword: confirmPasswordData });
       if (passwordData !== confirmPasswordData) {
         errors.confirmPassword = "Passwords do not match";
         return;
       }
-      let fetchedUser = await userApi.getUserById(user.id);
-      let updatedUser = {
-        ...fetchedUser,
-        password: passwordData,
-      };
-      response = await userApi.updateUser({ user: updatedUser });
-      if (response.status === 200) {
-        await toast.success("Password updated!");
-        // reset password fields
-        password = "";
-        confirmPassword = "";
+
+      await userApi.updatePassword(user.id, passwordData, user.email);
+      
+      // reset password fields
+      password = "";
+      confirmPassword = "";
+      
+      toast.success("Password updated!");
         
-      } else {
-        await toast.error("Error updating password: " + response.message);
-        errors = resetErrors();
-      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         errors = resetErrors();
@@ -137,6 +120,7 @@
         });
       } else {
         console.error("Unexpected error:", error);
+        toast.error("Error updating password: " + error.message);
       }
     } finally {
       changePasswordLoading = false;
@@ -181,11 +165,11 @@
   <ErrorMessage message={errors.form} />
   <Card.Content class="flex flex-col gap-4">
 
-      <Input bind:value={password} type="password" name="password" placeholder="New Password" />
       <ErrorMessage message={errors.password} />
+      <Input bind:value={password} type="password" name="password" placeholder="New Password" />
       
-      <Input bind:value={confirmPassword} type="password" name="confirmPassword" placeholder="Confirm Password" />
       <ErrorMessage message={errors.confirmPassword} />
+      <Input bind:value={confirmPassword} type="password" name="confirmPassword" placeholder="Confirm Password" />
 
   </Card.Content>
   <Card.Footer class="px-6 py-4">

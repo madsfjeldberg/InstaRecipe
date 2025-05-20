@@ -1,26 +1,27 @@
 <script>
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import AlertDialogAction from "$lib/components/ui/alert-dialog/alert-dialog-action.svelte";
-  import { X } from "lucide-svelte";
+  import { toast } from 'svelte-sonner';
 
-  import { toast } from "svelte-sonner";
-  import userApi from "$lib/api/userApi";
+  import { X } from 'lucide-svelte';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+  import AlertDialogAction from '$lib/components/ui/alert-dialog/alert-dialog-action.svelte';
+
+  import userApi from '$lib/api/userApi';
   
   let isDialogOpen = $state(false);
   const { user } = $props();
-  
   const handleDelete = async () => {
   try {
-    await userApi.deleteUser(user.id);
+    await userApi.deleteUser(user.id, user.email);
     toast.success('Account deleted successfully!');
     goto('/');
+
   } catch (error) {
     console.error(error);
-    toast.error('Failed to delete account. Please try again.');
+    toast.error(error.message);
   }
 }
   
