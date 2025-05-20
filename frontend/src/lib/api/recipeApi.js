@@ -1,4 +1,4 @@
-import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util';
+import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/recipes` : '/api/recipes';
 
