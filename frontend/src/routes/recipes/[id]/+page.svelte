@@ -47,7 +47,7 @@
       isLoading = true;
       try {
         recipe = await recipeApi.getRecipeById(recipeId);
-        steps = recipe.instructions.split(/\d+\.\s/).forEach(step => step.trim());
+        steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
         likes = recipe.likes;

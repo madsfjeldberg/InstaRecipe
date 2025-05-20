@@ -1,5 +1,5 @@
 <script>
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     import { toast } from "svelte-sonner";
     import { Textarea } from "$lib/components/ui/textarea/index.js";
@@ -9,7 +9,18 @@
     import { user } from "../../../stores/authStore.js";
 
     let { isDisplayingReplyDialog = $bindable(), parentComment, replyParent } = $props();
-    let commentReplyText = $state("@" + parentComment.user.username + "\n");
+    let commentReplyText = $state("");
+
+
+
+    onMount( () => {
+        if(replyParent) {
+            commentReplyText = "@" + replyParent.user.username + "\n";
+            return;
+        }
+
+        commentReplyText = "@" + parentComment.user.username + "\n"
+    })
 
 
 
@@ -48,7 +59,11 @@
 
 </script>
 
-<h3 class="italic mt-4 mb-2 ml-1">Replying to {parentComment.user.username}</h3>
+{#if replyParent}
+    <h3 class="italic mt-4 mb-2 ml-1">Replying to {replyParent.user.username}</h3>
+{:else}
+    <h3 class="italic mt-4 mb-2 ml-1">Replying to {parentComment.user.username}</h3>
+{/if}
 <Textarea bind:value={commentReplyText}/>
 
 <div class="mb-10 mt-4">
