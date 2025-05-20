@@ -16,6 +16,7 @@
   import recipeListApi from "$lib/api/recipelistApi.js";
   import categoryApi from "$lib/api/categoryApi.js";
   import tagsApi from "$lib/api/tagsApi.js";
+    import { toast } from "svelte-sonner";
   
 
   const { data } = $props();
@@ -36,9 +37,15 @@
 
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
-    recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
-    categories = await categoryApi.getCategories();
-    tags = await tagsApi.getRecipeTags();
+    try {
+      recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
+      categories = await categoryApi.getCategories();
+      tags = await tagsApi.getRecipeTags();
+      
+    } catch(error) {
+      toast.error(error.message + "\nTry again later");
+      return;
+    }
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
