@@ -153,7 +153,8 @@
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
-    
+      console.log(selectedList)
+    console.log(recipeListId)
     try {
       let response;
       let success = addRecipeRequest.parse({
@@ -164,11 +165,14 @@
         category,
       });
       
+      const ingredientsArray = ingredients.split(",");
+
       isLoading = true;
       response = await recipeApi.addRecipe(
         name,
         description,
-        ingredients,
+        ingredientsArray,
+        ingredientsArray,
         instructions,
         category,
         selectedTags,
@@ -273,17 +277,17 @@
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="recipeName" class="text-right">Name</Label>
-            <Input id="recipeName" placeholder="Grandma's lasagna" name="recipeName" class="col-span-3"/>
+            <Input id="recipeName" placeholder="Grandma's lasagna" name="recipeName" class="col-span-3" value="Grandmas' Lasagne"/>
             <ErrorMessage message={errors.name} className="col-span-3 col-end-5" />
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="description" class="text-right">Description</Label>
-            <Textarea id="description" placeholder="The best recipe to ever do it." name="description" class="col-span-3" />
+            <Textarea id="description" placeholder="The best recipe to ever do it." name="description" class="col-span-3" value="The best to ever do it!" />
             <ErrorMessage message={errors.description} className="col-span-3 col-end-5" />
           </div>
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="ingredients" class="text-right">Ingredients</Label>
-            <Textarea id="ingredients" placeholder="200g minced beef, 100g carrots, 50g butter" name="ingredients" class="col-span-3" />
+            <Textarea id="ingredients" placeholder="200g minced beef, 100g carrots, 50g butter" name="ingredients" class="col-span-3" value="212g minced beef, 32g carrots, 1 onion"/>
             <ErrorMessage message={errors.ingredients} className="col-span-3 col-end-5" />
           </div>
         </div>
@@ -291,7 +295,7 @@
         <div class="grid gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="instructions" class="text-right">Instructions</Label>
-            <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" />
+            <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" value="Chops carrots, put in pot, and stir stir stir"/>
             <ErrorMessage message={errors.instructions} className="col-span-3 col-end-5" />
           </div>
 
