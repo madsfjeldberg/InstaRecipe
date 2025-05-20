@@ -1,36 +1,43 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
-  import * as Card from "$lib/components/ui/card/index.js";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import { toast } from 'svelte-sonner';
 
-  import { toast } from "svelte-sonner";
+  import * as Card from '$lib/components/ui/card/index.js';
+  import Switch from '$lib/components/ui/switch/switch.svelte';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Checkbox } from '$lib/components/ui/checkbox/index.js';
   
-  import userApi from "$lib/api/userApi";
+  import userApi from '$lib/api/userApi';
 
   let { data } = $props();
   let userId = data.user.id;
   let user = $state({});
   let emailNotifications = $state(true);
 
-  const saveSettings = async () => {
-    user.emailNotifications = emailNotifications;
-    let response = await userApi.updateUser({ user });
-
-    if (response.status !== 200) {
-      toast.error("Failed to save settings.");
-      return;
+  
+  onMount(async () => {
+    try {
+      user = await userApi.getUserById(userId);
+      emailNotifications = user.emailNotifications;
+    } catch (error) {
+      toast.error(error.message);
     }
-    toast.success("Settings saved successfully!");
+  });
+  
+  const toggleEmailNotifications = () => {
+    emailNotifications = !emailNotifications;
   }
 
-  onMount(async () => {
-    user = await userApi.getUserById(userId);
-    emailNotifications = user.emailNotifications;
-  });
+  const saveSettings = async () => {
+    try {
+      await userApi.updateEmailNotificationsSetting(userId, emailNotifications, user.email);
+      toast.success("Settings saved successfully!");
 
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
 </script>
 
 <Card.Root class="col-span-5">
