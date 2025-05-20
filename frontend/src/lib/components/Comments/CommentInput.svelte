@@ -1,12 +1,12 @@
 <script>
-    import { onDestroy } from "svelte";
+    import { onDestroy } from 'svelte';
 
-    import { toast } from "svelte-sonner";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Textarea } from "$lib/components/ui/textarea/index.js";
+    import { toast } from 'svelte-sonner';
+    import { Button } from '$lib/components/ui/button/index.js';
+    import { Textarea } from '$lib/components/ui/textarea/index.js';
 
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
 
 
 

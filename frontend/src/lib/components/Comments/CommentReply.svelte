@@ -1,12 +1,12 @@
 <script>
-    import { onDestroy, onMount } from "svelte";
+    import { onDestroy, onMount } from 'svelte';
 
-    import { toast } from "svelte-sonner";
-    import { Textarea } from "$lib/components/ui/textarea/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
+    import { toast } from 'svelte-sonner';
+    import { Textarea } from '$lib/components/ui/textarea/index.js';
+    import { Button } from '$lib/components/ui/button/index.js';
 
-    import { socket } from "../../../stores/socketStore.js";
-    import { user } from "../../../stores/authStore.js";
+    import { socket } from '../../../stores/socketStore.js';
+    import { user } from '../../../stores/authStore.js';
 
     let { isDisplayingReplyDialog = $bindable(), parentComment, replyParent } = $props();
     let commentReplyText = $state("");

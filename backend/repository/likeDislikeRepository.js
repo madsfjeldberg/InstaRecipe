@@ -1,4 +1,4 @@
-import prisma from "../database/prismaClient.js"
+import prisma from '../database/prismaClient.js'
 
 const like = async (userId, recipeId) => {
   let recipe = await prisma.recipe.findUnique({

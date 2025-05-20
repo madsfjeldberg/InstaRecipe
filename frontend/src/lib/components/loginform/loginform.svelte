@@ -4,11 +4,11 @@
   import { z } from 'zod';
   import { toast } from 'svelte-sonner';
 
+  import { LoaderCircle } from 'lucide-svelte';
   import * as Card from '$lib/components/ui/card/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
-  import { LoaderCircle } from 'lucide-svelte';
 
   import authApi from '$lib/api/authApi.js';
   import userApi from '$lib/api/userApi.js';

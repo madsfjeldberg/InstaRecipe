@@ -1,6 +1,6 @@
 <script>
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { Check } from "lucide-svelte";
+  import { Check } from 'lucide-svelte';
+  import * as Select from '$lib/components/ui/select/index.js';
 
   let { user, recipeLists = $bindable(), selectedList = $bindable() } = $props();
   let userId = user.id;

@@ -1,13 +1,13 @@
 <script>
-    import { onDestroy } from "svelte";
+    import { onDestroy } from 'svelte';
 
-    import { Button } from "$lib/components/ui/button/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import Separator from "../ui/separator/separator.svelte";
+    import { Button } from '$lib/components/ui/button/index.js';
+    import * as Card from '$lib/components/ui/card/index.js';
+    import Separator from '../ui/separator/separator.svelte';
     
-    import CommentInput from "./CommentInput.svelte";
-    import CommentReply from "./CommentReply.svelte";
-    import { socket } from "../../../stores/socketStore.js";
+    import CommentInput from './CommentInput.svelte';
+    import CommentReply from './CommentReply.svelte';
+    import { socket } from '../../../stores/socketStore.js';
 
     let { comments = $bindable(), recipeId } = $props();
 

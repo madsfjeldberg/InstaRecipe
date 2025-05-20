@@ -1,15 +1,15 @@
 <script>
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
-  import { blur } from "svelte/transition";
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
+  import { blur } from 'svelte/transition';
 
-  import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
-  import Separator from "$lib/components/ui/separator/separator.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { LoaderCircle } from "lucide-svelte";
+  import { LoaderCircle } from 'lucide-svelte';
+  import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+  import Separator from '$lib/components/ui/separator/separator.svelte';
+  import Button from '$lib/components/ui/button/button.svelte';
   
-  import recipeApi from "$lib/api/recipeApi";
-  import recipeListApi from "$lib/api/recipelistApi.js";
+  import recipeApi from '$lib/api/recipeApi';
+  import recipeListApi from '$lib/api/recipelistApi.js';
 
   const { data } = $props();
   const { user } = data;

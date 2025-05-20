@@ -2,16 +2,16 @@ import 'dotenv/config';
 
 import { Router } from 'express';
 
-import prisma from '../database/prismaClient.js';
-import redis from '../database/redisClient.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 import authService from '../service/authService.js';
 import emailService from '../service/emailService.js';
 
-import authMiddleware from '../middleware/authMiddleware.js';
-
 import recipeListRepository from '../repository/recipeListRepository.js';
 import usersRepository from '../repository/usersRepository.js';
+
+import prisma from '../database/prismaClient.js';
+import redis from '../database/redisClient.js';
 
 const router = Router();
 

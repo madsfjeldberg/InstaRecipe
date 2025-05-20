@@ -1,8 +1,8 @@
-import { goto } from "$app/navigation";
+import { goto } from '$app/navigation';
 
-import { toast } from "svelte-sonner";
+import { toast } from 'svelte-sonner';
 
-import { isAuthenticated } from "../../stores/authStore.js";
+import { isAuthenticated } from '../../stores/authStore.js';
 
 
 function makeOption(httpMethod, body) {

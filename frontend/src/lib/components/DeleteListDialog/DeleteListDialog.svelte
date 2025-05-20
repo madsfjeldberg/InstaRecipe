@@ -1,12 +1,12 @@
 <script>
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { X } from "lucide-svelte";
-  
-  import { toast } from "svelte-sonner";
+  import { toast } from 'svelte-sonner';
 
-  import recipeListApi from "$lib/api/recipelistApi";
+  import { X } from 'lucide-svelte';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+  import AlertDialogAction from '../ui/alert-dialog/alert-dialog-action.svelte';
+  
+  import recipeListApi from '$lib/api/recipelistApi';
 
   let { selectedList = $bindable(), recipeLists = $bindable(), isSheetDialogOpen = $bindable() } = $props();
   let isDialogOpen = $state(false);
@@ -20,7 +20,7 @@
       recipeLists = recipeLists.filter(list => list.id !== selectedList.id); // Remove the deleted list from the recipeLists
       selectedList = recipeLists[0] || null; // Set selectedList to the first one or null if none left
       
-      toast.success('List deleted successfully!');
+      toast.success("List deleted successfully!");
 
     } catch (error) {
       console.error(error);

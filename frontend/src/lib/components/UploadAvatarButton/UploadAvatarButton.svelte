@@ -1,8 +1,8 @@
 <script>
-  import Button from '../ui/button/button.svelte';
-  import { LoaderCircle } from 'lucide-svelte';
-
   import { toast } from 'svelte-sonner';
+
+  import { LoaderCircle } from 'lucide-svelte';
+  import Button from '../ui/button/button.svelte';
 
   import { avatarStore } from '../../../stores/avatarStore.js';
 

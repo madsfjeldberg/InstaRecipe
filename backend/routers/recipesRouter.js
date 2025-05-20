@@ -1,9 +1,9 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import macroService from "../service/macroService.js";
-import b2 from "../service/b2FileUploadService.js";
+import macroService from '../service/macroService.js';
+import b2 from '../service/b2FileUploadService.js';
 
-import prisma from "../database/prismaClient.js";
+import prisma from '../database/prismaClient.js';
 
 const router = Router();
 

@@ -1,6 +1,8 @@
 <script>
     import { goto } from "$app/navigation";
 
+    import { z } from "zod";
+
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
@@ -8,8 +10,6 @@
     import { toast } from "svelte-sonner";
     import { Stretch } from 'svelte-loading-spinners'; 
     import { LoaderCircle } from "lucide-svelte";
-
-    import { z } from "zod";
 
     import authApi from "$lib/api/authApi";
 

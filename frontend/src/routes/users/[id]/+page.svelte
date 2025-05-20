@@ -1,22 +1,21 @@
 <script>
-    import { onMount, onDestroy } from "svelte";
-    import { page } from "$app/stores";
+    import { onMount, onDestroy } from 'svelte';
+    import { page } from '$app/stores';
 
-    import { LoaderCircle, CircleUser } from "lucide-svelte";
-    import { Separator } from "$lib/components/ui/separator";
+    import { LoaderCircle, CircleUser } from 'lucide-svelte';
+    import { Separator } from '$lib/components/ui/separator';
+    import FollowButton from '$lib/components/Follow/FollowButton.svelte';
+    import UnfollowButton from '$lib/components/Follow/UnfollowButton.svelte';
+    import FollowModal from '$lib/components/Follow/FollowModal.svelte';
+    import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
+    import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
     
-    import FollowButton from "$lib/components/Follow/FollowButton.svelte";
-    import UnfollowButton from "$lib/components/Follow/UnfollowButton.svelte";
-    import FollowModal from "$lib/components/Follow/FollowModal.svelte";
-    import RecipeListSelect from "$lib/components/RecipeListSelect/RecipeListSelect.svelte";
-    import RecipeCard from "$lib/components/RecipeCard/RecipeCard.svelte";
+    import { avatarStore } from '../../../stores/avatarStore.js';
+    import { user } from '../../../stores/authStore.js';
+    import { socket } from '../../../stores/socketStore.js';
     
-    import { avatarStore } from "../../../stores/avatarStore.js";
-    import { user } from "../../../stores/authStore.js";
-    import { socket } from "../../../stores/socketStore.js";
-    
-    import userApi from "$lib/api/userApi.js";
-    import recipeListApi from "$lib/api/recipelistApi.js";
+    import userApi from '$lib/api/userApi.js';
+    import recipeListApi from '$lib/api/recipelistApi.js';
 
 
     const currentUserId = $page.params.id;

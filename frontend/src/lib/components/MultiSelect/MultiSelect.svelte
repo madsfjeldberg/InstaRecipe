@@ -1,5 +1,5 @@
 <script>
-  import * as Select from "$lib/components/ui/select/index.js";
+  import * as Select from '$lib/components/ui/select/index.js';
 
   let { items, selectedItems = $bindable(), selectPlaceholder } = $props();
 

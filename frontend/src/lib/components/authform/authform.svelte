@@ -27,4 +27,3 @@
 {:else}
   <RegisterForm onToggleAuthMode={handleToggleAuthMode} />
 {/if}
-

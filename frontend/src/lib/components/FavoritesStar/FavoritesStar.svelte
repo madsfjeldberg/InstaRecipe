@@ -1,10 +1,10 @@
 <script>
-    import { toast } from "svelte-sonner";
+    import { toast } from 'svelte-sonner';
     
-    import { Star } from "lucide-svelte";
-    import Button from "../ui/button/button.svelte";
+    import { Star } from 'lucide-svelte';
+    import Button from '../ui/button/button.svelte';
     
-    import recipelistApi from "$lib/api/recipelistApi.js";
+    import recipelistApi from '$lib/api/recipelistApi.js';
     
     const { favoritesRecipeList = $bindable(), recipe } = $props();
 

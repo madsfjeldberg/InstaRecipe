@@ -1,10 +1,10 @@
 <script>
-  import { tick } from "svelte";
+  import { tick } from 'svelte';
 
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { ThumbsUp } from "lucide-svelte";
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { ThumbsUp } from 'lucide-svelte';
 
-  import { user } from "../../../stores/authStore";
+  import { user } from '../../../stores/authStore.js';
   
   let { onLike, likes } = $props();
   let popping = $state(false);

@@ -1,12 +1,12 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
   import {
     Chart,
     DoughnutController,
     ArcElement,
     Tooltip,
     Legend,
-  } from "chart.js";
+  } from 'chart.js';
 
   let canvas;
 

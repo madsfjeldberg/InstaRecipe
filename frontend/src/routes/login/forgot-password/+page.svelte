@@ -1,13 +1,14 @@
 <script>
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import authApi from "$lib/api/authApi";
-    import { Toaster } from "$lib/components/ui/sonner";
-    import { toast } from "svelte-sonner";
+    import { toast } from 'svelte-sonner';
+    
+    import * as Card from '$lib/components/ui/card/index.js';
+    import { Input } from '$lib/components/ui/input/index.js';
+    import { Label } from '$lib/components/ui/label/index.js';
+    import { Button } from '$lib/components/ui/button/index.js';
+    import authApi from '$lib/api/authApi';
+    import { Toaster } from '$lib/components/ui/sonner';
     import { Stretch } from 'svelte-loading-spinners'; 
-    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-svelte";
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from 'lucide-svelte';
     
     let email = $state("");
     let isLoading = $state(false);

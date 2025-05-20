@@ -1,29 +1,29 @@
 <script>
-  import { onDestroy, onMount } from "svelte";
-  import { goto } from "$app/navigation";
+  import { onDestroy, onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
-  import { toast } from "svelte-sonner";
+  import { toast } from 'svelte-sonner';
 
-  import { Plus, ThumbsDown, ThumbsUp, Star, X } from "lucide-svelte";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import Badge from "$lib/components/ui/badge/badge.svelte";
+  import { Plus, ThumbsDown, ThumbsUp, Star, X } from 'lucide-svelte';
+  import * as Card from '$lib/components/ui/card/index.js';
+  import * as Select from '$lib/components/ui/select/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
+  import Badge from '$lib/components/ui/badge/badge.svelte';
 
-  import LikeButton from "$lib/components/RecipePopularity/LikeButton.svelte";
-  import DislikeButton from "$lib/components/RecipePopularity/DislikeButton.svelte";
-  import RecipeViews from "$lib/components/RecipePopularity/RecipeViews.svelte";
-  import DeleteRecipeDialog from "$lib/components/DeleteRecipeDialog/DeleteRecipeDialog.svelte";
-  import FavoritesStar from "$lib/components/FavoritesStar/FavoritesStar.svelte";
+  import LikeButton from '$lib/components/RecipePopularity/LikeButton.svelte';
+  import DislikeButton from '$lib/components/RecipePopularity/DislikeButton.svelte';
+  import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
+  import DeleteRecipeDialog from '$lib/components/DeleteRecipeDialog/DeleteRecipeDialog.svelte';
+  import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
 
-  import { user } from "../../../stores/authStore.js";
-  import { socket } from "../../../stores/socketStore.js";
+  import { user } from '../../../stores/authStore.js';
+  import { socket } from '../../../stores/socketStore.js';
 
-  import { handleDislike, handleLike } from "$lib/utils/recipeLikes";
+  import { handleDislike, handleLike } from '$lib/utils/recipeLikes';
   
-  import recipeListApi from "$lib/api/recipelistApi.js";
+  import recipeListApi from '$lib/api/recipelistApi.js';
   
  
   let { recipe, selectedList = $bindable(), favoritesRecipeList = $bindable(), parentUser } = $props();

@@ -1,5 +1,6 @@
-import usersRepository from '../repository/usersRepository.js';
 import auth from '../service/authService.js';
+
+import usersRepository from '../repository/usersRepository.js';
 
 async function authenticateToken(req, res, next) {
 

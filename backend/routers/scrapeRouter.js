@@ -1,10 +1,10 @@
-import "dotenv/config";
+import 'dotenv/config';
 
-import { Router } from "express";
-import puppeteer from "puppeteer";
+import { Router } from 'express';
+import puppeteer from 'puppeteer';
 
-import ai from "../service/aiService.js";
-import b2 from "../service/b2FileUploadService.js";
+import ai from '../service/aiService.js';
+import b2 from '../service/b2FileUploadService.js';
 
 
 

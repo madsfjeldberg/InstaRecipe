@@ -1,19 +1,20 @@
 <script>
-  import { z } from "zod";
+  import { z } from 'zod';
 
-  import { Pencil } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import Label from "../ui/label/label.svelte";
-  import Input from "../ui/input/input.svelte";
-  import Switch from "../ui/switch/switch.svelte";
+  import { toast } from 'svelte-sonner';
+
+  import { Pencil } from 'lucide-svelte';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import AlertDialogAction from '../ui/alert-dialog/alert-dialog-action.svelte';
+  import Label from '../ui/label/label.svelte';
+  import Input from '../ui/input/input.svelte';
+  import Switch from '../ui/switch/switch.svelte';
   
-  import DeleteListDialog from "../DeleteListDialog/DeleteListDialog.svelte";
+  import DeleteListDialog from '../DeleteListDialog/DeleteListDialog.svelte';
 
-  import recipeListApi from "$lib/api/recipelistApi";
+  import recipeListApi from '$lib/api/recipelistApi';
 
   let { selectedList = $bindable(), recipeLists = $bindable() } = $props();
   let isSheetDialogOpen = $state(false);
