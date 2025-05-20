@@ -1,17 +1,16 @@
+import "dotenv/config";
+
 import { Router } from "express";
 import puppeteer from "puppeteer";
-import "dotenv/config";
 
 import ai from "../service/aiService.js";
 import b2 from "../service/b2FileUploadService.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-
 
 
 
 const router = new Router();
 
-router.post("/api/scrape", authMiddleware.authenticateToken, async (req, res) => {
+router.post("/api/scrape", async (req, res) => {
   let browser;
   try {
     browser = await puppeteer.launch({
@@ -34,7 +33,7 @@ router.post("/api/scrape", authMiddleware.authenticateToken, async (req, res) =>
     const { url } = req.body;
 
     if (!url || !url.startsWith("http")) {
-      return res.status(400).json({ message: "Invalid URL provided" });
+      return res.status(400).send({ errorMessage: "Invalid URL provided" });
     }
 
     // Wait until network is idle to ensure page is fully loaded
@@ -53,19 +52,15 @@ router.post("/api/scrape", authMiddleware.authenticateToken, async (req, res) =>
       }
 
       if (!scrapedData) {
-        return res
-          .status(404)
-          .json({ message: "No recipe content found on page" });
+        return res.status(404).send({ errorMessage: "No recipe content found on page" });
       }
+
     } else if (url.includes("instagram")) {
       console.log("Detected Instagram URL");
       // Wait for the specific span to be present
-      const spanSelector =
-        "span.x193iq5w.xeuugli.x1fj9vlw.x13faqbe.x1vvkbs.xt0psk2.x1i0vuye.xvs91rp.xo1l8bm.x5n08af.x10wh9bi.x1wdrske.x8viiok.x18hxmgj";
+      const spanSelector = "span.x193iq5w.xeuugli.x1fj9vlw.x13faqbe.x1vvkbs.xt0psk2.x1i0vuye.xvs91rp.xo1l8bm.x5n08af.x10wh9bi.x1wdrske.x8viiok.x18hxmgj";
       await page.waitForSelector(spanSelector, { timeout: 5000 }).catch(() => {
-        console.log(
-          "No matching span elements found or timeout waiting for them"
-        );
+        console.log("No matching span elements found or timeout waiting for them");
       });
 
       // Find all matching span elements
@@ -88,18 +83,12 @@ router.post("/api/scrape", authMiddleware.authenticateToken, async (req, res) =>
       console.log("Extracted data:", scrapedData);
 
       if (scrapedData.length === 0) {
-        return res
-          .status(404)
-          .json({
-            status: 200,
-            data: { message: "No matching span content found on page" },
-          });
+        return res.status(404).send({ errorMessage: "No matching span content found on page" });
       }
+
     } else {
       console.log("No specific URL detected");
-      return res
-        .status(500)
-        .send({ status: 500, data: { message: "Invalid URL" } });
+      return res.status(400).send({ errorMessage: "Invalid URL" });
     }
 
     await browser.close();
@@ -119,21 +108,17 @@ router.post("/api/scrape", authMiddleware.authenticateToken, async (req, res) =>
 
       data.image = b2ImagePath;
 
-      return res.status(200).json({ status: 200, data });
+      return res.send({ data });
+
     } catch (err) {
       console.error("Error parsing AI response JSON:", err);
-      return res
-        .status(500)
-        .json({
-          message: "Server error. Please try again.",
-          error: err.message,
-        });
+      return res.status(500).send({errorMessage: "Server error, please try again later." });
     }
+
   } catch (error) {
     console.error("Error in scrape endpoint:", error);
-    return res
-      .status(500)
-      .json({ message: "Error processing request", error: error.message });
+    return res.status(500).send({ errorMessage: "Error processing request" });
+    
   } finally {
     // Ensure we always close the browser
     if (browser) {

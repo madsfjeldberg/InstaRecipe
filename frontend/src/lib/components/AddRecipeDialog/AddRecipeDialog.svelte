@@ -75,19 +75,12 @@
     const recipeListId = selectedList.id;
 
     try {
-      let response;
-      let success = linkRequest.parse({ url });
-      
       isLoading = true;
+      
+      linkRequest.parse({ url }); 
 
-      let generatedRecipe = await scrapeApi.scrapeLink(url);
-
-      if (generatedRecipe.status !== 200) {
-        errors = { ...errors, form: generatedRecipe.data.message };
-        return;
-      }
-
-      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
+      const generatedRecipe = await scrapeApi.scrapeLink(url);
+      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
       const newRecipe = await recipeApi.addRecipe(
         name,
         description,
