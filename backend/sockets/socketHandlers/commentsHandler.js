@@ -35,12 +35,12 @@ export const commentsHandler = (socket, io) => {
         } else {
             const foundRecipe = await recipeRepository.getRecipeById(newReply.recipeId);
             const recipeName = foundRecipe.name;
-          newReply.replyParent.recipe = { name: recipeName };
+            newReply.replyParent.recipe = { name: recipeName };
           
             const emailsNotificationEnabled = postedCommentReply.user.emailNotifications;
             if (emailsNotificationEnabled) {
               emailService.sendCommentReplyNotification(newReply.replyParent, postedCommentReply);    
-          };
+            };
             
         }
 

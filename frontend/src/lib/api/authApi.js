@@ -1,7 +1,7 @@
 import { isAuthenticated, user } from "../../stores/authStore.js";
 import { avatarStore } from "../../stores/avatarStore.js";
 
-import { makeOption } from "./util.js";
+import { makeOption } from "../utils/util.js";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 

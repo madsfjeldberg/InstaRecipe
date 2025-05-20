@@ -1,5 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/categories` : '/api/categories';
-import { makeOption } from "./util";
+import { makeOption } from "../utils/util";
 
 const getCategories = async () => {
 

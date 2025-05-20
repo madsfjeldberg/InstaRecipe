@@ -1,4 +1,4 @@
-import { makeOption } from "./util";
+import { makeOption } from "../utils/util";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/grocerylist` : '/api/grocerylist';
 

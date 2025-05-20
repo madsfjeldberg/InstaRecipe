@@ -1,4 +1,4 @@
-import { makeOption, fetchWithAuth } from "./util";
+import { makeOption, fetchWithAuth } from "../utils/util";
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/scrape` : '/api/scrape';
 
