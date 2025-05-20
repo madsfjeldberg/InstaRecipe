@@ -24,11 +24,14 @@
   let isInitialLoad = $state(true); // Flag to track if it's the initial load
 
   let userId = user.id;
+
   let recipeLists = $state([]);
   let selectedList = $state(null);
   let favoritesRecipeList = $state(null);
+
   let categories = $state([]);
   let tags = $state([]);
+
   let loading = $state(true);
 
   onMount(async () => {
@@ -87,9 +90,12 @@
             <AddRecipeDialog bind:selectedList {categories} {tags}/>
           </div>
         {:else}
-          <div class="group flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
-          </div>
+          <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
+          {#if selectedList.isPrivate}
+            <p>(Private)</p>
+          {:else}
+            <p>(Public)</p>
+          {/if}
         {/if}
         
         <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">

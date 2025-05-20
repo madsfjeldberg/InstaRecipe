@@ -79,8 +79,16 @@
   
  <Sheet.Root bind:open={isSheetDialogOpen}>
   <Sheet.Trigger>
-  <Button variant="link" class="text-2xl font-semibold transition-all">{selectedList.name}</Button>
+    <Button variant="link" class="text-2xl font-semibold transition-all">{selectedList.name}</Button>
+    <div class="flex justify-start ml-4">
+      {#if selectedList.isPrivate}
+        <p>(Private)</p>
+      {:else}
+        <p>(Public)</p>
+      {/if}
+    </div>
   </Sheet.Trigger>
+  
   <Sheet.Content side="left">
    <Sheet.Header>
     <Sheet.Title>Edit</Sheet.Title>
