@@ -1,22 +1,23 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
+  import { z } from 'zod';
+  import { toast } from 'svelte-sonner';
+
+  import { LoaderCircle } from 'lucide-svelte';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-  import CategorySelect from "$lib/components/CategorySelect/CategorySelect.svelte";
-  import MultiSelect from "../MultiSelect/MultiSelect.svelte";
-  import ErrorMessage from "$lib/components/ErrorMessage/ErrorMessage.svelte";
-  import { LoaderCircle } from "lucide-svelte";
+  import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 
-  import { z } from "zod";
-  import { toast } from "svelte-sonner";
-  
-  import recipeApi from "$lib/api/recipeApi";
-  import scrapeApi from "$lib/api/scrapeApi";
+  import CategorySelect from '$lib/components/CategorySelect/CategorySelect.svelte';
+  import MultiSelect from '../MultiSelect/MultiSelect.svelte';
+  import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
+
+  import recipeApi from '$lib/api/recipeApi';
+  import scrapeApi from '$lib/api/scrapeApi';
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
@@ -86,8 +87,8 @@
         return;
       }
 
-      let { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
-      response = await recipeApi.addRecipe(
+      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe.data;
+      const newRecipe = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
@@ -99,27 +100,18 @@
         recipeListId
       );
 
-      if (response.status === 201) {
-        const newRecipe = response.data.recipe;
-        newRecipe.ingredientsList = response.data.ingredients;
+      newRecipe.ingredientsList = newRecipe.ingredients;
 
-        selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList};
-        selectedList.recipes.push(newRecipe);
-        
-        errors = resetErrors();
-        selectedTags = [];
-        isDialogOpen = false; // Close the dialog
-        await toast.success("Recipe added successfully!");
-        
-      } else {
-        errors = { ...errors, form: response.message };
-      }
+      selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
+      selectedList = { ...selectedList};
+      selectedList.recipes.push(newRecipe.recipe);
       
-      isLoading = false;
-      
+      errors = resetErrors();
+      selectedTags = [];
+      isDialogOpen = false;
+      toast.success("Recipe added successfully!");
+
     } catch (error) {
-
       if (error instanceof z.ZodError) {
         errors = resetErrors();
         error.errors.forEach((err) => {
@@ -127,6 +119,7 @@
             errors[err.path[0]] = err.message;
           }
         });
+
       } else {
         errors = {
           ...resetErrors(),
@@ -153,11 +146,11 @@
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
-      console.log(selectedList)
-    console.log(recipeListId)
+
     try {
-      let response;
-      let success = addRecipeRequest.parse({
+      isLoading = true;
+      
+      addRecipeRequest.parse({
         name,
         description,
         ingredients,
@@ -167,8 +160,7 @@
       
       const ingredientsArray = ingredients.split(",");
 
-      isLoading = true;
-      response = await recipeApi.addRecipe(
+      const newRecipe = await recipeApi.addRecipe(
         name,
         description,
         ingredientsArray,
@@ -180,22 +172,16 @@
         recipeListId
       );
 
-      if (response.status === 201) {
-        const newRecipe = response.data.recipe;
-        newRecipe.ingredientsList = response.data.ingredients;
+      newRecipe.ingredientsList = newRecipe.ingredients;
 
-        selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
-        selectedList = { ...selectedList};
-        selectedList.recipes.push(newRecipe)
+      selectedList.updatedAt = new Date().toISOString(); // Ensure updatedAt is a string in ISO format
+      selectedList = { ...selectedList};
+      selectedList.recipes.push(newRecipe.recipe)
 
-        errors = resetErrors();
-        selectedTags = [];
-        isDialogOpen = false; // Close the dialog
-        await toast.success("Recipe added successfully!");
-        
-      } else {
-        errors = { ...errors, form: response.message };
-      }
+      errors = resetErrors();
+      selectedTags = [];
+      isDialogOpen = false; // Close the dialog
+      toast.success("Recipe added successfully!");
 
     } catch (error) {
       if (error instanceof z.ZodError) {

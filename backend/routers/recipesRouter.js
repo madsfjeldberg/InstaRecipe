@@ -1,11 +1,9 @@
 import { Router } from "express";
-import prisma from "../database/prismaClient.js";
 
 import macroService from "../service/macroService.js";
 import b2 from "../service/b2FileUploadService.js";
 
-import authMiddleware from "../middleware/authMiddleware.js";
-
+import prisma from "../database/prismaClient.js";
 
 const router = Router();
 
@@ -27,12 +25,16 @@ router.get("/api/recipes", async (req, res) => {
           },
         },
       });
-      return res.status(200).json(recipes);
+
+      return res.send({data: recipes});
+
     } catch (error) {
       console.error(error.message);
-      return res.status(500).json({ message: error.message });
+      return res.status(500).send({ errorMessage: "Something went wrong on the server during recipe search." });
     }
+
   } else {
+
     try {
       const recipes = await prisma.recipe.findMany({
         where: {
@@ -52,10 +54,12 @@ router.get("/api/recipes", async (req, res) => {
           likes: "desc",
         },
       });
-      res.status(200).json(recipes);
+      console.log(recipes)
+      res.send({ data: recipes });
+
     } catch (error) {
       console.error(error.message);
-      return res.status(500).json({ message: error.message });
+      return res.status(500).send({ errorMessage: "Something went wrong on the server during recipe search." });
     }
   }
 });
@@ -63,13 +67,11 @@ router.get("/api/recipes", async (req, res) => {
 router.get("/api/recipes/:id", async (req, res) => {
   const id = req.params.id;
   if (!id) {
-    return res
-      .status(400)
-      .send({ errorMessage: "Recipe id missing in request" });
+    return res.status(400).send({ errorMessage: "Recipe id missing in request" });
   }
 
   try {
-    const recipe = await prisma.recipe.findUnique({
+    const foundRecipe = await prisma.recipe.findUnique({
       where: {
         id,
       },
@@ -88,22 +90,15 @@ router.get("/api/recipes/:id", async (req, res) => {
         },
       },
     });
+    if(!foundRecipe) {
+      return res.status(404).send({ errorMessage: "No recipe found with that id." });
+    }
 
-    res.send({ data: recipe });
+    res.send({ data: foundRecipe });
+
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .send({ errorMessage: "Something went wrong fetching the recipe" });
-  }
-});
-
-router.get("/api/recipes/categories", async (req, res) => {
-  try {
-    const categories = await prisma.category.findMany();
-    res.status(200).json(categories);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send({ errorMessage: "Something went wrong fetching the recipe" });
   }
 });
 
@@ -127,7 +122,7 @@ router.post("/api/recipes", async (req, res) => {
     !category ||
     !tags
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).send({ errorMessage: "All fields are required" });
   }
 
   const ingredientsWithMacros =
@@ -181,31 +176,29 @@ router.post("/api/recipes", async (req, res) => {
       return { recipe: newRecipe, ingredients: createdIngredients };
     });
 
-    res
-      .status(201)
-      .json({
-        status: 201,
-        data: { recipe: result.recipe, ingredients: result.ingredients },
-      });
+    res.send({ data: { recipe: result.recipe, ingredients: result.ingredients } });
+
   } catch (error) {
     console.error(error.message);
     console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).send({ errorMessage: "Could not save the recipe in database" });
   }
 });
 
-router.delete("/api/recipes/:id", authMiddleware.authenticateToken, async (req, res) => {
+router.delete("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ message: "Recipe ID is required" });
+    return res.status(400).send({ errorMessage: "Recipe ID is required" });
   }
+  
   try {
     await prisma.ingredient.deleteMany({
       where: {
         recipeId: id,
       },
     });
+
     await prisma.comment.deleteMany({
       where: {
         recipeId: id,
@@ -215,17 +208,16 @@ router.delete("/api/recipes/:id", authMiddleware.authenticateToken, async (req, 
     let recipe = await prisma.recipe.delete({
       where: { id: id },
     });
+
     let imageurl = recipe.image;
     if (imageurl) {
       const fileName = imageurl.split("/").pop();
       await b2.deleteFile(fileName);
     }
-    res
-      .status(200)
-      .json({ status: 200, message: "Recipe deleted successfully" });
+    res.send({ data: {} });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).send({ errorMessage: "Could not delete recipe, server error" });
   }
 });
 

@@ -1,27 +1,27 @@
 <script>
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { blur } from "svelte/transition";
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { blur } from 'svelte/transition';
+  
+  import { toast } from 'svelte-sonner';
 
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import ThemeToggle from "../ThemeToggle/ThemeToggle.svelte";
-  import Separator from "../ui/separator/separator.svelte";
-  import Label from "../ui/label/label.svelte";
-  import Navlink from "./NavLink.svelte";
+  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle, CircleUser, Menu, Search } from 'lucide-svelte';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import Separator from '../ui/separator/separator.svelte';
+  import Label from '../ui/label/label.svelte';
+  
+  import Navlink from './NavLink.svelte';
+  import ThemeToggle from '../ThemeToggle/ThemeToggle.svelte';
 
-  import { Cog, CookingPot, LogIn, LogOut, LoaderCircle, CircleUser, Menu, Search } from "lucide-svelte";
+  import { isAuthenticated, user } from '../../../stores/authStore.js';
+  import { avatarStore } from '../../../stores/avatarStore.js';
 
-  import { toast } from "svelte-sonner";
-
-  import { isAuthenticated, user } from "../../../stores/authStore.js";
-  import { avatarStore } from "../../../stores/avatarStore.js";
-
-  import authApi from "$lib/api/authApi.js";
-  import userApi from "$lib/api/userApi";
-  import recipeApi from "$lib/api/recipeApi";
+  import authApi from '$lib/api/authApi.js';
+  import userApi from '$lib/api/userApi';
+  import recipeApi from '$lib/api/recipeApi';
   
 
   let searchValue = $state("");

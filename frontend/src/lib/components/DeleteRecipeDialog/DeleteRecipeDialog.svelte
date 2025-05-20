@@ -1,33 +1,32 @@
 <script>
-  import { stopPropagation } from "svelte/legacy";
+  import { stopPropagation } from 'svelte/legacy';
 
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-  import AlertDialogAction from "../ui/alert-dialog/alert-dialog-action.svelte";
-  import { X } from "lucide-svelte";
+  import { toast } from 'svelte-sonner';
+
+  import { X } from 'lucide-svelte';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+  import AlertDialogAction from '../ui/alert-dialog/alert-dialog-action.svelte';
   
-  import { toast } from "svelte-sonner";
-  
-  import recipeApi from "$lib/api/recipeApi";
+  import recipeApi from '$lib/api/recipeApi';
 
   let { recipeId, selectedList = $bindable() } = $props();
   let isDialogOpen = $state(false);
 
   const handleDelete = async () => {
-  try {
-    await recipeApi.deleteRecipe(recipeId);
-    // Remove the recipe from the selected list
-    selectedList.recipes = selectedList.recipes.filter(recipe => recipe.id !== recipeId);
-    toast.success('Recipe deleted successfully!');
-    isDialogOpen = false;
-  } catch (error) {
-    console.error(error);
-    toast.error('Failed to delete the recipe. Please try again.');
+    try {
+      await recipeApi.deleteRecipe(recipeId);
+      // Remove the recipe from the selected list
+      selectedList.recipes = selectedList.recipes.filter(recipe => recipe.id !== recipeId);
+      isDialogOpen = false;
+      toast.success('Recipe deleted successfully!');
+      
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
   }
-}
-  
-
- </script>
+</script>
   
  <AlertDialog.Root bind:open={isDialogOpen}>
   <AlertDialog.Trigger onclick={(event) => event.stopPropagation()} class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 duration-300 transition-all">
