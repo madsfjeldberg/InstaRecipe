@@ -1,5 +1,5 @@
 <script>
-  import Navlink from '$lib/components/Navbar/NavLink.svelte';
+  import NavLink from '$lib/components/Navbar/NavLink.svelte';
 
   let { data, children } = $props();
 
@@ -20,8 +20,8 @@
   >
     <nav class="text-muted-foreground grid gap-4 text-sm"
       data-x-chunk-container="chunk-container after:right-0">
-      <Navlink href="/settings/general" exact={true} >General</Navlink>
-      <Navlink href="/settings/notifications" exact={true} >Notifications</Navlink>
+      <NavLink href="/settings/general" exact={true} >General</NavLink>
+      <NavLink href="/settings/notifications" exact={true} >Notifications</NavLink>
     </nav>
     <div class="grid grid-cols-8 gap-6">
       {@render children()}
