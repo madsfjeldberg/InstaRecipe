@@ -17,9 +17,7 @@
     import userApi from '$lib/api/userApi.js';
     import recipeListApi from '$lib/api/recipelistApi.js';
 
-     const { data } = $props();
-  console.log("user", data)
-  console.log("æøøæøæå", $user)
+
 
     const currentUserId = $page.params.id;
     let currentUser = $state(null);
@@ -42,6 +40,10 @@
             currentUser = await userApi.getUserById(currentUserId);
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
+
+            if(!viewer) {
+                return;
+            }
 
             viewer = await userApi.getUserById($user.id);
             const viewerRecipeLists = await recipeListApi.getRecipeListsByUserId(viewer.id);
@@ -121,7 +123,7 @@
     </div>
 {/if}
 
-{#if currentUser && viewer}
+{#if currentUser}
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
@@ -143,7 +145,7 @@
 
         <!-- Follow / Unfollow button -->
         <div class="flex gap-6">
-            {#if currentUser.id !== viewer.id} 
+            {#if viewer && currentUser.id !== viewer.id} 
                 {#if isFollowing}
                     <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
                 {:else}

@@ -74,8 +74,8 @@
                         <p>{user.username}</p>
                     </button>
                     
-                    {#if user.id !== viewer.id}
-                        {#if viewerFollowingList.some( (followingUser) => followingUser.id === user.id)}
+                    {#if viewer && user.id !== viewer.id}
+                        {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === user.id)}
                             <UnfollowButton parentUser={user}/>
                         {:else}
                             <FollowButton parentUser={user}/>
@@ -101,7 +101,7 @@
                     </button>
                     
                     {#if filteredUser.id !== viewer.id}
-                        {#if viewerFollowingList.some( (followingUser) => followingUser.id === filteredUser.id)}
+                        {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === filteredUser.id)}
                             <UnfollowButton parentUser={filteredUser}/>
                         {:else}
                             <FollowButton parentUser={filteredUser}/>

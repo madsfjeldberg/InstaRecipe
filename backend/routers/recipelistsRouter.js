@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import authMiddleware from '../middleware/authMiddleware.js';
+
 import recipeListRepository from '../repository/recipeListRepository.js';
 
 import prisma from '../database/prismaClient.js';
@@ -32,7 +34,7 @@ router.get("/api/recipelists/user/:userId", async (req, res) => {
   }
 );
 
-router.post("/api/recipelists", async (req, res) => {
+router.post("/api/recipelists", authMiddleware.authenticateToken, async (req, res) => {
   const { name, userId } = req.body;
   if (!name || !userId) {
     return res.status(400).send({ errorMessage: "All fields are required" });
@@ -56,7 +58,7 @@ router.post("/api/recipelists", async (req, res) => {
   }
 });
 
-router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+router.post("/api/recipelists/:listId/recipe/:recipeId", authMiddleware.authenticateToken, async (req, res) => {
   try {
     const updatedList = await recipeListRepository.addRecipeToFavoritesList(req.params.listId, req.params.recipeId);
     res.send({ data: updatedList });
@@ -67,7 +69,7 @@ router.post("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
   }  
 });
 
-router.put("/api/recipelists/:listId", async (req, res) => {
+router.put("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
   const { listId } = req.params;
   const { name, isPrivate } = req.body;
 
@@ -91,7 +93,7 @@ router.put("/api/recipelists/:listId", async (req, res) => {
   }
 });
 
-router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
+router.delete("/api/recipelists/:listId/recipe/:recipeId", authMiddleware.authenticateToken, async (req, res) => {
   try {
     const updatedList = await recipeListRepository.removeRecipeFromStaredList(req.params.listId, req.params.recipeId);
     res.send({ data: updatedList });
@@ -102,7 +104,7 @@ router.delete("/api/recipelists/:listId/recipe/:recipeId", async (req, res) => {
   }
 });
 
-router.delete("/api/recipelists/:listId", async (req, res) => {
+router.delete("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
   const { listId } = req.params;
   if (!listId) {
     return res.status(400).send({ errorMessage: "List ID is required" });

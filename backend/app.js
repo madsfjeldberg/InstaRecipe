@@ -43,13 +43,13 @@ app.use(authRouter);
 app.use(usersRouter);
 app.use(recipesRouter);
 app.use(commentsRouter);
+app.use(recipelistsRouter);
 
 // authentication jwt token for all routes except authRouter
 app.use(authMiddleware.authenticateToken);
 
 app.use(categoriesRouter);
 app.use(groceryListRouter);
-app.use(recipelistsRouter);
 app.use(scrapeRouter);
 app.use(tagsRouter);
 

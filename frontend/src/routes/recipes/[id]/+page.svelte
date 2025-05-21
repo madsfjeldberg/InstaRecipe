@@ -29,8 +29,9 @@
     import recipeApi from '$lib/api/recipeApi.js';
     import groceryListApi from '$lib/api/groceryListApi.js';
     import commentsApi from '$lib/api/commentsApi.js';
-   const { data } = $props();
-  console.log("recipep", data)
+
+
+
     let recipe = $state(null);
     let comments = $state([]);
     let checkedItems = $state([]);
@@ -89,7 +90,6 @@
     const generateShoppingList = async () => {
       if(!$user) {
         toast.error("You need login/register to generate a shopping list.");
-        goto("/login");
         return;
       }
 
@@ -113,8 +113,13 @@
     }
 
     const onLike = (event) => {
+      event.stopPropagation();
+      
+      if(!$user) {
+        toast.error("You have to login/register to like this recipe.");
+        return;
+      }
       const updated = handleLike({
-        event,
         likes,
         dislikes,
         userId: $user.id,
@@ -126,8 +131,14 @@
     };
 
     const onDislike = (event) => {
+      event.stopPropagation();
+      
+      if(!$user) {
+        toast.error("You have to login/register to like this recipe.");
+        return;
+      }
+
       const updated = handleDislike({
-        event,
         likes,
         dislikes,
         userId: $user.id,
