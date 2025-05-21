@@ -1,5 +1,6 @@
 <script>
     import { onDestroy, onMount } from 'svelte';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 
     import { toast } from 'svelte-sonner';
@@ -28,6 +29,8 @@
     import recipeApi from '$lib/api/recipeApi.js';
     import groceryListApi from '$lib/api/groceryListApi.js';
     import commentsApi from '$lib/api/commentsApi.js';
+
+
 
     let recipe = $state(null);
     let comments = $state([]);
@@ -85,6 +88,11 @@
 
 
     const generateShoppingList = async () => {
+      if(!$user) {
+        toast.error("You need login/register to generate a shopping list.");
+        return;
+      }
+
       const groceryList = recipe.ingredientsList.map( (ingredient) => {
         return {name: ingredient.name, measurements: ingredient.servingSize};
       });
@@ -105,8 +113,13 @@
     }
 
     const onLike = (event) => {
+      event.stopPropagation();
+      
+      if(!$user) {
+        toast.error("You have to login/register to like this recipe.");
+        return;
+      }
       const updated = handleLike({
-        event,
         likes,
         dislikes,
         userId: $user.id,
@@ -118,8 +131,14 @@
     };
 
     const onDislike = (event) => {
+      event.stopPropagation();
+      
+      if(!$user) {
+        toast.error("You have to login/register to like this recipe.");
+        return;
+      }
+
       const updated = handleDislike({
-        event,
         likes,
         dislikes,
         userId: $user.id,

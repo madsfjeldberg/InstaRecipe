@@ -18,6 +18,7 @@
     import recipeListApi from '$lib/api/recipelistApi.js';
 
 
+
     const currentUserId = $page.params.id;
     let currentUser = $state(null);
     let currentUserRecipeLists = $state(null);
@@ -39,6 +40,10 @@
             currentUser = await userApi.getUserById(currentUserId);
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
+
+            if(!$user) {
+                return;
+            }
 
             viewer = await userApi.getUserById($user.id);
             const viewerRecipeLists = await recipeListApi.getRecipeListsByUserId(viewer.id);
@@ -109,7 +114,6 @@
         ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
         : `/api/users/${currentUserId}/avatar`;
     };
-
 </script>
 
 {#if isLoading}
@@ -119,7 +123,7 @@
     </div>
 {/if}
 
-{#if currentUser && viewer}
+{#if currentUser}
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
@@ -141,12 +145,18 @@
 
         <!-- Follow / Unfollow button -->
         <div class="flex gap-6">
-            {#if currentUser.id !== viewer.id} 
-                {#if isFollowing}
-                    <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
-                {:else}
-                    <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+            {#if viewer}
+
+                {#if currentUser.id !== viewer.id} 
+                    {#if isFollowing}
+                        <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                    {:else}
+                        <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                    {/if}
                 {/if}
+
+            {:else}
+                <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />  
             {/if}
 
             <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList={viewerSelectedList}/>

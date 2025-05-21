@@ -7,7 +7,8 @@
   import LoginForm from '../LoginForm/LoginForm.svelte';
   import RegisterForm from '../RegisterForm/RegisterForm.svelte';
 
-  let loginMode = true;
+  const { returnTo } = $props();
+  let loginMode = $state(true);
 
   const handleToggleAuthMode = () => {
     loginMode = !loginMode;
@@ -23,7 +24,7 @@
 </svelte:head>
 
 {#if loginMode}
-  <LoginForm onToggleAuthMode={handleToggleAuthMode} />
+  <LoginForm onToggleAuthMode={handleToggleAuthMode} {returnTo} />
 {:else}
   <RegisterForm onToggleAuthMode={handleToggleAuthMode} />
 {/if}

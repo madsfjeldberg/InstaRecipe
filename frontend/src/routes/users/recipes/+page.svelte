@@ -18,6 +18,7 @@
   import recipeListApi from '$lib/api/recipelistApi.js';
   import categoryApi from '$lib/api/categoryApi.js';
   import tagsApi from '$lib/api/tagsApi.js';
+  import { goto } from '$app/navigation';
   
 
   const { data } = $props();

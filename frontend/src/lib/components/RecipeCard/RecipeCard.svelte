@@ -30,7 +30,6 @@
   let { id, name, description, tags, category, image, totalViews } = recipe;
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
-  let userId = $user.id;
 
   
   const disconnect = socket.on("update-like-dislike", (recipe) => {
@@ -51,8 +50,15 @@
   //these could be isolated in components
   // handle like/dislike events
   const onLike = (event) => {
+    event.stopPropagation();
+
+    if(!$user) {
+      toast.error("You have to login/register to like this recipe.");
+      return;
+    }
+
+    const userId = $user.id;
     const updated = handleLike({
-      event,
       likes,
       dislikes,
       userId,
@@ -64,8 +70,15 @@
   };
 
   const onDislike = (event) => {
+    event.stopPropagation();
+
+    if(!$user) {
+      toast.error("You have to login/register to dislike this recipe.");
+      return;
+    }
+
+    const userId = $user.id;
     const updated = handleDislike({
-      event,
       likes,
       dislikes,
       userId,
@@ -85,17 +98,20 @@
   }}
   >
   
-  {#if parentUser && $user}
-    {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
-      <DeleteRecipeDialog recipeId={id} bind:selectedList />
+  {#if $user}
+
+    {#if parentUser}
+      {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
+        <DeleteRecipeDialog recipeId={id} bind:selectedList />
+      {/if}
+    
+    {:else} 
+      {#if selectedList && selectedList.name !== "Favorites"}
+        <DeleteRecipeDialog recipeId={id} bind:selectedList />
+      {/if}
     {/if}
-  
-  {:else} 
-    {#if selectedList && selectedList.name !== "Favorites"}
-      <DeleteRecipeDialog recipeId={id} bind:selectedList />
-    {/if}
+
   {/if}
-  
 
   
   <Card.Header class="p-0">
@@ -137,7 +153,7 @@
 
     {#if !selectedList}
       <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-        <Button onclick={recipeListApi.addRecipeToRecipeList} variant="ghost">
+        <Button onclick={(event) => addRecipeToRecipeList(event)} variant="ghost">
           <Plus class="h-5 w-5 text-gray-600" />Add to list
         </Button>
       </div>

@@ -14,11 +14,12 @@
   import userApi from '$lib/api/userApi.js';
 
   import { avatarStore } from '../../../stores/avatarStore.js';
-  import { user, isAuthenticated } from '../../../stores/authStore.js';
+  import { updateAuthState } from '../../../stores/authStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
-  let { onToggleAuthMode } = $props();
+  let { onToggleAuthMode, returnTo } = $props();
+
   let isLoading = $state(false);
 
   let errors = $state({
@@ -59,15 +60,13 @@
       reader.readAsDataURL(userAvatarBlob);
       reader.onload = () => avatarStore.set(reader.result);
 
-      isAuthenticated.set(true);
-      user.set(loggedInUser);
-
+      updateAuthState(loggedInUser);
+      
+      goto(returnTo);
       toast.success('Login successful!');
-   
-      goto('/dashboard');
       
     } catch (error) {
-      console.error(error)
+      
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
           if (err.path[0] in errors) {

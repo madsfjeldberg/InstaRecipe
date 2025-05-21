@@ -126,7 +126,7 @@
         <Navlink exact={true} href="/">Home</Navlink>
       {:else}
         <Navlink exact={true} href="/dashboard">Dashboard</Navlink>
-        <Navlink href="/recipes">Recipes</Navlink>
+        <Navlink href="/users/recipes">Recipes</Navlink>
       {/if}
     </nav>
     <Sheet.Root>
@@ -165,7 +165,7 @@
       </div>
 
       <!-- SEARCH START -->
-      {#if $isAuthenticated}
+      <!-- {#if $isAuthenticated} -->
         <div class="relative z-50">
           <Button
             variant="ghost"
@@ -349,7 +349,7 @@
           {/if}
         </div>
         <!-- END SEARCH INPUT AND DROPDOWN -->
-      {/if}
+      <!-- {/if} -->
 
       {#if $isAuthenticated && $user}
       <DropdownMenu.Root>

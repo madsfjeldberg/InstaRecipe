@@ -2,48 +2,40 @@ import { redirect } from '@sveltejs/kit';
 
 import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET, COOKIE_OPTIONS } from '$lib/config/env.server.js';
+import { JWT_SECRET } from '$lib/config/env.server.js'; 
 
-import { isAuthenticated, updateAuthState } from './stores/authStore.js';
+import userApi from '$lib/api/userApi.js';
 
-// This is a SvelteKit hook that runs on first request to the server
-// It checks if the user is authenticated by looking for a JWT token in cookies
-// If the token is not present and the user is trying to access a protected route,
-// it redirects them to the login page
-// If the token is present, it verifies the token and decodes it to get user info
-// The user info is then saved in event.locals for later use
 
-// The data can be accessed in the load function of any route
 
-const validateUser = (token) => {
-  if (!token) {
-    throw redirect(303, '/login');
-  }
+const verifyJWT = (token) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     return { id: decoded.id, username: decoded.username, email: decoded.email };
-  } catch (err) {
-    console.error('JWT verification failed:', err);
-    throw redirect(303, '/login');
+
+  } catch (error) {
+    throw error
   }
 }
 
 export const handle = async ({ event, resolve }) => {
+  const token = event.cookies.get('jwt');
+  if (token) {
+    try {
+      const payload = verifyJWT(token);
+      const user = await userApi.getUserById(payload.id);
+      const { avatar, avatarMime, ...modifiedUser } = user;
+      event.locals.user = modifiedUser;
 
-  const protectedPaths = ['/dashboard', '/settings', '/recipes'];
-  const isProtectedPath = protectedPaths.some(path =>
-    event.url.pathname === path || event.url.pathname.startsWith(path + '/')
-  );
+    } catch (error) {
+      console.error('JWT verification failed:', error);
+      event.locals.user = null;
+      throw redirect(303, '/login');
+    }
 
-    // Check if user is trying to access protected route
-  if (isProtectedPath) {
-    const token = event.cookies.get('jwt');
-    const user = validateUser(token);
-    // If token is valid, save user info in event.locals for later use
-    event.locals.user = user;
+  } else {
+    event.locals.user = null;
   }
-  const response = await resolve(event);
-  return response;
-}
 
-    
+  return resolve(event);
+};

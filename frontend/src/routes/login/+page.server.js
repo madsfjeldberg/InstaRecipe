@@ -1,8 +1,11 @@
-export function load({ locals }) {
-  // locals.user is set in hooks.server.js
-  // This will be available in the +layout.svelte file
-  console.log('Loading user data in login:', locals.user);
-  return {
-    user: locals.user || null,
-  };
+import { redirect } from '@sveltejs/kit';
+
+export function load({ locals, url }) {
+  if (locals.user) {
+    // user is already authenticated → short-circuit to /dashboard
+    throw redirect(303, '/dashboard');
+  }
+  
+  const returnTo = url.searchParams.get('returnTo') || '/dashboard';
+  return { url: url.pathname, returnTo };
 }

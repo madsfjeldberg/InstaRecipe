@@ -7,12 +7,7 @@ import os from 'os';
 import { promises as fsPromises } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 
-import B2 from 'backblaze-b2';
-
-const b2Client = new B2({
-  accountId: process.env.BACKBLAZE_ACCOUNT_ID,
-  applicationKey: process.env.BACKBLAZE_API_KEY,
-});
+import b2Client from '../database/b2Client.js';
 
 const authorize = async () => {
   try {
@@ -100,15 +95,21 @@ const cleanupTempFile = async (filePath) => {
 
 // Main function to handle the upload process
 const handleB2Upload = async (imageUrl) => {
-  const tempDir = path.join(os.tmpdir(), 'images');
-  const fileName = `${uuidv4()}.jpg`;
-  const tempFilePath = path.join(tempDir, fileName);
-  await downloadImage(imageUrl, tempFilePath);
-  await uploadImage(tempFilePath, fileName);
-  await cleanupTempFile(tempFilePath);
+  try {
 
-  const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
-  return b2ImagePath;
+    const tempDir = path.join(os.tmpdir(), 'images');
+    const fileName = `${uuidv4()}.jpg`;
+    const tempFilePath = path.join(tempDir, fileName);
+    await downloadImage(imageUrl, tempFilePath);
+    await uploadImage(tempFilePath, fileName);
+    await cleanupTempFile(tempFilePath);
+    
+    const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
+    return b2ImagePath;
+
+  } catch (error) {
+    throw error;
+  }
 }
 
 const deleteFile = async (fileName) => {
