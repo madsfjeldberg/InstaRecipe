@@ -18,13 +18,12 @@
 
   let { data, children } = $props();
 
-  const year = new Date().getFullYear();
 
   onMount(() => {
     // on mount, update auth state
     // this makes sure the correct state is set when page is refreshed
     updateAuthState(data.user);
-    });
+  });
 
   const handleLogout = async () => {
     await authApi.logout();
@@ -39,20 +38,20 @@
 <div class="bg-muted">
   <Navbar />
   <div class="container mx-auto">
-  <div class="transition-wrapper">
-  {#key data.url}
-  <main
-    in:transition.blur={{ duration: 300 }}
-    out:transition.blur={{ duration: 300 }}
-    class="min-h-screen"
-   >
+    <div class="transition-wrapper">
+      {#key data.url}
+        <main
+          in:transition.blur={{ duration: 300 }}
+          out:transition.blur={{ duration: 300 }}
+          class="min-h-screen"
+        >
 
-    {@render children()}
+          {@render children()}
 
-  </main>
-  {/key}
-  </div>
-  <Footer />
+        </main>
+      {/key}
+    </div>
+    <Footer />
   </div>
 </div>
 

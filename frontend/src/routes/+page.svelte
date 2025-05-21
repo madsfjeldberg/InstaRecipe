@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
 
-  import { isAuthenticated } from "../stores/authStore";
+  import { isAuthenticated } from "../stores/authStore.js";
   
   onMount(() => {
     // Check if the user is authenticated
