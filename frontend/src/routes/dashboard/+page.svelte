@@ -16,12 +16,16 @@
   let loading = $state(true);
   let recipes = $state([]);
   let favoritesRecipeList = $state(null);
-  let username = user.username;
 
   onMount(async () => {
     loading = true;
     try {
       recipes = await recipeApi.getAllRecipes();
+      
+      if(!user) {
+        return;
+      }
+
       const recipeLists = await recipeListApi.getRecipeListsByUserId(user.id);
 
       if (recipeLists.length > 0) {
@@ -43,7 +47,13 @@
 </svelte:head>
 
 <div class="flex flex-col p-10">
-  <h1 class="font-bold text-3xl text-left dark:text-gray-200 mb-10">Hello, {username}!</h1>
+  {#if user}
+    <h1 class="font-bold text-3xl text-left dark:text-gray-200 mb-10">Hello, {user.username}!</h1>
+    
+    {:else}
+    <h1 class="font-bold text-3xl text-left dark:text-gray-200 mb-10">Welcome!</h1>
+    
+  {/if}
 
   {#if loading}
     <!-- still loading: show spinner -->

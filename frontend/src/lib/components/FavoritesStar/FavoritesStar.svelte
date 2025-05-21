@@ -4,6 +4,8 @@
     import { Star } from 'lucide-svelte';
     import Button from '../ui/button/button.svelte';
     
+    import { user } from '../../../stores/authStore.js';
+
     import recipelistApi from '$lib/api/recipelistApi.js';
     
     const { favoritesRecipeList = $bindable(), recipe } = $props();
@@ -12,6 +14,11 @@
     const isAddedToFavoritesRecipeList = async (event) => {
         event.stopPropagation();
 
+        if (!$user) {
+            toast.error("You have to login/register to add recipe to favorites.")
+            return;
+        }
+        
         try {
             const inFavoritesList = favoritesRecipeList.recipes.some( (checkRecipe) => checkRecipe.id === recipe.id )
             if (inFavoritesList) {

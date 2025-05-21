@@ -1,8 +1,6 @@
 
 
-const handleLike = ({ event, likes, dislikes, userId, recipeId, socket }) => {
-  // prevent outer button from firing, if it exists
-  event?.stopPropagation?.();
+const handleLike = ({ likes, dislikes, userId, recipeId, socket }) => {
 
   if (likes.includes(userId)) {
     // remove like from local state
@@ -28,9 +26,7 @@ const handleLike = ({ event, likes, dislikes, userId, recipeId, socket }) => {
   return { likes, dislikes };
 }
 
-const handleDislike = ({ event, likes, dislikes, userId, recipeId, socket }) => {
-  // prevent outer button from firing, if it exists
-  event?.stopPropagation?.();
+const handleDislike = ({ likes, dislikes, userId, recipeId, socket }) => {
 
   if (dislikes.includes(userId)) {
 
