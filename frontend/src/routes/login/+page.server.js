@@ -1,8 +1,8 @@
+import { redirect } from '@sveltejs/kit';
+
 export function load({ locals }) {
-  // locals.user is set in hooks.server.js
-  // This will be available in the +layout.svelte file
-  console.log('Loading user data in login:', locals.user);
-  return {
-    user: locals.user || null,
-  };
+  if (locals.user) {
+    // user is already authenticated → short-circuit to /dashboard
+    throw redirect(303, '/dashboard');
+  }
 }

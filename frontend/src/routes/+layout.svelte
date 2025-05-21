@@ -12,13 +12,13 @@
   
   import Navbar from '$lib/components/Navbar/Navbar.svelte';
   
-  import { isAuthenticated, updateAuthState } from '../stores/authStore.js';
+  import { updateAuthState } from '../stores/authStore.js';
   
   import authApi from '$lib/api/authApi.js';
 
   let { data, children } = $props();
-
-
+  
+  
   onMount(() => {
     // on mount, update auth state
     // this makes sure the correct state is set when page is refreshed
