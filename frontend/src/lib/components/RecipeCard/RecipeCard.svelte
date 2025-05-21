@@ -98,17 +98,20 @@
   }}
   >
   
-  {#if parentUser && $user}
-    {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
-      <DeleteRecipeDialog recipeId={id} bind:selectedList />
+  {#if $user}
+
+    {#if parentUser}
+      {#if selectedList && selectedList.name !== "Favorites" && parentUser.id === $user.id}
+        <DeleteRecipeDialog recipeId={id} bind:selectedList />
+      {/if}
+    
+    {:else} 
+      {#if selectedList && selectedList.name !== "Favorites"}
+        <DeleteRecipeDialog recipeId={id} bind:selectedList />
+      {/if}
     {/if}
-  
-  {:else} 
-    {#if selectedList && selectedList.name !== "Favorites"}
-      <DeleteRecipeDialog recipeId={id} bind:selectedList />
-    {/if}
+
   {/if}
-  
 
   
   <Card.Header class="p-0">

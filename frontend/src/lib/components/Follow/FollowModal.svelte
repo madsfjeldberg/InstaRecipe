@@ -74,12 +74,18 @@
                         <p>{user.username}</p>
                     </button>
                     
-                    {#if viewer && user.id !== viewer.id}
-                        {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === user.id)}
-                            <UnfollowButton parentUser={user}/>
-                        {:else}
-                            <FollowButton parentUser={user}/>
+                    {#if viewer }
+                        {#if user.id !== viewer.id}
+                            {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === user.id)}
+                                <UnfollowButton parentUser={user}/>
+                            {:else}
+                                <FollowButton parentUser={user}/>
+                            {/if}
                         {/if}
+
+                        {:else} 
+                            <FollowButton parentUser={user}/>
+
                     {/if}
                 </div>
             {/each}

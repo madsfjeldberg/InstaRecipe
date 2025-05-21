@@ -41,7 +41,7 @@
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
             viewerSelectedList = currentUserRecipeLists[0];
 
-            if(!viewer) {
+            if(!$user) {
                 return;
             }
 
@@ -145,12 +145,18 @@
 
         <!-- Follow / Unfollow button -->
         <div class="flex gap-6">
-            {#if viewer && currentUser.id !== viewer.id} 
-                {#if isFollowing}
-                    <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
-                {:else}
-                    <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+            {#if viewer}
+
+                {#if currentUser.id !== viewer.id} 
+                    {#if isFollowing}
+                        <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                    {:else}
+                        <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                    {/if}
                 {/if}
+
+            {:else}
+                <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />  
             {/if}
 
             <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList={viewerSelectedList}/>
