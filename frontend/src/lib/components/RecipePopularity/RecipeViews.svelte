@@ -15,7 +15,6 @@
     // Only increment views if on the correct recipe page
     if (get(page).url.pathname === `/recipes/${recipeId}`) {
       const data = {
-        userId: $user.id || null,
         recipeId
       };
       socket.emit("update-recipe-views", data);

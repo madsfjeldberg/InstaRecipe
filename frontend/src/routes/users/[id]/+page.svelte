@@ -17,6 +17,9 @@
     import userApi from '$lib/api/userApi.js';
     import recipeListApi from '$lib/api/recipelistApi.js';
 
+     const { data } = $props();
+  console.log("user", data)
+  console.log("æøøæøæå", $user)
 
     const currentUserId = $page.params.id;
     let currentUser = $state(null);
@@ -109,7 +112,6 @@
         ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
         : `/api/users/${currentUserId}/avatar`;
     };
-
 </script>
 
 {#if isLoading}

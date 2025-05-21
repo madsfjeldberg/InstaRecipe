@@ -24,7 +24,8 @@ export const handle = async ({ event, resolve }) => {
     try {
       const payload = verifyJWT(token);
       const user = await userApi.getUserById(payload.id);
-      event.locals.user = user;
+      const { avatar, avatarMime, ...modifiedUser } = user;
+      event.locals.user = modifiedUser;
 
     } catch (error) {
       console.error('JWT verification failed:', error);

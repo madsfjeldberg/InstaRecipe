@@ -126,7 +126,7 @@
         <Navlink exact={true} href="/">Home</Navlink>
       {:else}
         <Navlink exact={true} href="/dashboard">Dashboard</Navlink>
-        <Navlink href="/recipes">Recipes</Navlink>
+        <Navlink href="/users/recipes">Recipes</Navlink>
       {/if}
     </nav>
     <Sheet.Root>

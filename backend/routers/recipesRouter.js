@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import authMiddleware from '../middleware/authMiddleware.js';
+
 import macroService from '../service/macroService.js';
 import b2 from '../service/b2FileUploadService.js';
 
@@ -101,7 +103,7 @@ router.get("/api/recipes/:id", async (req, res) => {
   }
 });
 
-router.post("/api/recipes", async (req, res) => {
+router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
   const {
     name,
     description,
@@ -184,7 +186,7 @@ router.post("/api/recipes", async (req, res) => {
   }
 });
 
-router.delete("/api/recipes/:id", async (req, res) => {
+router.delete("/api/recipes/:id", authMiddleware.authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
