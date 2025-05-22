@@ -8,7 +8,6 @@ const sendGroceryList = async (recipeName, ingredients) => {
     try{
         const option = makeOption("POST", {groceryList})
         const response = await fetch(BASE_URL, option);
-        const result = await response.json();
 
         return await ifResponseOk(response);
 
