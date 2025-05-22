@@ -24,6 +24,29 @@ const cookieOptions = {
 };
 
 
+router.get("/api/auth/verify/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        isConfirmed: true,
+      },
+    });
+
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    const token = await authService.generateToken(userWithoutPassword);
+
+    return res.cookie("jwt", token, cookieOptions).send({ data: userWithoutPassword });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Something went wrong confirming the email." });
+  }
+});
 
 router.post("/api/auth/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -201,28 +224,5 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
   }
 });
 
-router.get("/api/auth/verify/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        isConfirmed: true,
-      },
-    });
-
-    const { password: _, ...userWithoutPassword } = updatedUser;
-    const token = await authService.generateToken(userWithoutPassword);
-
-    return res.cookie("jwt", token, cookieOptions).send({ data: userWithoutPassword });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ errorMessage: "Something went wrong confirming the email." });
-  }
-});
 
 export default router;
