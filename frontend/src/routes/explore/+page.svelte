@@ -43,7 +43,7 @@
 </script>
 
 <svelte:head>
-  <title>InstaRecipe | Dashboard</title>
+  <title>InstaRecipe | explore</title>
 </svelte:head>
 
 <div class="flex flex-col p-10">
