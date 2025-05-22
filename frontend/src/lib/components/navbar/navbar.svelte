@@ -125,7 +125,8 @@
       </a>
       {#if !$isAuthenticated}
         <Navlink exact={true} href="/">Home</Navlink>
-      {:else}
+        <Navlink exact={true} href="/explore">Explore</Navlink>
+        {:else}
         <Navlink exact={true} href="/explore">Explore</Navlink>
         <Navlink href="/users/recipes">Recipes</Navlink>
       {/if}
