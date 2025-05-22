@@ -16,7 +16,7 @@
   import Navlink from './NavLink.svelte';
   import ThemeToggle from '../ThemeToggle/ThemeToggle.svelte';
 
-  import { isAuthenticated, user } from '../../../stores/authStore.js';
+  import { updateAuthState, isAuthenticated, user } from '../../../stores/authStore.js';
   import { avatarStore } from '../../../stores/avatarStore.js';
 
   import authApi from '$lib/api/authApi.js';
@@ -70,6 +70,7 @@
   const handleLogout = async () => {
     try {
       await authApi.logout($user.email);
+      updateAuthState(null);
       toast.success("Logged out successfully");
       goto("/");
 

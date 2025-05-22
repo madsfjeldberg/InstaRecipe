@@ -33,7 +33,7 @@ const getUserById = async (userId) => {
             return null;
         }
         
-        const { password, ...userWithoutPassword } = foundUser;
+        const { password, createdAt, updatedAt, isConfirmed, isDeleted, ...userWithoutPassword } = foundUser;
         return userWithoutPassword;
 
     } catch (error) {

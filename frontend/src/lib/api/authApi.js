@@ -6,18 +6,11 @@ import { ifResponseOk, makeOption } from '../utils/util.js';
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 
 const login = async (username, password) => {
-  
   try{
     const postOption = makeOption("POST", {username, password});
     const response = await fetch(BASE_URL + "/login", postOption);
-    const result = await response.json();
     
-    if (!response.ok) {
-      throw new Error(result.errorMessage);
-    }
-    
-    isAuthenticated.set(true);
-    return result.data;
+    return await ifResponseOk(response);
     
   } catch (error) {
     throw error;
@@ -40,15 +33,8 @@ const logout = async (email) => {
   try {
     const getOption = makeOption("POST", {email});
     const response = await fetch(BASE_URL + "/logout", getOption);
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.errorMessage);
-    }
     
-    isAuthenticated.set(false);
-    user.set(null);
-    avatarStore.set(null);
+    return await ifResponseOk(response);
   
   }catch(error) {
     throw error;
