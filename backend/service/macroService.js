@@ -1,4 +1,4 @@
-async function getMacros(ingredients) {
+const getMacros = async (ingredients) => {
     try {
         const response = await fetch("https://api.calorieninjas.com/v1/nutrition?query=" + ingredients, {
             headers: {

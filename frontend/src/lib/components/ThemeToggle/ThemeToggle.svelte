@@ -4,7 +4,7 @@
   import {Sun, Moon} from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button/index.js';
   
-  function handleClick() {
+  const handleClick = () => {
     toggleMode();
   }
   

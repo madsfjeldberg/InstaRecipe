@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
-function createAvatarStore() {
+const createAvatarStore = () => {
   const initial = browser
     ? localStorage.getItem('user-avatar') || ''
     : '';

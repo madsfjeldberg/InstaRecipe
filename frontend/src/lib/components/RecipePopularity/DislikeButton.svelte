@@ -16,7 +16,7 @@
     return "";
   };
 
-  async function handleClick(event) {
+  const handleClick = async (event) => {
     popping = true;
     onDislike(event);
     await tick();

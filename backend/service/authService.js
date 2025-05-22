@@ -47,7 +47,7 @@ const generateToken = async (user) => {
   }
 }
 
-async function verifyToken(token) {
+const verifyToken = async (token) => {
   try {
     const decodedPayload = jwt.verify(token, JWT_SECRET);
     const exists = await redis.sIsMember(decodedPayload.email, token);
@@ -62,7 +62,7 @@ async function verifyToken(token) {
   }
 }
 
-async function destroyToken(userEmail, token) {
+const destroyToken = async (userEmail, token) => {
 
   try {
     const keysDeleted = await redis.sRem(userEmail, token);

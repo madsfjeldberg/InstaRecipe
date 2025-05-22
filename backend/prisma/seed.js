@@ -1,6 +1,6 @@
 import prisma from '../database/prismaClient.js';
 
-async function main() {
+const main = async () => {
   
   const categories = [
     'Breakfast',

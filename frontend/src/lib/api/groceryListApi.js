@@ -2,13 +2,12 @@ import { ifResponseOk, makeOption } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/grocerylist` : '/api/grocerylist';
 
-async function sendGroceryList(recipeName, ingredients) {
+const sendGroceryList = async (recipeName, ingredients) => {
     const groceryList = {name: recipeName, items: ingredients};
 
     try{
         const option = makeOption("POST", {groceryList})
         const response = await fetch(BASE_URL, option);
-        const result = await response.json();
 
         return await ifResponseOk(response);
 
