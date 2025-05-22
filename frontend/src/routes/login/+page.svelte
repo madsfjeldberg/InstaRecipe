@@ -3,6 +3,7 @@
 
   const { data } = $props();
   const returnTo = data.returnTo;
+  const isRegister = data.isRegister;
   
 </script>
 
@@ -10,4 +11,4 @@
   <title>InstaRecipe | Login</title>
 </svelte:head>
 
-<AuthForm {returnTo}/>
+<AuthForm {returnTo} {isRegister}/>

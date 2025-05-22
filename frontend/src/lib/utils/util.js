@@ -51,4 +51,10 @@ const ifResponseOk = async (response) => {
     return result.data;
 }
 
-export { makeOption, fetchWithAuth, ifResponseOk };
+const avatarUrl = (userId) => {
+    return import.meta.env.VITE_API_URL
+      ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
+      : `/api/users/${userId}/avatar`;
+  };
+
+export { makeOption, fetchWithAuth, ifResponseOk, avatarUrl };
