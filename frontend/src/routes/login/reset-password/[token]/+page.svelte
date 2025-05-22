@@ -39,7 +39,7 @@
 
 
 
-    async function handleResetPassword(event) {
+    const handleResetPassword = async (event) => {
         event.preventDefault();
 
         const result = resetPasswordSchema.safeParse({
@@ -57,7 +57,7 @@
 
 
 
-    async function resetPassword() {
+    const resetPassword = async () => {
         try {
             isLoading = true;
             const resetToken = getResetTokenFromHref();
@@ -80,7 +80,7 @@
 
 
 
-    function validateFormInput(result) {
+    const validateFormInput = (result) => {
 
         if (!result.success) {
             if (result.error.issues.length === 2) {
@@ -113,7 +113,7 @@
     }
 
 
-    function getResetTokenFromHref() {
+    const getResetTokenFromHref = () => {
         const pathSegments = location.href.split("/");
         return pathSegments[pathSegments.length - 1];
     }

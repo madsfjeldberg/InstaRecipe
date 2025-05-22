@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 
 const PROD_URL = import.meta.env.PROD_URL || "http://localhost:9000";
 
-function createSocketStore() {
+const createSocketStore = () => {
 
   const socket = io(PROD_URL, {withCredentials: true});
   const { subscribe, set } = writable(socket);

@@ -5,7 +5,7 @@ import { toast } from 'svelte-sonner';
 import { isAuthenticated } from '../../stores/authStore.js';
 
 
-function makeOption(httpMethod, body) {
+const makeOption = (httpMethod, body) => {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     if (!methods.includes(httpMethod)) {
@@ -28,7 +28,7 @@ function makeOption(httpMethod, body) {
     return option;
 }
 
-async function fetchWithAuth(url, options) {
+const fetchWithAuth = async (url, options) => {
     const response = await fetch(url, options);
 
     if (response.status === 401) {

@@ -15,12 +15,12 @@
   let uploading = $state(false);
 
   // trigger the hidden input
-  function handleUploadClick() {
+  const handleUploadClick = () => {
     browseInput.click();
   }
 
   // when a file is chosen...
-  async function onFileChange() {
+  const onFileChange = async () => {
     if (files.length === 0) return;
     const file = files[0]; // only one file is allowed
     // restrict size

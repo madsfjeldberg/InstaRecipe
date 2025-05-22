@@ -14,7 +14,7 @@
     let isLoading = $state(false);
     let success = $state(false);
 
-    async function handleSendResetPasswordRequest(event) {
+    const handleSendResetPasswordRequest = async (event) => {
         event.preventDefault();
 
         try {

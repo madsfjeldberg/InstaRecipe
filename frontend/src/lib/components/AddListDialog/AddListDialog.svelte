@@ -27,7 +27,7 @@
       .max(50, "Name must be at most 50 characters long"),
   });
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);

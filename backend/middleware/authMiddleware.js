@@ -2,7 +2,7 @@ import auth from '../service/authService.js';
 
 import usersRepository from '../repository/usersRepository.js';
 
-async function authenticateToken(req, res, next) {
+const authenticateToken = async (req, res, next) => {
 
     const token = req.cookies.jwt;
     if(!token) {
@@ -25,7 +25,7 @@ async function authenticateToken(req, res, next) {
 }
 
 //burde kun bruges på /api/login, hvis man allerede er logget ind, og man clicker login burde man blive redirected direkte til explore.
-async function isAuthenticated(req, res, next) {
+const isAuthenticated = async (req, res, next) => {
     try{
         const jwt = req.cookies.jwt;
         if(!jwt) {
