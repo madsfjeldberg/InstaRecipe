@@ -117,7 +117,7 @@
       class="hidden flex-col gap-6 md:flex md:flex-row md:items-center md:gap-5 lg:gap-6"
     >
       <a
-        href={$isAuthenticated ? "/dashboard" : "/"}
+        href={$isAuthenticated ? "/explore" : "/"}
         class="flex items-center gap-2 text-lg font-semibold md:text-base"
       >
         <CookingPot class="h-6 w-6" />InstaRecipe
@@ -125,10 +125,11 @@
       {#if !$isAuthenticated}
         <Navlink exact={true} href="/">Home</Navlink>
       {:else}
-        <Navlink exact={true} href="/dashboard">Dashboard</Navlink>
+        <Navlink exact={true} href="/explore">Explore</Navlink>
         <Navlink href="/users/recipes">Recipes</Navlink>
       {/if}
     </nav>
+    
     <Sheet.Root>
       <Sheet.Trigger let:props>
         {#snippet child({ props })}
@@ -149,12 +150,13 @@
             <CookingPot class="h-6 w-6" />
             <span class="sr-only">InstaRecipe</span>
           </a>
-          <Navlink href="/dashboard" class="text-muted-foreground hover:text-foreground"> Dashboard </Navlink>
+          <Navlink href="/explore" class="text-muted-foreground hover:text-foreground"> Explore </Navlink>
           <Navlink href="/recipes" class="text-muted-foreground hover:text-foreground"> Recipes </Navlink>
           <Navlink href="/settings/general" class="hover:text-foreground"> Settings </Navlink>
         </nav>
       </Sheet.Content>
     </Sheet.Root>
+    
     <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
       <div class="ml-auto flex-1 sm:flex-initial">
         {#if !$isAuthenticated}

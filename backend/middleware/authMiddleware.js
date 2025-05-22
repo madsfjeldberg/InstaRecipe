@@ -24,7 +24,7 @@ async function authenticateToken(req, res, next) {
     }
 }
 
-//burde kun bruges på /api/login, hvis man allerede er logget ind, og man clicker login burde man blive redirected direkte til dashboard.
+//burde kun bruges på /api/login, hvis man allerede er logget ind, og man clicker login burde man blive redirected direkte til explore.
 async function isAuthenticated(req, res, next) {
     try{
         const jwt = req.cookies.jwt;
