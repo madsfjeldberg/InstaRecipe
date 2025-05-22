@@ -10,7 +10,7 @@
   
   import Navlink from './NavLink.svelte';
   import ThemeToggle from '../ThemeToggle/ThemeToggle.svelte';
-  import SearchBar from '../SerachBar/SearchBar.svelte';
+  import SearchBar from '../SearchBar/SearchBar.svelte';
 
   import { updateAuthState, isAuthenticated, user } from '../../../stores/authStore.js';
   import { avatarStore } from '../../../stores/avatarStore.js';
