@@ -1,15 +1,29 @@
 import prisma from '../database/prismaClient.js';
 
 const getRecipeById = async (recipeId) => {
-    try{
+    try {
         const foundRecipe = await prisma.recipe.findUnique({
             where: {
-                id: recipeId
-            }
-        })
+                id,
+            },
+            include: {
+                category: true,
+                tags: true,
+                ingredientsList: true,
+                comments: {
+                    include: {
+                        user: {
+                            select: {
+                                username: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
         return foundRecipe;
 
-    }catch(error) {
+    } catch (error) {
         console.error(error);
         throw new Error("Could not get recipe with id:", recipeId);
     }
@@ -17,8 +31,48 @@ const getRecipeById = async (recipeId) => {
 
 
 
+const getAllLikedRecipesByUserId = async (userId) => {
+    try {
+        const likedRecipes = await prisma.recipe.findMany({
+            where: {
+                likes: {
+                    has: {
+                        userId
+                    }
+                }
+            }
+        });
+        return likedRecipes;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+const getAllDislikedRecipesByUserId = async (userId) => {
+    try {
+        const likedRecipes = await prisma.recipe.findMany({
+            where: {
+                dislikes: {
+                    has: {
+                        userId
+                    }
+                }
+            }
+        });
+        return likedRecipes;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
 const incrementTotalViews = async (recipeId) => {
-    try{
+    try {
         const updatedRecipe = prisma.recipe.update({
             where: {
                 id: recipeId
@@ -31,7 +85,7 @@ const incrementTotalViews = async (recipeId) => {
         });
         return updatedRecipe;
 
-    }catch(error) {
+    } catch (error) {
         console.error(error);
         throw new Error("Could not increment total views for recipe with id:", recipeId);
     }
@@ -40,6 +94,8 @@ const incrementTotalViews = async (recipeId) => {
 
 
 export default {
-  getRecipeById,
-  incrementTotalViews
+    getRecipeById,
+    getAllLikedRecipesByUserId,
+    getAllDislikedRecipesByUserId,
+    incrementTotalViews
 }
