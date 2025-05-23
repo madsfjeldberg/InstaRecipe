@@ -1,5 +1,60 @@
 import prisma from '../database/prismaClient.js';
 
+
+
+const getAllRecipes = async () => {
+    try {
+        const foundRecipes = await prisma.recipe.findMany({
+            where: {
+                recipeLists: {
+                    some: {
+                        isPrivate: false,
+                    },
+                },
+            },
+            include: {
+                category: true,
+                tags: true,
+                ingredientsList: true,
+                recipeLists: true,
+            },
+            orderBy: {
+                likes: "desc",
+            },
+        });
+        return foundRecipes;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+const getRecipesByPartialSearch = async (partialName) => {
+    try {
+        const foundRecipes = await prisma.recipe.findMany({
+            where: {
+                name: {
+                    contains: partialName,
+                    mode: "insensitive",
+                },
+                recipeLists: {
+                    some: {
+                        isPrivate: false,
+                    },
+                },
+            },
+        });
+        return foundRecipes;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
 const getRecipeById = async (recipeId) => {
     try {
         const foundRecipe = await prisma.recipe.findUnique({
@@ -31,40 +86,28 @@ const getRecipeById = async (recipeId) => {
 
 
 
-const getAllLikedRecipesByUserId = async (userId) => {
+const getLikedDislikedRecipesHistoryOnUserId = async (userId) => {
     try {
-        const likedRecipes = await prisma.recipe.findMany({
+        const likedDislikedRecipesHistory = await prisma.recipe.findMany({
             where: {
-                likes: {
-                    has: {
-                        userId
+                OR: [
+                    {
+                        likes: {
+                            has: userId
+                        }
+                    },
+                    {
+                        dislikes: {
+                            has: userId
+                        }
                     }
-                }
+                ]
             }
         });
-        return likedRecipes;
+        return likedDislikedRecipesHistory;
 
     } catch (error) {
-        throw error;
-    }
-}
-
-
-
-const getAllDislikedRecipesByUserId = async (userId) => {
-    try {
-        const likedRecipes = await prisma.recipe.findMany({
-            where: {
-                dislikes: {
-                    has: {
-                        userId
-                    }
-                }
-            }
-        });
-        return likedRecipes;
-
-    } catch (error) {
+        console.error("Error fetching liked/disliked history:", error);
         throw error;
     }
 }
@@ -94,8 +137,9 @@ const incrementTotalViews = async (recipeId) => {
 
 
 export default {
+    getAllRecipes,
+    getRecipesByPartialSearch,
     getRecipeById,
-    getAllLikedRecipesByUserId,
-    getAllDislikedRecipesByUserId,
+    getLikedDislikedRecipesHistoryOnUserId,
     incrementTotalViews
 }
