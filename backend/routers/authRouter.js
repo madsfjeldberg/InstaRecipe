@@ -117,6 +117,7 @@ router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) 
     res.cookie("jwt", token, cookieOptions).send({data: userWithoutPassword});
 
   } catch (error) {
+    console.error(error)
     res.status(500).send({ errorMessage: "An error occurred during login." });
   }
 });

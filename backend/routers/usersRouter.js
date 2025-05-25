@@ -66,7 +66,7 @@ router.get("/api/users/:id/avatar", async (req, res) => {
 });
 
 router.get("/api/users/:id/recipes", authMiddleware.authenticateToken, async (req, res) => {
-  if (req.params.id) {
+  if (!req.params.id) {
     return res.status(400).send({ errorMessage: "User id needs to be provided in the request."});
   }
 
