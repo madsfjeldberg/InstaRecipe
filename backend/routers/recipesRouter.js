@@ -11,16 +11,13 @@ import recipeRepository from '../repository/recipeRepository.js';
 const router = Router();
 
 router.get("/api/recipes", async (req, res) => {
-  const { partialName, userLikeDislikeHistory } = req.query;
+  const { partialName } = req.query;
 
   try {
     let foundRecipes;
 
     if (partialName) {
       foundRecipes = await recipeRepository.getRecipesByPartialSearch(partialName);
-
-    } else if (userLikeDislikeHistory) {
-      foundRecipes = await recipeRepository.getLikedDislikedRecipesHistoryOnUserId(userLikeDislikeHistory);
 
     } else {
       foundRecipes = await recipeRepository.getAllRecipes();
