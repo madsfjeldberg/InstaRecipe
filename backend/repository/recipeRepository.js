@@ -59,7 +59,7 @@ const getRecipeById = async (recipeId) => {
     try {
         const foundRecipe = await prisma.recipe.findUnique({
             where: {
-                id,
+                id: recipeId
             },
             include: {
                 category: true,
