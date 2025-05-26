@@ -1,21 +1,25 @@
 <script>
-    import userApi from '$lib/api/userApi';
-    import { onMount } from 'svelte';
-    import { toast } from 'svelte-sonner';
-     import { LoaderCircle } from 'lucide-svelte';
+    import { onMount } from "svelte";
+
+    import { toast } from "svelte-sonner";
+    
+    import { LoaderCircle } from "lucide-svelte";
+    
+    import userApi from "$lib/api/userApi";
 
     const { data } = $props();
     const user = data.user;
 
-    let ratedRecipeHistory = $state([]);
+    let ratedRecipeHistory = $state(null);
 
     let isLoading = $state(true);
 
-    onMount( async () => {
+    onMount(async () => {
         try {
             isLoading = true;
             ratedRecipeHistory = await userApi.getUserRatedRecipesHistory(user.id);
-        } catch(error) {
+            console.log("history", ratedRecipeHistory)
+        } catch (error) {
             toast.error(error.message);
         } finally {
             isLoading = false;
@@ -23,14 +27,18 @@
     });
 </script>
 
-{#if isLoading} 
-    <LoaderCircle class="animate-spin"/> 
-    <h1 class="ml-4 text-xl">Loading...</h1>
+{#if true}
+    <div class="flex justify-center items-center min-h-screen">
+        <LoaderCircle class="animate-spin h-10 w-10"/>
+    </div>
 {/if}
 
-{#if ratedRecipeHistory.length === 0}
-    <h1 class="flex justify-center items-center h-min[window]">Rated recipes history is empty, rate a recipe...</h1>
+{#if ratedRecipeHistory && ratedRecipeHistory.length === 0}
+    <h1 class="flex justify-center items-center min-h-screen text-center">
+        Rated recipes history is empty, rate a recipe...
+    </h1>
 {/if}
+
 
 <!-- design the recipes history page
 
