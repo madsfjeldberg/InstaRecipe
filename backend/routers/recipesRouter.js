@@ -27,7 +27,7 @@ router.get("/api/recipes", async (req, res) => {
     
   } catch (error) {
     console.error(error.message);
-    return res.status(500).send({ errorMessage: "Something went getting recipes." });
+    return res.status(500).send({ errorMessage: "Something went wrong getting recipes." });
   }
 });
 
