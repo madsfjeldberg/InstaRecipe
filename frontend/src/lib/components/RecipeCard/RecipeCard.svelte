@@ -1,10 +1,9 @@
 <script>
-  import { onDestroy, onMount } from 'svelte';
   import { goto } from '$app/navigation';
 
   import { toast } from 'svelte-sonner';
 
-  import { Plus, ThumbsDown, ThumbsUp, Star, X } from 'lucide-svelte';
+  import { Plus, X } from 'lucide-svelte';
   import * as Card from '$lib/components/ui/card/index.js';
   import * as Select from '$lib/components/ui/select/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -12,83 +11,27 @@
   import { Label } from '$lib/components/ui/label/index.js';
   import Badge from '$lib/components/ui/badge/badge.svelte';
 
-  import LikeButton from '$lib/components/RecipePopularity/LikeButton.svelte';
-  import DislikeButton from '$lib/components/RecipePopularity/DislikeButton.svelte';
   import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
   import DeleteRecipeDialog from '$lib/components/DeleteRecipeDialog/DeleteRecipeDialog.svelte';
   import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
+  import LikeDislikeButtonsCombined from '../RecipePopularity/LikeDislikeButtonsCombined.svelte';
 
   import { user } from '../../../stores/authStore.js';
-  import { socket } from '../../../stores/socketStore.js';
-
-  import { handleDislike, handleLike } from '$lib/utils/recipeLikes';
   
   import recipeListApi from '$lib/api/recipelistApi.js';
   
  
   let { recipe, selectedList = $bindable(), favoritesRecipeList = $bindable(), parentUser } = $props();
   let { id, name, description, tags, category, image, totalViews } = recipe;
+
   let likes = $state(recipe.likes);
   let dislikes = $state(recipe.dislikes);
-
-  
-  const disconnect = socket.on("update-like-dislike", (recipe) => {
-    if (recipe.id === id) {
-      likes = recipe.likes;
-      dislikes = recipe.dislikes;
-    }
-  });
-  onDestroy(disconnect);
 
     
   const addRecipeToRecipeList = (event) => {
      event.stopPropagation();
      toast.info("Feature coming soon!");
   }
-
-
-  //these could be isolated in components
-  // handle like/dislike events
-  const onLike = (event) => {
-    event.stopPropagation();
-
-    if(!$user) {
-      toast.error("You have to login/register to like this recipe.");
-      return;
-    }
-
-    const userId = $user.id;
-    const updated = handleLike({
-      likes,
-      dislikes,
-      userId,
-      recipeId: id,
-      socket,
-    });
-    likes = updated.likes;
-    dislikes = updated.dislikes;
-  };
-
-  const onDislike = (event) => {
-    event.stopPropagation();
-
-    if(!$user) {
-      toast.error("You have to login/register to dislike this recipe.");
-      return;
-    }
-
-    const userId = $user.id;
-    const updated = handleDislike({
-      likes,
-      dislikes,
-      userId,
-      recipeId: id,
-      socket,
-    });
-    likes = updated.likes;
-    dislikes = updated.dislikes;
-  };
-
 </script>
  
 <Card.Root 
@@ -143,13 +86,12 @@
     </div>
   </Card.Content>
 
-  <Card.Footer class="pb-2 px-2 justify-between gap-2">
-    <div class="flex items-center">
-      <LikeButton {onLike} {likes} />
-      <DislikeButton {onDislike} {dislikes} />
+  <Card.Footer class="pb-1 px-2 justify-between gap-2 ml-2">
+    <div class="flex items-center gap-3">
       <RecipeViews {totalViews} recipeId={id}/>
+      <LikeDislikeButtonsCombined bind:likes bind:dislikes recipeId={recipe.id}/>
+      <FavoritesStar {recipe} bind:favoritesRecipeList/>
     </div>
-    <FavoritesStar {recipe} bind:favoritesRecipeList/>
 
     {#if !selectedList}
       <div class="flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">

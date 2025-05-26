@@ -1,11 +1,12 @@
 <script>
+    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 
     import { toast } from 'svelte-sonner';
 
     import { Stretch } from 'svelte-loading-spinners';
-    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft, ThumbsDown, ThumbsUp } from 'lucide-svelte';
+    import { LoaderCircle, Zap, BicepsFlexed, CakeSlice, Wheat, ArrowLeft } from 'lucide-svelte';
     import * as Card from '$lib/components/ui/card/index.js';
     import { Root } from '$lib/components/ui/button';
     import { Separator } from '$lib/components/ui/separator';    
@@ -16,6 +17,7 @@
     import CommentInput from '$lib/components/Comments/CommentInput.svelte';
     import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
     import LikeDislikeButtonsCombined from '$lib/components/RecipePopularity/LikeDislikeButtonsCombined.svelte';
+    import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
     import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
     import BarChart from '$lib/components/ChartJs/BarChart.svelte';
     
@@ -27,9 +29,10 @@
     import recipeApi from '$lib/api/recipeApi.js';
     import groceryListApi from '$lib/api/groceryListApi.js';
     import commentsApi from '$lib/api/commentsApi.js';
+    import recipeListApi from '$lib/api/recipelistApi.js';
 
 
-
+    
     let recipe = $state(null);
     let comments = $state([]);
     let checkedItems = $state([]);
@@ -37,10 +40,21 @@
     let likes = $state([]);
     let dislikes = $state([]);
     let totalViews = $state();
-
+    
     let isLoading = $state(true);
     let isGroceryListGenerating = $state(false)
     let recipeId = $state(null);
+    
+    let favoritesRecipeList = $state(null)
+
+
+    onMount( async () => {
+      if($user) {
+        const recipeLists = await recipeListApi.getRecipeListsByUserId($user.id);
+        favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites" );
+      }
+    })
+
 
     //hvorfor on effect? og ikke onMount?
     $effect(async () => {
@@ -133,6 +147,7 @@
           <div class="col-span-1 flex justify-end items-center gap-3">
             <RecipeViews {totalViews} {recipeId} />
             <LikeDislikeButtonsCombined bind:likes bind:dislikes {recipeId}/>
+            <FavoritesStar bind:favoritesRecipeList {recipe} />
           </div>
           <div>
             {#if recipe.tags}
