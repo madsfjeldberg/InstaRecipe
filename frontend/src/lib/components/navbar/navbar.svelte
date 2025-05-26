@@ -32,14 +32,6 @@
       toast.error(error.message);
     }
   };
-
-  const handleNavigate = (recipeId) => {
-    goto(`/recipes/${recipeId}`);
-    searchValue = "";
-    searchFocused = false;
-    recipeSearchResults = [];
-    userSearchResults = [];
-  };
 </script>
 
 <header class="bg-background sticky top-0 border-b">

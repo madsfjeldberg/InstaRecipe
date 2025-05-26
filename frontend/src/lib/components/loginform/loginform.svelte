@@ -117,7 +117,7 @@
         </div>
 
         {#if isLoading}
-          <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Loading...</Button>
+          <Button disabled><LoaderCircle class="mr-2 h-4 w-4 animate-spin" /> Logging in...</Button>
         {:else}
           <Button type="submit" class="w-full">Login</Button>
         {/if}

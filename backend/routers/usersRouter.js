@@ -8,6 +8,7 @@ import authService from '../service/authService.js';
 import usersRepository from '../repository/usersRepository.js';
 
 import prisma from '../database/prismaClient.js';
+import recipeRepository from '../repository/recipeRepository.js';
 
 const router = Router();
 const upload = multer();
@@ -63,6 +64,20 @@ router.get("/api/users/:id/avatar", async (req, res) => {
 
   res.set('Content-Type', user.avatarMime || 'image/png').send(user.avatar);
 });
+
+router.get("/api/users/:id/recipes", authMiddleware.authenticateToken, async (req, res) => {
+  if (!req.params.id) {
+    return res.status(400).send({ errorMessage: "User id needs to be provided in the request."});
+  }
+
+  try {
+    const foundRecipes = await recipeRepository.getLikedDislikedRecipesHistoryOnUserId(req.params.id);
+    res.send({ data: foundRecipes });
+
+  } catch (error) {
+    res.status(500).send({ errorMessage: "could not get user recipes liked and dislike history."});
+  }
+})
 
 router.post("/api/users/:id/avatar", authMiddleware.authenticateToken, upload.single("avatar"), async (req, res) => {
     let userId = req.params.id;

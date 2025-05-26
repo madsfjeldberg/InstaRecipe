@@ -2,7 +2,7 @@ import { goto } from '$app/navigation';
 
 import { toast } from 'svelte-sonner';
 
-import { isAuthenticated } from '../../stores/authStore.js';
+import { updateAuthState } from '../../stores/authStore.js';
 
 
 const makeOption = (httpMethod, body) => {
@@ -32,7 +32,7 @@ const fetchWithAuth = async (url, options) => {
     const response = await fetch(url, options);
 
     if (response.status === 401) {
-        isAuthenticated.set(false);
+        updateAuthState(null);
         toast.error("Session expired. Please log in again.");
         goto("/login");
         throw new Error("Unauthorized");

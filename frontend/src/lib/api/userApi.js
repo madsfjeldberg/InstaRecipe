@@ -52,6 +52,18 @@ const getUserAvatar = async (userId) => {
   }
 }
 
+const getUserRatedRecipesHistory = async (userId) => {
+  try {
+    const option = makeOption("GET");
+    const response = await fetchWithAuth(BASE_URL + "/" + userId + "/recipes", option);
+
+    return await ifResponseOk(response);
+
+  } catch (error) {
+    throw error;
+  }
+}
+
 const updateUsername = async (id, username, email) => {
   try {
     const user = {id, username, email}
@@ -115,6 +127,7 @@ const userApi = {
   getUserById,
   getUserAvatar,
   getUsersByPartialUsername,
+  getUserRatedRecipesHistory,
   updateUsername,
   updatePassword,
   updateEmailNotificationsSetting,

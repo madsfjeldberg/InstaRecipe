@@ -1,57 +1,39 @@
+import { socket } from "../../stores/socketStore.js";
 
 
-const handleLike = ({ likes, dislikes, userId, recipeId, socket }) => {
 
-  if (likes.includes(userId)) {
-    // remove like from local state
-    likes = likes.filter((like) => like !== userId);
-    // emit event to server to remove like
-    socket.emit("remove-like", { recipeId, userId });
+const handleLike = ({ likes, dislikes, userId, recipeId }) => {
+  const currentLikes = new Set(likes);
+  const currentDislikes = new Set(dislikes);
 
-  } else if (dislikes.includes(userId)) {
-    // if user has disliked the recipe, remove dislike from local state
-    // and add like to local state
-    dislikes = dislikes.filter((dislike) => dislike !== userId);
-    likes.push(userId);
-    // emit event to server to remove dislike and add like
-    socket.emit("remove-dislike", { recipeId, userId });
-    socket.emit("add-like", { recipeId, userId });
-
+  if (currentLikes.has(userId)) {
+    currentLikes.delete(userId);
   } else {
-    // just add like to local state, and emit
-    likes.push(userId);
-    socket.emit("add-like", { recipeId, userId });
+    currentLikes.add(userId);
+    currentDislikes.delete(userId);
   }
 
-  return { likes, dislikes };
-}
+  socket.emit("toggle-like", { recipeId, userId });
 
-const handleDislike = ({ likes, dislikes, userId, recipeId, socket }) => {
+  return { likes: Array.from(currentLikes), dislikes: Array.from(currentDislikes) };
+};
 
-  if (dislikes.includes(userId)) {
 
-    // remove dislike from local state
-    dislikes = dislikes.filter((dislike) => dislike !== userId);
-    // emit event to server to remove dislike
-    socket.emit("remove-dislike", { recipeId, userId });
 
-  } else if (likes.includes(userId)) {
+const handleDislike = ({ likes, dislikes, userId, recipeId }) => {
+  const currentLikes = new Set(likes);
+  const currentDislikes = new Set(dislikes);
 
-    // if user has liked the recipe, remove like from local state
-    likes = likes.filter((like) => like !== userId);
-    // add dislike to local state
-    dislikes.push(userId);
-    // emit event to server to remove like and add dislike
-    socket.emit("remove-like", { recipeId, userId });
-    socket.emit("add-dislike", { recipeId, userId });
-
+  if (currentDislikes.has(userId)) {
+    currentDislikes.delete(userId);
   } else {
-    // just add dislike to local state, and emit
-    dislikes.push(userId);
-    socket.emit("add-dislike", { recipeId, userId });
+    currentDislikes.add(userId);
+    currentLikes.delete(userId);
   }
 
-  return { likes, dislikes };
-}
+  socket.emit("toggle-dislike", { recipeId, userId });
+
+  return { likes: Array.from(currentLikes), dislikes: Array.from(currentDislikes) };
+};
 
 export { handleLike, handleDislike };

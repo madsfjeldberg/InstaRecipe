@@ -70,7 +70,15 @@
         } else {
             recipeSearchResults = [];
         }
-  };
+    };
+
+    const handleNavigate = (recipeId) => {
+        goto(`/recipes/${recipeId}`);
+        searchValue = "";
+        searchFocused = false;
+        recipeSearchResults = [];
+        userSearchResults = [];
+    };
 </script>
 
 <div class="relative z-50">

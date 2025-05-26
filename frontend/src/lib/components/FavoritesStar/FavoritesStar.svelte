@@ -36,6 +36,8 @@
         }
     };
 
+
+    
     const addToFavoritesRecipeList = async (newRecipe) => {
         favoritesRecipeList.recipes = [
             ...favoritesRecipeList.recipes,
@@ -52,6 +54,8 @@
             toast.error(error.message);
         }
     };
+
+
 
     const removeFromFavoritesList = async (recipeToRemove) => {
         favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter(
