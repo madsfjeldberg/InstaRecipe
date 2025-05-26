@@ -4,7 +4,7 @@ import prisma from '../database/prismaClient.js';
 
 const getAllRecipes = async () => {
     try {
-        const foundRecipes = await prisma.recipe.findMany({
+        let foundRecipes = await prisma.recipe.findMany({
             where: {
                 recipeLists: {
                     some: {
@@ -17,11 +17,19 @@ const getAllRecipes = async () => {
                 tags: true,
                 ingredientsList: true,
                 recipeLists: true,
-            },
-            orderBy: {
-                likes: "desc",
-            },
+            }
         });
+
+        foundRecipes.sort((a, b) => {
+            const likesDifference = b.likes.length - a.likes.length;
+
+            if (likesDifference !== 0) {
+                return likesDifference;
+            }
+
+            return b.totalViews - a.totalViews;
+        });
+
         return foundRecipes;
 
     } catch (error) {
