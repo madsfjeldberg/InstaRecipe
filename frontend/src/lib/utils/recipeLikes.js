@@ -1,4 +1,8 @@
-const handleLike = ({ likes, dislikes, userId, recipeId, socket }) => {
+import { socket } from "../../stores/socketStore.js";
+
+
+
+const handleLike = ({ likes, dislikes, userId, recipeId }) => {
   const currentLikes = new Set(likes);
   const currentDislikes = new Set(dislikes);
 
@@ -16,7 +20,7 @@ const handleLike = ({ likes, dislikes, userId, recipeId, socket }) => {
 
 
 
-const handleDislike = ({ likes, dislikes, userId, recipeId, socket }) => {
+const handleDislike = ({ likes, dislikes, userId, recipeId }) => {
   const currentLikes = new Set(likes);
   const currentDislikes = new Set(dislikes);
 

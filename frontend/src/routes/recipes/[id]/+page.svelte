@@ -1,5 +1,4 @@
 <script>
-    import { onDestroy, onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 
@@ -16,8 +15,7 @@
     import Comment from '$lib/components/Comments/Comment.svelte';
     import CommentInput from '$lib/components/Comments/CommentInput.svelte';
     import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
-    import LikeButton from '$lib/components/RecipePopularity/LikeButton.svelte';
-    import DislikeButton from '$lib/components/RecipePopularity/DislikeButton.svelte';
+    import LikeDislikeButtonsCombined from '$lib/components/RecipePopularity/LikeDislikeButtonsCombined.svelte';
     import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
     import BarChart from '$lib/components/ChartJs/BarChart.svelte';
     
@@ -44,6 +42,7 @@
     let isGroceryListGenerating = $state(false)
     let recipeId = $state(null);
 
+    //hvorfor on effect? og ikke onMount?
     $effect(async () => {
       recipeId = $page.params.id;
       if (!recipeId) return;
@@ -65,17 +64,8 @@
         isLoading = false;
       }
     });
-      
-    // listen for changes to like/dislike counts
-    const disconnect = socket.on("update-like-dislike", (recipe) => {
-      if (recipe.id === recipeId) {
-        likes = recipe.likes;
-        dislikes = recipe.dislikes;
-      }
+  
 
-    });
-      
-    onDestroy(disconnect);
 
     const toggleItem = (name) => {
       if (checkedItems.includes(name)) {
@@ -111,44 +101,6 @@
         isGroceryListGenerating = false;
       }
     }
-
-    const onLike = (event) => {
-      event.stopPropagation();
-      
-      if(!$user) {
-        toast.error("You have to login/register to like this recipe.");
-        return;
-      }
-      const updated = handleLike({
-        likes,
-        dislikes,
-        userId: $user.id,
-        recipeId: recipe.id,
-        socket,
-      });
-      likes = updated.likes;
-      dislikes = updated.dislikes;
-    };
-
-    const onDislike = (event) => {
-      event.stopPropagation();
-      
-      if(!$user) {
-        toast.error("You have to login/register to like this recipe.");
-        return;
-      }
-
-      const updated = handleDislike({
-        likes,
-        dislikes,
-        userId: $user.id,
-        recipeId: recipe.id,
-        socket,
-      });
-      likes = updated.likes;
-      dislikes = updated.dislikes;
-    };
-
 </script>
 
 <svelte:head>
@@ -178,10 +130,9 @@
           <div class="col-span-1">
             <Badge>{recipe.category.name}</Badge>
           </div>
-          <div class="col-span-1 flex justify-end items-center">
+          <div class="col-span-1 flex justify-end items-center gap-3">
             <RecipeViews {totalViews} {recipeId} />
-            <LikeButton {onLike} {likes} />
-            <DislikeButton {onDislike} {dislikes} />
+            <LikeDislikeButtonsCombined bind:likes bind:dislikes {recipeId}/>
           </div>
           <div>
             {#if recipe.tags}
