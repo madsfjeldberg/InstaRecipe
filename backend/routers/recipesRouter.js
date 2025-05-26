@@ -27,7 +27,7 @@ router.get("/api/recipes", async (req, res) => {
     
   } catch (error) {
     console.error(error.message);
-    return res.status(500).send({ errorMessage: "Something went getting recipes." });
+    return res.status(500).send({ errorMessage: "Something went wrong getting recipes." });
   }
 });
 
@@ -52,12 +52,26 @@ router.get("/api/recipes/:id", async (req, res) => {
   }
 });
 
-router.get("/api/recipes/users/:id", authMiddleware.authenticateToken, (req, res) => {
-  if (!req.params.id) {
-    return res.status(404).send({ errorMessage: "No liked recipes found" });
-  }
-})
+router.get("/api/recipes/users/:id", authMiddleware.authenticateToken, async (req, res) => {
+  const userId = req.params.id;
 
+  if (!userId) {
+    return res.status(400).send({ errorMessage: "User ID is required" });
+  }
+
+  try {
+    const likedRecipes = await recipeRepository.getLikedRecipesByUserId(userId);
+
+    if (!likedRecipes || likedRecipes.length === 0) {
+      return res.status(404).send({ errorMessage: "No liked recipes found for this user" });
+    }
+
+    res.send({ data: likedRecipes });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({ errorMessage: "Something went wrong fetching liked recipes" });
+  }
+});
 router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) => {
   const {
     name,
