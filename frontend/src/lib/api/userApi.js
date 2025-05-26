@@ -55,7 +55,7 @@ const getUserAvatar = async (userId) => {
 const getUserRatedRecipesHistory = async (userId) => {
   try {
     const option = makeOption("GET");
-    const response = await fetchWithAuth(BASE_URL + "/" + userId + "/recipes");
+    const response = await fetchWithAuth(BASE_URL + "/" + userId + "/recipes", option);
 
     return await ifResponseOk(response);
 
