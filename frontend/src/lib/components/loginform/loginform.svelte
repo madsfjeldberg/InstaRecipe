@@ -14,6 +14,7 @@
   import userApi from '$lib/api/userApi.js';
 
   import { updateAuthState } from '../../../stores/authStore.js';
+  import { avatarStore } from '../../../stores/avatarStore.js';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
