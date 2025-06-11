@@ -4,8 +4,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const getAllRecipes = async () => {
   try {
-    const option = makeOption("GET");
-    const response = await fetchWithAuth(BASE_URL, option);
+    const response = await fetch(BASE_URL);
 
     return await ifResponseOk(response);
 
@@ -16,8 +15,7 @@ const getAllRecipes = async () => {
 
 const getRecipeById = async (id) => {
   try {
-    const option = makeOption("GET");
-    const response = await fetchWithAuth(BASE_URL + "/" + id, option);
+    const response = await fetch(BASE_URL + "/" + id);
 
     return await ifResponseOk(response);
 
@@ -29,8 +27,7 @@ const getRecipeById = async (id) => {
 
 const getRecipesByPartialName = async (query) => {
   try{
-    const option = makeOption("GET");
-    const response = await fetchWithAuth(`${BASE_URL}/?partialName=${query}`, option);
+    const response = await fetch(`${BASE_URL}/?partialName=${query}`);
 
     return await ifResponseOk(response);
 
@@ -44,7 +41,7 @@ const addRecipe = async (name, description, ingredients, ingredientsInGrams, ins
 
   try {
     const option = makeOption("POST", recipeToCreate)
-    const response = await fetch(BASE_URL, option);
+    const response = await fetchWithAuth(BASE_URL, option);
 
     return await ifResponseOk(response);
 
