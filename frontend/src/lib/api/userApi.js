@@ -8,8 +8,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const getUserById = async (userId) => {
   try {
-    const getOption = makeOption("GET");
-    const response = await fetch(BASE_URL + "/" + userId, getOption);
+    const response = await fetch(BASE_URL + "/" + userId);
     const result = await response.json();
 
     if(!response.ok) {
@@ -25,9 +24,7 @@ const getUserById = async (userId) => {
 
 const getUsersByPartialUsername = async (query) => {
   try {
-    const option = makeOption("GET");
-    const response = await fetch(`${BASE_URL}/?partialUsername=${query}`, option);
-    
+    const response = await fetch(`${BASE_URL}/?partialUsername=${query}`);
     return await ifResponseOk(response)
 
   }catch(error) {
@@ -37,8 +34,7 @@ const getUsersByPartialUsername = async (query) => {
 
 const getUserAvatar = async (userId) => {
   try{
-    const getOption = makeOption("GET");
-    const response = await fetch(BASE_URL + "/" + userId + "/avatar", getOption);
+    const response = await fetch(BASE_URL + "/" + userId + "/avatar");
     
     if(!response.ok) {
       const result = await response.json();
@@ -55,14 +51,14 @@ const getUserAvatar = async (userId) => {
 
 
 const uploadAvatar = async (userId, avatarFile) => {
-  const res = await fetchWithAuth(`${BASE_URL}/${userId}/avatar`, {
+  const response = await fetchWithAuth(`${BASE_URL}/${userId}/avatar`, {
     headers: {"Authorization": ""},
     method: 'POST',
     credentials: 'include',
     body: avatarFile
   });
 
-  return res;
+  return response;
 }
 
 
