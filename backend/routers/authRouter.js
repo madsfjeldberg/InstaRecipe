@@ -146,7 +146,7 @@ router.post("/api/auth/access-token", async (req, res) => {
 
   try {
 
-    const decodedToken = await auth.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECERET);
+    const decodedToken = await auth.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     if(!decodedToken) {
       return res.status(401).send({ errorMessage: "Invalid refresh token" });
     }
