@@ -1,12 +1,13 @@
 import { goto } from '$app/navigation';
+import { get } from 'svelte/store';
 
 import { toast } from 'svelte-sonner';
 
-import { updateAuthState } from '../../stores/authStore.js';
+import { updateAuthState, accessToken } from '../../stores/authStore.js';
 import authApi from '$lib/api/authApi.js';
 
 
-const makeOption = (httpMethod, body, accessToken) => {
+const makeOption = (httpMethod, body) => {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     if (!methods.includes(httpMethod)) {
@@ -22,10 +23,6 @@ const makeOption = (httpMethod, body, accessToken) => {
         }
     }
 
-    if (accessToken) {
-        option.headers["Authorization"] = "Bearer " + accessToken;
-    }
-
     if (body) {
         option.body = JSON.stringify(body);
     }
@@ -34,12 +31,13 @@ const makeOption = (httpMethod, body, accessToken) => {
 }
 
 const fetchWithAuth = async (url, options) => {
+    options.headers["Authorization"] = "Bearer " + get(accessToken);
     let response = await fetch(url, options);
 
     if (response.status === 401) {
         try {
-            const accessToken = await authApi.renewAccessToken();
-            options.headers["Authorization"] = "Bearer " + accessToken;
+            const renewedAccessToken = await authApi.renewAccessToken();
+            options.headers["Authorization"] = "Bearer " + renewedAccessToken;
             
             response = await fetch(url, options);
             
