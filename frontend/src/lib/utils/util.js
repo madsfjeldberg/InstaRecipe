@@ -3,9 +3,10 @@ import { goto } from '$app/navigation';
 import { toast } from 'svelte-sonner';
 
 import { updateAuthState } from '../../stores/authStore.js';
+import authApi from '$lib/api/authApi.js';
 
 
-const makeOption = (httpMethod, body) => {
+const makeOption = (httpMethod, body, accessToken) => {
 
     const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     if (!methods.includes(httpMethod)) {
@@ -21,6 +22,10 @@ const makeOption = (httpMethod, body) => {
         }
     }
 
+    if (accessToken) {
+        option.headers["Authorization"] = "Bearer " + accessToken;
+    }
+
     if (body) {
         option.body = JSON.stringify(body);
     }
@@ -29,13 +34,22 @@ const makeOption = (httpMethod, body) => {
 }
 
 const fetchWithAuth = async (url, options) => {
-    const response = await fetch(url, options);
+    let response = await fetch(url, options);
 
     if (response.status === 401) {
-        updateAuthState(null);
-        toast.error("Session expired. Please log in again.");
-        goto("/login");
-        throw new Error("Unauthorized");
+        try {
+            const accessToken = await authApi.renewAccessToken();
+            options.headers["Authorization"] = "Bearer " + accessToken;
+            
+            response = await fetch(url, options);
+            
+        } catch (error) {
+            console.error(error);
+            updateAuthState(null, null);
+            toast.error("Session expired. Please log in again.");
+            goto("/login");
+            throw new Error("Unauthorized");
+        }
     }
 
     return response;
