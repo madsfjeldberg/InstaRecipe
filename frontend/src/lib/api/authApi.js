@@ -20,6 +20,20 @@ const verifyEmail = async (userId) => {
 
 
 
+const verifyToken = async (token) => {
+  try{
+    const postOption = makeOption("POST", {token});
+    const response = await fetch(BASE_URL + "/token/verify", postOption);
+
+    return await ifResponseOk(response);
+
+  } catch (error) {
+    throw error;
+  }
+} 
+
+
+
 const login = async (username, password) => {
   try{
     const postOption = makeOption("POST", {username, password});
@@ -126,9 +140,10 @@ const resetPassword = async (newPassword, resetToken) => {
 
 
 const authApi = {
+  verifyEmail,
+  verifyToken,
   login,
   register,
-  verifyEmail,
   logout,
   renewAccessToken,
   sendRestPasswordRequest,

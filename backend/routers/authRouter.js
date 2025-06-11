@@ -168,6 +168,25 @@ router.post("/api/auth/access-token", async (req, res) => {
 
 
 
+router.post("/api/auth/token/verify", async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const isVerified = await auth.verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
+    if(!isVerified) {
+      return res.status(401).send({ errorMessage: "Invalid token"});
+    }
+
+    res.send({ data: isVerified });
+
+  } catch(error) {
+    console.error(error)
+    res.status(500).send({ errorMessage: "Something went wrong verifying token."})
+  }
+})
+
+
+
 router.post("/api/auth/forgot-password", async (req, res) => {
   const { email } = req.body;
 
