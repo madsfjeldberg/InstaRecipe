@@ -78,7 +78,7 @@ const verifyToken = async (token, tokenSeceret) => {
   try {
     const decodedPayload = jwt.verify(token, tokenSeceret);
     const ttl = decodedPayload.exp - decodedPayload.iat;
-console.log("TIME TO LIVE",ttl)
+
     if (ttl === SEVEN_DAYS) {
       const exists = await redis.sIsMember(decodedPayload.email, token);
       if (!exists) {
