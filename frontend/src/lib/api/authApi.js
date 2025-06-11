@@ -1,4 +1,4 @@
-import { isAuthenticated, user } from '../../stores/authStore.js';
+import { isAuthenticated, user, accessToken } from '../../stores/authStore.js';
 import { avatarStore } from '../../stores/avatarStore.js';
 
 import { ifResponseOk, makeOption } from '../utils/util.js';
@@ -34,6 +34,7 @@ const login = async (username, password) => {
     return result.data;
     
   } catch (error) {
+    console.error(error)
     throw error;
   }
 }

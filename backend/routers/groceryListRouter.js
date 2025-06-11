@@ -10,7 +10,7 @@ router.post("/api/grocerylist", async (req, res) => {
         return res.status(400).send({ errorMessage: "Technical error in frontend: Grocery list was not generated propaply neither included in the request" });
     }
 
-    await emailService.sendGroceryListEmail(req.user.email, groceryList)
+    emailService.sendGroceryListEmail(req.user.email, groceryList)
     res.send({ data: groceryList })
 })
 
