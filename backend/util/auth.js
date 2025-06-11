@@ -4,11 +4,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import redis from '../database/redisClient.js';
 
-const SALT = 10;
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRATION = 604800; // 7 days
+
 
 const hashPassword = async (password) => {
+  const SALT = 10;
+  
   try {
     const hashedPassword = await bcrypt.hash(password, SALT);
     return hashedPassword;
@@ -26,37 +26,64 @@ const verifyPassword = async (password, hashedPassword) => {
   }
 }
 
-const generateAccessToken = async (user) => {
-  const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  const exp = now + JWT_EXPIRATION; // Exactly JWT_EXPIRATION seconds from now
 
-  const token = jwt.sign({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    iat: now,
-    exp: exp
-  }, JWT_SECRET);
+
+
+
+
+const ACCESS_TOKEN_SECERET = process.env.ACCESS_TOKEN_SECERET;
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    }, 
+    ACCESS_TOKEN_SECERET,
+    { expiresIn: '30m' }
+  );
+}
+
+const generateRefreshToken = async (user) => {
+  
+  const refreshToken = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    }, 
+    process.env.REFRESH_TOKEN_SECERET,
+    { expiresIn: '7d' }
+  );
 
   try {
-    await redis.sAdd(user.email, token);
-    return token;
+    await redis.sAdd(user.email, refreshToken);
+    return refreshToken;
     
   } catch (error) {
-    throw new Error(`Error generating token: ${error.message}`);
+    throw new Error(`Error adding refresh token to redis: ${error.message}`);
   }
 }
 
-const generateRefreshToken = () => {
-  
+const generateTokens = async (user) => {
+  const accessToken = generateAccessToken(user);
+  const refreshToken = await generateRefreshToken(user);
+
+  return {accessToken, refreshToken}
 }
 
-const verifyToken = async (token) => {
+const verifyToken = async (token, tokenSeceret) => {
+    const SEVEN_DAYS = 7 * 24 * 60 * 60;
+
   try {
-    const decodedPayload = jwt.verify(token, JWT_SECRET);
-    const exists = await redis.sIsMember(decodedPayload.email, token);
-    if (!exists) {
-      return null;
+    const decodedPayload = jwt.verify(token, tokenSeceret);
+    const ttl = decodedPayload.exp - decodedPayload.iat;
+console.log("TIME TO LIVE",ttl)
+    if (ttl === SEVEN_DAYS) {
+      const exists = await redis.sIsMember(decodedPayload.email, token);
+      if (!exists) {
+        return null;
+      }
     }
 
     return decodedPayload;
@@ -66,24 +93,9 @@ const verifyToken = async (token) => {
   }
 }
 
-const destroyToken = async (userEmail, token) => {
-
-  try {
-    const keysDeleted = await redis.sRem(userEmail, token);
-    if(keysDeleted === 0) {
-      return false;
-    }
-
-    return true;
-
-  } catch (error) {
-    throw new Error(`Error deleting token: ${error.message}`);
-  }
-}
 
 
-
-const invalidateOtherTokens = async (email) => {
+const invalidateAllRefreshTokens = async (email) => {
   try{
     await redis.del(email);
   }catch(error) {
@@ -95,7 +107,7 @@ const invalidateOtherTokens = async (email) => {
 
 const decodeToken = (token) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECERET);
     return decoded;
   } catch (error) {
     throw new Error(`Invalid token: ${error.message}`);
@@ -106,10 +118,11 @@ const auth = {
   hashPassword,
   verifyPassword,
   generateAccessToken,
+  generateRefreshToken,
+  generateTokens,
   decodeToken,
   verifyToken,
-  destroyToken,
-  invalidateOtherTokens
+  invalidateAllRefreshTokens
 };
 
 export default auth;

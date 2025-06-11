@@ -4,7 +4,7 @@ import { Router } from 'express';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
-import authService from '../util/auth.js';
+import auth from '../util/auth.js';
 import emailService from '../util/email.js';
 
 import recipeListRepository from '../repository/recipeListRepository.js';
@@ -38,9 +38,9 @@ router.get("/api/auth/verify/:id", async (req, res) => {
     });
 
     const { password: _, ...userWithoutPassword } = updatedUser;
-    const token = await authService.generateAccessToken(userWithoutPassword);
+    const {refreshToken, accessToken} = await auth.generateTokens(userWithoutPassword);
 
-    return res.cookie("jwt", token, cookieOptions).send({ data: userWithoutPassword });
+    return res.cookie("refreshToken", refreshToken, cookieOptions).send({ data: userWithoutPassword, accessToken });
 
   } catch (error) {
     console.error(error);
@@ -65,7 +65,7 @@ router.post("/api/auth/register", async (req, res) => {
       return res.status(400).send({ errorMessage: "Email already exists." });
     }
 
-    const hashedPassword = await authService.hashPassword(password);
+    const hashedPassword = await auth.hashPassword(password);
     const newUser = await prisma.user.create({
       data: {
         username,
@@ -106,15 +106,15 @@ router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) 
       return res.status(401).send({ errorMessage: "Please confirm your email first." });
     }
 
-    const isValidPassword = await authService.verifyPassword(password, foundUser.password);
+    const isValidPassword = await auth.verifyPassword(password, foundUser.password);
     if (!isValidPassword) {
       return res.status(401).send({ errorMessage: "Wrong username or password." });
     }
 
-    const token = await authService.generateAccessToken(foundUser);
+    const {refreshToken, accessToken} = await auth.generateTokens(foundUser);
     const { password: _, ...userWithoutPassword } = foundUser; 
 
-    res.cookie("jwt", token, cookieOptions).send({data: userWithoutPassword});
+    res.cookie("refreshToken", refreshToken, cookieOptions).send({data: userWithoutPassword, accessToken});
 
   } catch (error) {
     console.error(error)
@@ -125,28 +125,46 @@ router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) 
 
 
 router.post("/api/auth/logout", async (req, res) => {
-  const jwt = req.cookies.jwt;
-  if (!jwt) {
-    return res.status(404).send({ errorMessage: "No tokens found on request." });
-  }
-
   const { email } = req.body;
   if(!email) {
     return res.status(404).send({ errorMessage: "Email must be included in request." });
   }
 
   try {
-    const isDestroyed = await authService.destroyToken(email, jwt);
-    if (!isDestroyed) {
-      return res.status(404).send({ errorMessage: "Could not destroy token." });
-    }
-    
-    res.clearCookie("jwt").status(200).send({ });
+    await auth.invalidateAllRefreshTokens(email);
+    res.clearCookie("refreshToken").sendStatus(204);
 
   }catch(error) {
     res.status(500).send({ errorMessage: "Could not logout error occurred on the server."});
   }
 });
+
+
+
+router.post("/api/auth/access-token", async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  try {
+
+    const decodedToken = await auth.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECERET);
+    if(!decodedToken) {
+      return res.status(401).send({ errorMessage: "Invalid refresh token" });
+    }
+    
+    const user = {
+      id: decodedToken.id,
+      username: decodedToken.username,
+      email: decodedToken.email
+    }
+    
+    const accessToken = auth.generateAccessToken(user);
+    res.send({ accessToken });
+  
+  } catch(error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Something went in the process of generating access token."})
+  }
+})
 
 
 
@@ -165,8 +183,8 @@ router.post("/api/auth/forgot-password", async (req, res) => {
 
     const resetToken = crypto.randomUUID();
     const FIFTEEN_MINUTES = 900;
-    const isSet = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
-    if (!isSet) {
+    const isPersisted = await redis.setEx(resetToken, FIFTEEN_MINUTES, email);
+    if (!isPersisted) {
       return res.status(500).send({ errorMessage: "Something went wrong generating reset password token." });
     }
 
@@ -192,7 +210,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
     }
     
     const email = await redis.get(resetToken);
-    await authService.invalidateOtherTokens(email);
+    await auth.invalidateAllRefreshTokens(email);
 
     const isDeleted = await redis.del(resetToken);
     if (!isDeleted) {
@@ -204,7 +222,7 @@ router.patch("/api/auth/reset-password/:token", async (req, res) => {
       return res.status(401).send({ errorMessage: "Must include a new password." });
     }
 
-    const newHashedPassword = await authService.hashPassword(newPassword);
+    const newHashedPassword = await auth.hashPassword(newPassword);
     const updatedUser = await prisma.user.update({
       where: {
         email: email,

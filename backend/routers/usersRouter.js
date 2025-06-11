@@ -104,45 +104,38 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
     return res.status(400).send({ errorMessage: "User data is required" });
   }
   
-
   
-  const jwt = req.cookies.jwt;
-  if (!jwt) {
-    return res.status(404).send({ errorMessage: "No tokens found on request." });
-  }
   
   try {
-  const isDestroyed = await auth.destroyToken(user.email, jwt);
-  if (!isDestroyed) {
-    return res.status(404).send({ errorMessage: "Could not destroy token." });
-  }
+    
+    if(user.emailNotification) {
+      const updatedUser = await usersRepository.updateEmailNotifications(user.id, user.emailNotification.setting);
+      return res.send({ data: updatedUser});
+    }
 
 
+    
+    await auth.invalidateAllRefreshTokens(user.email);
 
-  let updatedUser;
-  if (user.username) {
-    updatedUser = await usersRepository.updateUsername(user.id, user.username);
-  }
+    let updatedUser;
+    if (user.username) {
+      updatedUser = await usersRepository.updateUsername(user.id, user.username);
+    }
 
-  if(user.password) {
-    const hashedPassword = await auth.hashPassword(user.password);
-    updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
-  }
-  
-  if(user.emailNotification) {
-    updatedUser = await usersRepository.updateEmailNotifications(user.id, user.emailNotification.setting);
-  }
-  
-  if (!updatedUser) {
-    return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
-  }
-  const { password: _, ...userWithoutPassword } = updatedUser;
+    if(user.password) {
+      const hashedPassword = await auth.hashPassword(user.password);
+      updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
+    }
+    
+    if (!updatedUser) {
+      return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
+    }
 
-    const token = await auth.generateAccessToken(userWithoutPassword);
+    const {refreshToken, accessToken} = await auth.generateTokens(updatedUser);
     res
-      .clearCookie("jwt")
-      .cookie("jwt", token, cookieOptions)
-      .send({ data: userWithoutPassword});
+      .clearCookie("refreshToken")
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .send({ data: updatedUser, accessToken});
 
   } catch (error) {
     console.error("Error updating user:", error);
@@ -181,21 +174,11 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
 
     // Delete the user
     await usersRepository.softDeleteUser(userId);
-    
-    const jwt = req.cookies.jwt;
-    if (!jwt) {
-      return res.status(404).send({ errorMessage: "No tokens found on request." });
-    }
-
-    const isDestroyed = await auth.destroyToken(user.email, jwt);
-    if (!isDestroyed) {
-      return res.status(404).send({ errorMessage: "Could not destroy token." });
-    }
 
     // Clear the auth cookie
+    await auth.invalidateAllRefreshTokens(user.email);
     res.clearCookie("jwt", cookieOptions);
-
-    return res.send({ data: {} });
+    res.sendStatus(204);
 
   } catch (error) {
     console.error("Error deleting user:", error);

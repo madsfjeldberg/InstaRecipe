@@ -1,21 +1,25 @@
+import 'dotenv/config'
+
 import auth from '../util/auth.js';
 
 import usersRepository from '../repository/usersRepository.js';
 
 const authenticateToken = async (req, res, next) => {
 
-    const token = req.cookies.jwt;
-    if(!token) {
+    const authHeader = req.headers["authorization"];
+    const accessToken = authHeader && authHeader.split(" ")[1];
+
+    if(!accessToken) {
         return res.status(401).send({ errorMessage: "Token missing from request"});
     }
     
     try {
-        const user = await auth.verifyToken(token);
-        if(!user) {
-            return res.clearCookie("jwt").status(401).send({ errorMessage: "Invalid token" });
+        const decodedToken = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECERET);
+        if(!decodedToken) {
+            return res.status(401).send({ errorMessage: "Invalid token" });
         }
         
-        req.user = user;
+        req.user = decodedToken;
         next();
 
     } catch(error) {
@@ -27,12 +31,14 @@ const authenticateToken = async (req, res, next) => {
 //burde kun bruges på /api/login, hvis man allerede er logget ind, og man clicker login burde man blive redirected direkte til explore.
 const isAuthenticated = async (req, res, next) => {
     try{
-        const jwt = req.cookies.jwt;
-        if(!jwt) {
+        const authHeader = req.headers["authorization"];
+        const accessToken = authHeader && authHeader.split(" ")[1];
+
+        if (!accessToken) {
             return next();
         }
 
-        const decodedJwt = await auth.verifyToken(jwt);
+        const decodedJwt = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECERET);
         const user = await usersRepository.getUserById(decodedJwt.id)
 
         res.send({ data: user});
