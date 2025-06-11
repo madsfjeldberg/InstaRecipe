@@ -31,7 +31,7 @@ const verifyPassword = async (password, hashedPassword) => {
 
 
 
-const ACCESS_TOKEN_SECERET = process.env.ACCESS_TOKEN_SECERET;
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const generateAccessToken = (user) => {
   return jwt.sign(
     {
@@ -39,7 +39,7 @@ const generateAccessToken = (user) => {
       username: user.username,
       email: user.email,
     }, 
-    ACCESS_TOKEN_SECERET,
+    ACCESS_TOKEN_SECRET,
     { expiresIn: '30m' }
   );
 }
@@ -52,7 +52,7 @@ const generateRefreshToken = async (user) => {
       username: user.username,
       email: user.email,
     }, 
-    process.env.REFRESH_TOKEN_SECERET,
+    process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: '7d' }
   );
 
@@ -107,7 +107,7 @@ const invalidateAllRefreshTokens = async (email) => {
 
 const decodeToken = (token) => {
   try {
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECERET);
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
     return decoded;
   } catch (error) {
     throw new Error(`Invalid token: ${error.message}`);
