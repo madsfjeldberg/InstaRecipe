@@ -7,5 +7,5 @@ export function load({ locals, url }) {
   }
   
   const returnTo = url.searchParams.get('returnTo') || '/explore';
-  return { url: url.pathname, returnTo };
+  return { url: url.pathname, returnTo, user: locals.user };
 }

@@ -14,7 +14,7 @@ const authenticateToken = async (req, res, next) => {
     }
     
     try {
-        const decodedToken = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECERET);
+        const decodedToken = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
         if(!decodedToken) {
             return res.status(401).send({ errorMessage: "Invalid token" });
         }
@@ -38,7 +38,7 @@ const isAuthenticated = async (req, res, next) => {
             return next();
         }
 
-        const decodedJwt = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECERET);
+        const decodedJwt = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
         const user = await usersRepository.getUserById(decodedJwt.id)
 
         res.send({ data: user});

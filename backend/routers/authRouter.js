@@ -146,7 +146,7 @@ router.post("/api/auth/access-token", async (req, res) => {
 
   try {
 
-    const decodedToken = await auth.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECERET);
+    const decodedToken = await auth.verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     if(!decodedToken) {
       return res.status(401).send({ errorMessage: "Invalid refresh token" });
     }
@@ -163,6 +163,25 @@ router.post("/api/auth/access-token", async (req, res) => {
   } catch(error) {
     console.error(error);
     res.status(500).send({ errorMessage: "Something went in the process of generating access token."})
+  }
+})
+
+
+
+router.post("/api/auth/token/verify", async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const isVerified = await auth.verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
+    if(!isVerified) {
+      return res.status(401).send({ errorMessage: "Invalid token"});
+    }
+
+    res.send({ data: isVerified });
+
+  } catch(error) {
+    console.error(error)
+    res.status(500).send({ errorMessage: "Something went wrong verifying token."})
   }
 })
 

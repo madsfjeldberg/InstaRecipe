@@ -4,7 +4,6 @@ import { env } from '$env/dynamic/private';
 // and make them available in the application.
 // currently only used in hooks.server.js
 
-export const REFRESH_TOKEN_SECERET = env.REFRESH_TOKEN_SECERET;
 export const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',

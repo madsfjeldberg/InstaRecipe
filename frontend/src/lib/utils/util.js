@@ -60,6 +60,10 @@ const ifResponseOk = async (response) => {
         throw new Error(result.errorMessage)
     }
 
+    if(result.accessToken) {
+        accessToken.set(result.accessToken);
+    }
+
     return result.data;
 }
 
