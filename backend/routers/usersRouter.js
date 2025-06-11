@@ -3,12 +3,11 @@ import multer from 'multer';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
-import authService from '../service/authService.js';
+import auth from '../util/auth.js';
 
 import usersRepository from '../repository/usersRepository.js';
 
 import prisma from '../database/prismaClient.js';
-import recipeRepository from '../repository/recipeRepository.js';
 
 const router = Router();
 const upload = multer();
@@ -65,36 +64,28 @@ router.get("/api/users/:id/avatar", async (req, res) => {
   res.set('Content-Type', user.avatarMime || 'image/png').send(user.avatar);
 });
 
-router.get("/api/users/:id/recipes", authMiddleware.authenticateToken, async (req, res) => {
-  if (!req.params.id) {
-    return res.status(400).send({ errorMessage: "User id needs to be provided in the request."});
-  }
-
-  try {
-    const foundRecipes = await recipeRepository.getLikedDislikedRecipesHistoryOnUserId(req.params.id);
-    res.send({ data: foundRecipes });
-
-  } catch (error) {
-    res.status(500).send({ errorMessage: "could not get user recipes liked and dislike history."});
-  }
-})
-
 router.post("/api/users/:id/avatar", authMiddleware.authenticateToken, upload.single("avatar"), async (req, res) => {
     let userId = req.params.id;
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return res.status(404).send({ errorMessage: "User not found" });
-    }
+    try{
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        avatar: req.file.buffer,
-        avatarMime: req.file.mimetype,
-      },
-    });
-    const { password: _, ...userWithoutPassword } = updatedUser;
-    res.send({ data: userWithoutPassword });
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).send({ errorMessage: "User not found" });
+      }
+      
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          avatar: req.file.buffer,
+          avatarMime: req.file.mimetype,
+        },
+      });
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.send({ data: userWithoutPassword });
+    } catch (error) {
+      console.error(error)
+      res.status(500).send({ errorMessage: "Something went wrong uploading avatar"})
+    }
   }
 );
 
@@ -104,45 +95,38 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
     return res.status(400).send({ errorMessage: "User data is required" });
   }
   
-
   
-  const jwt = req.cookies.jwt;
-  if (!jwt) {
-    return res.status(404).send({ errorMessage: "No tokens found on request." });
-  }
   
   try {
-  const isDestroyed = await authService.destroyToken(user.email, jwt);
-  if (!isDestroyed) {
-    return res.status(404).send({ errorMessage: "Could not destroy token." });
-  }
+    
+    if(user.emailNotification) {
+      const updatedUser = await usersRepository.updateEmailNotifications(user.id, user.emailNotification.setting);
+      return res.send({ data: updatedUser});
+    }
 
 
+    
+    await auth.invalidateAllRefreshTokens(user.email);
 
-  let updatedUser;
-  if (user.username) {
-    updatedUser = await usersRepository.updateUsername(user.id, user.username);
-  }
+    let updatedUser;
+    if (user.username) {
+      updatedUser = await usersRepository.updateUsername(user.id, user.username);
+    }
 
-  if(user.password) {
-    const hashedPassword = await authService.hashPassword(user.password);
-    updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
-  }
-  
-  if(user.emailNotification) {
-    updatedUser = await usersRepository.updateEmailNotifications(user.id, user.emailNotification.setting);
-  }
-  
-  if (!updatedUser) {
-    return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
-  }
-  const { password: _, ...userWithoutPassword } = updatedUser;
+    if(user.password) {
+      const hashedPassword = await auth.hashPassword(user.password);
+      updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
+    }
+    
+    if (!updatedUser) {
+      return res.status(500).send({ errorMessage: "Server error. Error updating user fields." });
+    }
 
-    const token = await authService.generateToken(userWithoutPassword);
+    const {refreshToken, accessToken} = await auth.generateTokens(updatedUser);
     res
-      .clearCookie("jwt")
-      .cookie("jwt", token, cookieOptions)
-      .send({ data: userWithoutPassword});
+      .clearCookie("refreshToken")
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .send({ data: updatedUser, accessToken});
 
   } catch (error) {
     console.error("Error updating user:", error);
@@ -181,21 +165,11 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
 
     // Delete the user
     await usersRepository.softDeleteUser(userId);
-    
-    const jwt = req.cookies.jwt;
-    if (!jwt) {
-      return res.status(404).send({ errorMessage: "No tokens found on request." });
-    }
-
-    const isDestroyed = await authService.destroyToken(user.email, jwt);
-    if (!isDestroyed) {
-      return res.status(404).send({ errorMessage: "Could not destroy token." });
-    }
 
     // Clear the auth cookie
-    res.clearCookie("jwt", cookieOptions);
-
-    return res.send({ data: {} });
+    await auth.invalidateAllRefreshTokens(user.email);
+    res.clearCookie("refreshToken", cookieOptions);
+    res.sendStatus(204);
 
   } catch (error) {
     console.error("Error deleting user:", error);

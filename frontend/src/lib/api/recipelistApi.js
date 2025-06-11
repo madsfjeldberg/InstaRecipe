@@ -5,8 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const getRecipeListsByUserId = async (userId) => {
   try {
-    const option = makeOption("GET");
-    const response = await fetchWithAuth(`${BASE_URL}/user/${userId}`, option);
+    const response = await fetch(`${BASE_URL}/user/${userId}`);
     
     return await ifResponseOk(response);
   

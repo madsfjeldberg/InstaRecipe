@@ -1,8 +1,10 @@
 import { goto } from '$app/navigation';
+import { get } from 'svelte/store';
 
 import { toast } from 'svelte-sonner';
 
-import { updateAuthState } from '../../stores/authStore.js';
+import { updateAuthState, accessToken } from '../../stores/authStore.js';
+import authApi from '$lib/api/authApi.js';
 
 
 const makeOption = (httpMethod, body) => {
@@ -29,13 +31,23 @@ const makeOption = (httpMethod, body) => {
 }
 
 const fetchWithAuth = async (url, options) => {
-    const response = await fetch(url, options);
+    options.headers["Authorization"] = "Bearer " + get(accessToken);
+    let response = await fetch(url, options);
 
     if (response.status === 401) {
-        updateAuthState(null);
-        toast.error("Session expired. Please log in again.");
-        goto("/login");
-        throw new Error("Unauthorized");
+        try {
+            const renewedAccessToken = await authApi.renewAccessToken();
+            options.headers["Authorization"] = "Bearer " + renewedAccessToken;
+            
+            response = await fetch(url, options);
+            
+        } catch (error) {
+            console.error(error);
+            updateAuthState(null, null);
+            toast.error("Session expired. Please log in again.");
+            goto("/login");
+            throw new Error("Unauthorized");
+        }
     }
 
     return response;

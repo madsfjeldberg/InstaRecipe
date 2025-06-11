@@ -5,6 +5,7 @@
   import Button from '../ui/button/button.svelte';
 
   import { avatarStore } from '../../../stores/avatarStore.js';
+    import userApi from '$lib/api/userApi';
 
   const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
@@ -12,7 +13,7 @@
 
   let browseInput = $state(null);
   let files = $state(null);
-  let uploading = $state(false);
+  let isUploading = $state(false);
 
   // trigger the hidden input
   const handleUploadClick = () => {
@@ -33,28 +34,32 @@
     const formData = new FormData();
     formData.append('avatar', file);
 
-    uploading = true;
-    const res = await fetch(`${BASE_URL}/users/${user.id}/avatar`, {
-      method: 'POST',
-      credentials: 'include',
-      body: formData
-    });
-    uploading = false;
+    isUploading = true;
+    try {
+      const response = await userApi.uploadAvatar(user.id, formData);
 
-    if (res.ok) {
-      
+      if (!response.ok) {
+        toast.error('Avatar upload failed', await res.text()); 
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         avatarStore.set(reader.result);
       };
       reader.readAsDataURL(file);
-    } else {
-      console.error('Avatar upload failed', await res.text());
+
+      toast.success("Avatar successfully uploaded!");
+    } catch(error) {
+      toast.error(error.message);
+
+    } finally {
+      isUploading = false;
     }
+
   }
 </script>
 
-{#if (uploading)}
+{#if (isUploading)}
 <Button disabled>
   <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
   Uploading

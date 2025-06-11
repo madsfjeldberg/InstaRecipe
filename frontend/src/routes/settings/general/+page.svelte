@@ -65,7 +65,7 @@
       changeUsernameRequest.parse({ username });
 
       const updatedUser = await userApi.updateUsername(user.id, username, user.email);
-      toast.success(`Username updated to ${updatedUser.password}!`);
+      toast.success(`Username updated to ${updatedUser.username}!`);
       
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -8,7 +8,8 @@ import prisma from '../database/prismaClient.js';
 
 const router = Router();
 
-// Get all recipe lists for a specific user
+
+
 router.get("/api/recipelists/user/:userId", async (req, res) => {
     const { userId } = req.params;
 

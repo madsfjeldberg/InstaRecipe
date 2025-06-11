@@ -1,21 +1,45 @@
-import { isAuthenticated, user } from '../../stores/authStore.js';
+import { isAuthenticated, user, accessToken } from '../../stores/authStore.js';
 import { avatarStore } from '../../stores/avatarStore.js';
 
 import { ifResponseOk, makeOption } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 
+
+
+const verifyEmail = async (userId) => {
+  try {
+    const response = await fetch(BASE_URL + "/verify/" + userId);
+    
+    return await ifResponseOk(response);
+
+  }catch(error) {
+    throw error;
+  }
+}
+
+
+
 const login = async (username, password) => {
   try{
     const postOption = makeOption("POST", {username, password});
     const response = await fetch(BASE_URL + "/login", postOption);
-    
-    return await ifResponseOk(response);
+    const result = await response.json();
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+
+    accessToken.set(result.accessToken);
+    return result.data;
     
   } catch (error) {
+    console.error(error)
     throw error;
   }
 }
+
+
 
 const register = async (username, email, password) => {
   try {
@@ -29,14 +53,40 @@ const register = async (username, email, password) => {
   }
 };
 
+
+
 const logout = async (email) => {
   try {
     const getOption = makeOption("POST", {email});
     const response = await fetch(BASE_URL + "/logout", getOption);
     
-    return await ifResponseOk(response);
+    if(!response.ok) {
+      const result = await response.json();
+      throw new Error(result.errorMessage);
+    }
   
   }catch(error) {
+    throw error;
+  }
+}
+
+
+
+const renewAccessToken = async () => {
+  try {
+    const postOption = makeOption("POST");
+    const response = await fetch(BASE_URL + "/access-token", postOption);
+    const result = await response.json();
+
+    if(!response.ok) {
+      throw new Error(result.errorMessage);
+    }
+
+    const newAccessToken = result.accessToken;
+    accessToken.set(newAccessToken);
+    return newAccessToken;
+
+  } catch (error) {
     throw error;
   }
 }
@@ -72,16 +122,6 @@ const resetPassword = async (newPassword, resetToken) => {
 
 
 
-const verifyEmail = async (userId) => {
-  try {
-    const response = await fetch(BASE_URL + "/verify/" + userId);
-    
-    return await ifResponseOk(response);
-
-  }catch(error) {
-    throw error;
-  }
-}
 
 
 
@@ -90,6 +130,7 @@ const authApi = {
   register,
   verifyEmail,
   logout,
+  renewAccessToken,
   sendRestPasswordRequest,
   resetPassword
 };

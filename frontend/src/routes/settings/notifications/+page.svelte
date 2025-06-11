@@ -12,8 +12,8 @@
 
   let { data } = $props();
   let userId = data.user.id;
-  let user = $state({});
-  let emailNotifications = $state(true);
+  let user = $state(data.user);
+  let emailNotifications = $state(user.emailNotifications);
 
   
   onMount(async () => {
@@ -35,6 +35,7 @@
       toast.success("Settings saved successfully!");
 
     } catch (error) {
+      console.error(error)
       toast.error(error.message);
     }
   }
