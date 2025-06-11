@@ -1,7 +1,14 @@
 <script>
   import AuthForm from '$lib/components/AuthForm/AuthForm.svelte';
 
+  import { updateAuthState } from '../../stores/authStore.js';
+
   const { data } = $props();
+
+  if(data.user === null) {
+    updateAuthState(null);
+  }
+
   const returnTo = data.returnTo;
   const isRegister = data.isRegister;
   
