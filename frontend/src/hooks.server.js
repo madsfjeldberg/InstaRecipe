@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 
 import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET } from '$lib/config/env.server.js'; 
+import { REFRESH_TOKEN_SECERET } from '$lib/config/env.server.js'; 
 
 import userApi from '$lib/api/userApi.js';
 
@@ -10,7 +10,7 @@ import userApi from '$lib/api/userApi.js';
 
 const verifyJWT = (token) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, REFRESH_TOKEN_SECERET);
     return { id: decoded.id, username: decoded.username, email: decoded.email };
 
   } catch (error) {
@@ -19,7 +19,7 @@ const verifyJWT = (token) => {
 }
 
 export const handle = async ({ event, resolve }) => {
-  const token = event.cookies.get('jwt');
+  const token = event.cookies.get('refreshToken');
   if (token) {
     try {
       const payload = verifyJWT(token);
