@@ -1,4 +1,4 @@
-import auth from '../service/authService.js';
+import auth from '../util/auth.js';
 
 import usersRepository from '../repository/usersRepository.js';
 

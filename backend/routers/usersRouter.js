@@ -3,7 +3,7 @@ import multer from 'multer';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
-import authService from '../service/authService.js';
+import auth from '../util/auth.js';
 
 import usersRepository from '../repository/usersRepository.js';
 
@@ -112,7 +112,7 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   }
   
   try {
-  const isDestroyed = await authService.destroyToken(user.email, jwt);
+  const isDestroyed = await auth.destroyToken(user.email, jwt);
   if (!isDestroyed) {
     return res.status(404).send({ errorMessage: "Could not destroy token." });
   }
@@ -125,7 +125,7 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   }
 
   if(user.password) {
-    const hashedPassword = await authService.hashPassword(user.password);
+    const hashedPassword = await auth.hashPassword(user.password);
     updatedUser = await usersRepository.updatePassword(user.id, hashedPassword);
   }
   
@@ -138,7 +138,7 @@ router.put("/api/users", authMiddleware.authenticateToken, async (req, res) => {
   }
   const { password: _, ...userWithoutPassword } = updatedUser;
 
-    const token = await authService.generateToken(userWithoutPassword);
+    const token = await auth.generateAccessToken(userWithoutPassword);
     res
       .clearCookie("jwt")
       .cookie("jwt", token, cookieOptions)
@@ -187,7 +187,7 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
       return res.status(404).send({ errorMessage: "No tokens found on request." });
     }
 
-    const isDestroyed = await authService.destroyToken(user.email, jwt);
+    const isDestroyed = await auth.destroyToken(user.email, jwt);
     if (!isDestroyed) {
       return res.status(404).send({ errorMessage: "Could not destroy token." });
     }

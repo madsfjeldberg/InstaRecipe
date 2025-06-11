@@ -1,7 +1,7 @@
 import 'dotenv/config';
+
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
 import redis from '../database/redisClient.js';
 
 const SALT = 10;
@@ -26,7 +26,7 @@ const verifyPassword = async (password, hashedPassword) => {
   }
 }
 
-const generateToken = async (user) => {
+const generateAccessToken = async (user) => {
   const now = Math.floor(Date.now() / 1000); // Current time in seconds
   const exp = now + JWT_EXPIRATION; // Exactly JWT_EXPIRATION seconds from now
 
@@ -45,6 +45,10 @@ const generateToken = async (user) => {
   } catch (error) {
     throw new Error(`Error generating token: ${error.message}`);
   }
+}
+
+const generateRefreshToken = () => {
+  
 }
 
 const verifyToken = async (token) => {
@@ -101,7 +105,7 @@ const decodeToken = (token) => {
 const auth = {
   hashPassword,
   verifyPassword,
-  generateToken,
+  generateAccessToken,
   decodeToken,
   verifyToken,
   destroyToken,

@@ -4,8 +4,8 @@ import { Router } from 'express';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
-import authService from '../service/authService.js';
-import emailService from '../service/emailService.js';
+import authService from '../util/auth.js';
+import emailService from '../util/email.js';
 
 import recipeListRepository from '../repository/recipeListRepository.js';
 import usersRepository from '../repository/usersRepository.js';
@@ -38,7 +38,7 @@ router.get("/api/auth/verify/:id", async (req, res) => {
     });
 
     const { password: _, ...userWithoutPassword } = updatedUser;
-    const token = await authService.generateToken(userWithoutPassword);
+    const token = await authService.generateAccessToken(userWithoutPassword);
 
     return res.cookie("jwt", token, cookieOptions).send({ data: userWithoutPassword });
 
@@ -111,7 +111,7 @@ router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) 
       return res.status(401).send({ errorMessage: "Wrong username or password." });
     }
 
-    const token = await authService.generateToken(foundUser);
+    const token = await authService.generateAccessToken(foundUser);
     const { password: _, ...userWithoutPassword } = foundUser; 
 
     res.cookie("jwt", token, cookieOptions).send({data: userWithoutPassword});

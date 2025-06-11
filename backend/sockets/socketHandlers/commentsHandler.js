@@ -1,4 +1,4 @@
-import emailService from '../../service/emailService.js';
+import emailService from '../../util/email.js';
 
 import commentsRepository from '../../repository/commentsRepository.js';
 import recipeRepository from '../../repository/recipeRepository.js';
