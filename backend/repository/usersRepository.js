@@ -284,6 +284,7 @@ const softDeleteUser = async (userId) => {
                 id: userId
             },
             data: {
+                username: null,
                 email: "deleted@" + userId,
                 password: "deleted_" + userId,
                 avatar: null,
