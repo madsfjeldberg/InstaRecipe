@@ -26,7 +26,7 @@ const getUserById = async (userId) => {
 const getUsersByPartialUsername = async (query) => {
   try {
     const option = makeOption("GET");
-    const response = await fetchWithAuth(`${BASE_URL}/?partialUsername=${query}`, option);
+    const response = await fetch(`${BASE_URL}/?partialUsername=${query}`, option);
     
     return await ifResponseOk(response)
 
@@ -52,17 +52,20 @@ const getUserAvatar = async (userId) => {
   }
 }
 
-const getUserRatedRecipesHistory = async (userId) => {
-  try {
-    const option = makeOption("GET");
-    const response = await fetchWithAuth(BASE_URL + "/" + userId + "/recipes", option);
 
-    return await ifResponseOk(response);
 
-  } catch (error) {
-    throw error;
-  }
+const uploadAvatar = async (userId, avatarFile) => {
+  const res = await fetchWithAuth(`${BASE_URL}/${userId}/avatar`, {
+    headers: {"Authorization": ""},
+    method: 'POST',
+    credentials: 'include',
+    body: avatarFile
+  });
+
+  return res;
 }
+
+
 
 const updateUsername = async (id, username, email) => {
   try {
@@ -109,14 +112,13 @@ const deleteUser = async (userId, email) => {
     const user = { id: userId, email }
     const option = makeOption("DELETE", { user });
     const response = await fetchWithAuth(`${BASE_URL}`, option);
-    const result = await response.json();
     
     if (!response.ok) {
+      const result = await response.json();
       throw new Error(result.errorMessage);
     }
     
     updateAuthState(null);
-    return result.data;
 
   } catch (error) { 
     throw error;
@@ -127,7 +129,7 @@ const userApi = {
   getUserById,
   getUserAvatar,
   getUsersByPartialUsername,
-  getUserRatedRecipesHistory,
+  uploadAvatar,
   updateUsername,
   updatePassword,
   updateEmailNotificationsSetting,
