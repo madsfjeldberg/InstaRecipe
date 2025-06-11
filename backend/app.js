@@ -19,7 +19,6 @@ import rateLimiter from "./middleware/rateLimiter.js";
 import logger from "./middleware/logger.js";
 import cors from "./middleware/cors.js";
 import authMiddleware from "./middleware/authMiddleware.js";
-import globalErrorHandler from './middleware/globalErrorHandler.js';
 
 import { registerSocketHandlers } from "./sockets/registerSocketHandlers.js";
 

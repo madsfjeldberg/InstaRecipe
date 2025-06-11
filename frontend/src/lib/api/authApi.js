@@ -1,15 +1,28 @@
-import { get } from 'svelte/store';
-
-import { isAuthenticated, user, accessToken } from '../../stores/authStore.js';
+import { isAuthenticated, user } from '../../stores/authStore.js';
 import { avatarStore } from '../../stores/avatarStore.js';
 
 import { ifResponseOk, makeOption } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 
+
+
+const verifyEmail = async (userId) => {
+  try {
+    const response = await fetch(BASE_URL + "/verify/" + userId);
+    
+    return await ifResponseOk(response);
+
+  }catch(error) {
+    throw error;
+  }
+}
+
+
+
 const login = async (username, password) => {
   try{
-    const postOption = makeOption("POST", {username, password}, get(accessToken));
+    const postOption = makeOption("POST", {username, password});
     const response = await fetch(BASE_URL + "/login", postOption);
     const result = await response.json();
 
@@ -108,16 +121,6 @@ const resetPassword = async (newPassword, resetToken) => {
 
 
 
-const verifyEmail = async (userId) => {
-  try {
-    const response = await fetch(BASE_URL + "/verify/" + userId);
-    
-    return await ifResponseOk(response);
-
-  }catch(error) {
-    throw error;
-  }
-}
 
 
 
