@@ -32,7 +32,7 @@
     </Button>
 
     <Input
-        class="min-w-0 max-w-[6%] font-semibold text-center pl-6"
+        class="w-20 font-semibold text-center pl-7"
         bind:value={servings}
         type="number"
         oninput={checkServingsValue}

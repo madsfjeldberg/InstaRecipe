@@ -17,6 +17,7 @@
     import CommentInput from '$lib/components/Comments/CommentInput.svelte';
     import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
     import LikeDislikeButtonsCombined from '$lib/components/RecipePopularity/LikeDislikeButtonsCombined.svelte';
+    import ServingsInput from '$lib/components/ServingsInput/ServingsInput.svelte';
     import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
     import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
     import BarChart from '$lib/components/ChartJs/BarChart.svelte';
@@ -35,6 +36,7 @@
     
     let recipe = $state(null);
     let comments = $state([]);
+    let servings = $state(4);
     let checkedItems = $state([]);
     let steps = $state([]);
     let likes = $state([]);
@@ -64,6 +66,8 @@
       isLoading = true;
       try {
         recipe = await recipeApi.getRecipeById(recipeId);
+        // servings = recipe.servings;
+        console.log(recipe)
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
@@ -227,6 +231,13 @@
                 
         </div>
   
+        <div class="grid place-items-center mb-2">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="servings">
+            Servings
+          </label>
+          <ServingsInput id="servings" bind:servings/>
+        </div>
+
         <!-- Ingredients & Instructions Card -->
         <Card.Root class="shadow-lg flex flex-row w-full mb-8">
           <!-- Ingredients Section -->
@@ -256,7 +267,13 @@
                   class="cursor-pointer text-left select-none"
                     onclick={() => toggleItem(ingredient.name)}>
                     <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
-                      {ingredient.name}: {ingredient.servingSize}g
+                      {#if servings === 4}
+                        {ingredient.name}: {ingredient.servingSize}g
+                        
+                        {:else}
+                        {ingredient.name}: {(ingredient.servingSize/4) * servings}g
+
+                      {/if}
                       </span>
                   </button>
                   </li>
