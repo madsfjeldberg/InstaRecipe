@@ -36,8 +36,8 @@ const getRecipesByPartialName = async (query) => {
   }
 }
 
-const addRecipe = async (name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId) => {
-  const recipeToCreate = { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image, recipeListId };
+const addRecipe = async (name, description, ingredients, ingredientsInGrams, instructions, servings, category, tags, image, recipeListId) => {
+  const recipeToCreate = { name, description, ingredients, ingredientsInGrams, instructions, servings, category, tags, image, recipeListId };
 
   try {
     const option = makeOption("POST", recipeToCreate)

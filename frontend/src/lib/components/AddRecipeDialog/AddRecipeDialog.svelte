@@ -37,6 +37,7 @@
     description: "",
     ingredients: "",
     instructions: "",
+    servings: "",
     category: "",
     url: "",
     };
@@ -52,6 +53,7 @@
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
     ingredients: z.string().min(1, "Ingredients are required"),
+    servings: z.string().min(1, "servings are required"),
     instructions: z.string().min(1, "Instructions are required"),
     category: z.string().min(1, "Category is required"),
   });
@@ -80,6 +82,7 @@
       linkRequest.parse({ url }); 
 
       const generatedRecipe = await scrapeApi.scrapeLink(url);
+      //TODO ADD SERVINGS TO SCRAPE API.
       const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
       const newRecipe = await recipeApi.addRecipe(
         name,
@@ -136,6 +139,7 @@
     const description = formData.get('description');
     const ingredients = formData.get('ingredients');
     const instructions = formData.get('instructions');
+    const servings = formData.get('servings');
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
@@ -148,6 +152,7 @@
         description,
         ingredients,
         instructions,
+        servings,
         category,
       });
       
@@ -159,6 +164,7 @@
         ingredientsArray,
         ingredientsArray,
         instructions,
+        servings,
         category,
         selectedTags,
         image,
@@ -276,6 +282,12 @@
             <Label for="instructions" class="text-right">Instructions</Label>
             <Textarea id="instructions" placeholder="Brown the beef on medium-high. Add carrots and butter." name="instructions" class="col-span-3" value="Chops carrots, put in pot, and stir stir stir"/>
             <ErrorMessage message={errors.instructions} className="col-span-3 col-end-5" />
+          </div>
+
+          <div class="grid grid-cols-4 items-center gap-4">
+            <Label for="instructions" class="text-right">Servings</Label>
+            <Input id="servings" placeholder="how many does this recipe serve?" name="servings" class="col-span-3" value="4"/>
+            <ErrorMessage message={errors.servings} className="col-span-3 col-end-5" />
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">

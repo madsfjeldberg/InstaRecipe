@@ -61,6 +61,7 @@ router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) =
     ingredients,
     ingredientsInGrams,
     instructions,
+    servings,
     category,
     tags,
     image,
@@ -71,14 +72,14 @@ router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) =
     !description ||
     !ingredients ||
     !instructions ||
+    !servings ||
     !category ||
     !tags
   ) {
     return res.status(400).send({ errorMessage: "All fields are required" });
   }
 
-  const ingredientsWithMacros =
-    await macroService.getMacros(ingredientsInGrams);
+  const ingredientsWithMacros = await macroService.getMacros(ingredientsInGrams);
 
   try {
     const result = await prisma.$transaction(async (transaction) => {
@@ -88,6 +89,7 @@ router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) =
           description,
           ingredients,
           instructions,
+          servings,
           category: { connect: { name: category } },
           tags: { connect: tags.map((tag) => ({ name: tag })) },
           recipeLists: { connect: { id: recipeListId } },
