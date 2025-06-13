@@ -12,6 +12,7 @@ Structure:
   "ingredients": [],
   "ingredientsInGrams": "",
   "instructions": "",
+  "servings": "",
   "category": "",
   "tags": []
 }
@@ -39,6 +40,9 @@ Instructions:
 If instructions are missing, generate plausible cooking steps based on common methods and the ingredients.
 Write clear, numbered, concise steps.
 DO NOT make this an array. it should just be a string.
+
+Servings:
+If servings are missing choose the appropiate servings given the amount of ingredients used.
 
 Category: This should be one of the following: Breakfast, Lunch, Dinner, Dessert, Snack, Beverage.
 
