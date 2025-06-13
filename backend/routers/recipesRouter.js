@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
+import ai from '../service/aiService.js';
 import macroService from '../service/macroService.js';
 import b2 from '../service/b2FileUploadService.js';
 
@@ -79,15 +80,17 @@ router.post("/api/recipes", authMiddleware.authenticateToken, async (req, res) =
     return res.status(400).send({ errorMessage: "All fields are required" });
   }
 
-  const ingredientsWithMacros = await macroService.getMacros(ingredientsInGrams);
-
+  
   try {
+    const ingredientsWithMacros = await macroService.getMacros(ingredientsInGrams);
+    const parsedIngredients = await ai.parseUserInputedIngredients(ingredients);
+
     const result = await prisma.$transaction(async (transaction) => {
       const newRecipe = await transaction.recipe.create({
         data: {
           name,
           description,
-          ingredients,
+          ingredients: parsedIngredients,
           instructions,
           servings,
           category: { connect: { name: category } },
