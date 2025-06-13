@@ -20,9 +20,7 @@ export const handle = async ({ event, resolve }) => {
   if (token) {
     try {
       const payload = await verifyJWT(token);
-      const user = await userApi.getUserById(payload.id);
-      const { avatar, avatarMime, ...modifiedUser } = user;
-      event.locals.user = modifiedUser;
+      event.locals.user = payload;
 
     } catch (error) {
       event.cookies.delete('refreshToken', { path: '/' });

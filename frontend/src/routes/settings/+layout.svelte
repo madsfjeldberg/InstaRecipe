@@ -1,5 +1,5 @@
 <script>
-  import NavLink from '$lib/components/Navbar/NavLink.svelte';
+  import NavLink from '$lib/components/Navbar/Navlink.svelte';
 
   let { children } = $props();
 
