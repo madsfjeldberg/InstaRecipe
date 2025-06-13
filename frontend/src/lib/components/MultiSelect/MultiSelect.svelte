@@ -9,7 +9,7 @@
       return;
     }
   };
-</script>
+  </script>
 
 <Select.Root
   onValueChange={isMaxSelection}
@@ -18,7 +18,7 @@
   type="multiple"
 >                                                                            
 <!--                                                                  Hvis du har en god dynamisk måde at resize select box på må du gerne lave det her om :) -->
-  <Select.Trigger class={`flex flex-wrap rounded ${items.filter( (item) => selectedItems.find( (selectedItemId) => item.id === selectedItemId)).map((obj) => {return obj.name}).join("").length > 25 ? 'min-h-[6rem]' : ''}`}>
+  <Select.Trigger class="h-auto flex flex-wrap gap-2">
     {#if selectedItems.length}
       {#each selectedItems as selectedItemName (selectedItemName)}
         <span class="px-2 py-1 bg-slate-200 dark:bg-slate-900 rounded text-sm">
