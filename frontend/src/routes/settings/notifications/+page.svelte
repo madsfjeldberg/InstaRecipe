@@ -38,7 +38,6 @@
       toast.success("Settings saved successfully!");
 
     } catch (error) {
-      console.error(error)
       toast.error(error.message);
     } finally {
       isLoading = false;
