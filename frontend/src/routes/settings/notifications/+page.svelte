@@ -3,6 +3,7 @@
 
   import { toast } from 'svelte-sonner';
 
+  import { LoaderCircle } from "lucide-svelte";
   import * as Card from '$lib/components/ui/card/index.js';
   import Switch from '$lib/components/ui/switch/switch.svelte';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -13,7 +14,8 @@
   let { data } = $props();
   let userId = data.user.id;
   let user = $state(data.user);
-  let emailNotifications = $state(user.emailNotifications);
+  let emailNotifications = $state(data.user.emailNotifications);
+  let isLoading = $state(false);
 
   
   onMount(async () => {
@@ -31,12 +33,15 @@
 
   const saveSettings = async () => {
     try {
+      isLoading = true;
       await userApi.updateEmailNotificationsSetting(userId, emailNotifications, user.email);
       toast.success("Settings saved successfully!");
 
     } catch (error) {
       console.error(error)
       toast.error(error.message);
+    } finally {
+      isLoading = false;
     }
   }
 </script>
@@ -45,7 +50,7 @@
   <Card.Header>
     <Card.Title>Email Notifications</Card.Title>
     <Card.Description>
-      Enable or disable email notifications for your account.
+      Enable or disable email notifications for your account, such as comments replies.
     </Card.Description>
   </Card.Header>
   <Card.Content class="flex items-center justify-between py-4">
@@ -54,5 +59,12 @@
   </Card.Content>
 </Card.Root>
 
+{#if isLoading}
+  <Button disabled class="col-span-2 col-start-1" onclick={saveSettings}>
+    <LoaderCircle class="animate-spin"/>
+    Saving settings...
+  </Button>
 
-<Button class="col-span-2 col-start-1" onclick={saveSettings}>Save Settings</Button>
+{:else}
+    <Button class="col-span-2 col-start-1" onclick={saveSettings}>Save Settings</Button>
+{/if}
