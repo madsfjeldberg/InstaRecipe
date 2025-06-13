@@ -16,19 +16,33 @@
   import MultiSelect from '../MultiSelect/MultiSelect.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
 
+  import tagsApi from '$lib/api/tagsApi';
   import recipeApi from '$lib/api/recipeApi';
   import scrapeApi from '$lib/api/scrapeApi';
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
-  let { selectedList = $bindable(), categories, tags } = $props();
+  let { selectedList = $bindable() } = $props();
 
+  let tags = $state([]);
   let selectedTags = $state([]);
   let counter = $state(0);
 
   let isLoading = $state(false);
   let isDialogOpen = $state(false); // control state of the dialog/sheet
   let inputMode = $state("link"); // control between link and manual input
+
+
+
+  onMount(async () => {
+    try {
+      tags = await tagsApi.getRecipeTags();
+    } catch (error) {
+      toast.error("Failed to load tags. Please try again later.");
+    }
+  });
+
+
 
   const resetErrors = () => {
   return {
@@ -293,7 +307,7 @@
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="category" class="text-right">Category</Label>
             <div class="col-span-3">
-              <CategorySelect {categories} name="category" />
+              <CategorySelect name="category" />
             </div>
             <ErrorMessage message={errors.category} className="col-span-3 col-end-5" />
           </div>

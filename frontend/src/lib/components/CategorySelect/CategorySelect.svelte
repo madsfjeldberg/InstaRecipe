@@ -3,9 +3,20 @@
 
   import { Check } from 'lucide-svelte';
   import * as Select from '$lib/components/ui/select/index.js';
+
+  import categoryApi from '$lib/api/categoryApi';
+  import { toast } from 'svelte-sonner';
   
-  let { categories = $bindable() } = $props();
   let selectedCategory = $state("");
+  let categories = $state([]);
+
+  onMount( async () => {
+    try {
+      categories = await categoryApi.getCategories();
+    }catch (error) {
+      toast.error(error.message + "\nTry again later");
+    }
+  })
 
 </script>
 
