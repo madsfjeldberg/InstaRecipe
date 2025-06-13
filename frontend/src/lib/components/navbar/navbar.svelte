@@ -8,7 +8,7 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   
-  import Navlink from './NavLink.svelte';
+  import Navlink from './Navlink.svelte';
   import ThemeToggle from '../ThemeToggle/ThemeToggle.svelte';
   import SearchBar from '../SearchBar/SearchBar.svelte';
 
@@ -86,12 +86,8 @@
       
         {#if !$isAuthenticated}
           <Navlink className="ml-4" exact={true} href="/login">
-            Login <LogIn class="h-5 w-5 inline-block" />
+            Login <LogIn class="h-5 w-5 inline" />
           </Navlink>
-
-          <a class="ml-4 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold" exact={true} href="/register">
-            Register <ClipboardPen class="h-5 w-5 inline-block"/>
-          </a>
         {/if}
       </div>
 
