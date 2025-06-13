@@ -53,7 +53,7 @@
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
     ingredients: z.string().min(1, "Ingredients are required"),
-    servings: z.string().min(1, "servings are required"),
+    servings: z.number().int().positive("Servings reqirued, it can't be 0."), // .positive() ensures it's > 0
     instructions: z.string().min(1, "Instructions are required"),
     category: z.string().min(1, "Category is required"),
   });
@@ -82,14 +82,14 @@
       linkRequest.parse({ url }); 
 
       const generatedRecipe = await scrapeApi.scrapeLink(url);
-      //TODO ADD SERVINGS TO SCRAPE API.
-      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
+      const { name, description, ingredients, ingredientsInGrams, instructions, servings, category, tags, image } = generatedRecipe;
       const newRecipe = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
         ingredientsInGrams,
         instructions,
+        Number(servings),
         category,
         tags,
         image,
@@ -139,7 +139,7 @@
     const description = formData.get('description');
     const ingredients = formData.get('ingredients');
     const instructions = formData.get('instructions');
-    const servings = formData.get('servings');
+    const servings = Number(formData.get('servings'));
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
@@ -286,7 +286,7 @@
 
           <div class="grid grid-cols-4 items-center gap-4">
             <Label for="instructions" class="text-right">Servings</Label>
-            <Input id="servings" placeholder="how many does this recipe serve?" name="servings" class="col-span-3" value="4"/>
+            <Input id="servings" type="number" placeholder="how many does this recipe serve?" name="servings" class="col-span-3" value="4"/>
             <ErrorMessage message={errors.servings} className="col-span-3 col-end-5" />
           </div>
 
