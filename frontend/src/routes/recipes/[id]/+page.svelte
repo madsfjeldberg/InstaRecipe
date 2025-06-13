@@ -296,7 +296,7 @@
                           {ingredient.name}: {ingredient.servingSize}g
                           
                           {:else}
-                          {ingredient.name}: {adjustMeasurment(ingredient)}g
+                          {ingredient.name}: {ingredient.servingSize * updatedServings/originalServings}g
                           
                           {/if}
                         </span>
