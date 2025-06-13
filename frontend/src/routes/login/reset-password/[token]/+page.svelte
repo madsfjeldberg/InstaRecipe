@@ -171,7 +171,6 @@
 
                 <Button type="submit">
                     {#if isLoading}
-                    <!-- TODO make loading spinners dynamicaly change color based on darkmode or not -->
                         <LoaderCircle class="animate-spin"/>
 
                         {:else}
