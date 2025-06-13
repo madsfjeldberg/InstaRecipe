@@ -51,7 +51,6 @@ router.get("/api/users", async (req, res) => {
   }
 
   return res.send({ data: users });
-  
 });
 
 router.get("/api/users/:id/avatar", async (req, res) => {

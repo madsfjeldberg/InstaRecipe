@@ -16,7 +16,6 @@
   import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
 
   import recipeListApi from '$lib/api/recipelistApi.js';
-  import categoryApi from '$lib/api/categoryApi.js';
   import tagsApi from '$lib/api/tagsApi.js';
   import { goto } from '$app/navigation';
   
@@ -32,17 +31,12 @@
   let selectedList = $state(null);
   let favoritesRecipeList = $state(null);
 
-  let categories = $state([]);
-  let tags = $state([]);
-
   let loading = $state(true);
 
   onMount(async () => {
     // Fetch the initial recipe list when the component mounts
     try {
       recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
-      categories = await categoryApi.getCategories();
-      tags = await tagsApi.getRecipeTags();
       
     } catch(error) {
       toast.error(error.message + "\nTry again later");
@@ -96,7 +90,7 @@
         {#if selectedList.name !== "Favorites"}
           <div class="group flex items-center justify-between mb-4">
               <EditListDialog bind:selectedList bind:recipeLists />
-            <AddRecipeDialog bind:selectedList {categories} {tags}/>
+            <AddRecipeDialog bind:selectedList/>
           </div>
         {:else}
           <h1 class="text-2xl font-semibold">{selectedList.name}</h1>

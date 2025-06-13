@@ -17,9 +17,11 @@
     import CommentInput from '$lib/components/Comments/CommentInput.svelte';
     import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
     import LikeDislikeButtonsCombined from '$lib/components/RecipePopularity/LikeDislikeButtonsCombined.svelte';
+    import ServingsInput from '$lib/components/ServingsInput/ServingsInput.svelte';
     import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
     import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
     import BarChart from '$lib/components/ChartJs/BarChart.svelte';
+    import RecipeNutritionTable from '$lib/components/RecipeNutritionTable/RecipeNutritionTable.svelte';
     
     import { handleLike, handleDislike } from '$lib/utils/recipeLikes.js';
 
@@ -35,6 +37,11 @@
     
     let recipe = $state(null);
     let comments = $state([]);
+    let updatedServings = $state();
+    let originalServings = $state();
+    let updatedIngredientsList = $state([]);
+    let originalIngredientsList = $state([]);
+
     let checkedItems = $state([]);
     let steps = $state([]);
     let likes = $state([]);
@@ -64,13 +71,19 @@
       isLoading = true;
       try {
         recipe = await recipeApi.getRecipeById(recipeId);
+        updatedServings = recipe.servings;
+        originalServings = updatedServings;
+        
+        updatedIngredientsList = recipe.ingredientsList;
+        originalIngredientsList = recipe.ingredientsList.map(ingredient => ({ ...ingredient }));
+
         steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
         comments = await commentsApi.getCommentsByRecipeId(recipeId);
       
         likes = recipe.likes;
         dislikes = recipe.dislikes;
         totalViews = recipe.totalViews;
-        
+        console.log(recipe)
       } catch (error) {
         toast.error("Could not load recipe, try again later. " + error.meesage );
 
@@ -115,6 +128,31 @@
         isGroceryListGenerating = false;
       }
     }
+
+    const adjustMeasurement = (ingredient) => {
+      const parts = ingredient.split(" ");
+      const quantity = parseFloat(parts[0]);
+      if (isNaN(quantity)) return null;
+
+      const adjustedQuantity = (quantity * (updatedServings / originalServings));
+      parts[0] = adjustedQuantity;
+      return parts.join(" ");
+    };
+    
+
+    const handleAdjustRecipeMacros = () => {
+      const ratio = updatedServings / originalServings;
+
+      updatedIngredientsList = originalIngredientsList.map(ingredient => ({
+        ...ingredient,
+        calories: ingredient.calories * ratio,
+        carbs: ingredient.carbs * ratio,
+        fat: ingredient.fat * ratio,
+        protein: ingredient.protein * ratio,
+        servingSize: ingredient.servingSize * ratio
+      }))
+    };
+    
 </script>
 
 <svelte:head>
@@ -171,36 +209,11 @@
                 <Separator class="mb-4" />
               </Card.Header>
                 <Card.Content class="w-full">
-                  <div class="flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
-                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                        <Zap class="text-yellow-500 mr-2" />
-                        Calories
-                      </span>
-                      <span class="inline-block font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{recipe.ingredientsList?.reduce((sum, i) => sum + i.calories, 0).toFixed() ?? 0} kcal</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                        <BicepsFlexed class="text-blue-500 mr-2" />
-                        Protein
-                      </span>
-                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.protein, 0).toFixed() ?? 0} g</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                        <CakeSlice class="w-5 h-5 mr-2 text-pink-500" />
-                        Fat
-                      </span>
-                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.fat, 0).toFixed() ?? 0} g</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="flex items-center font-medium text-gray-700 dark:text-gray-300">
-                        <Wheat class="w-5 h-5 mr-2 text-green-500" />
-                        Carbs
-                      </span>
-                      <span class="font-bold text-gray-900 dark:text-gray-100">{recipe.ingredientsList?.reduce((sum, i) => sum + i.carbs, 0).toFixed() ?? 0} g</span>
-                    </div>
-                  </div>
+                  {#if originalServings === updatedServings}
+                    <RecipeNutritionTable ingredientsList={originalIngredientsList} />
+                  {:else}
+                    <RecipeNutritionTable ingredientsList={updatedIngredientsList} />
+                  {/if}
                 </Card.Content>
             </Card.Root>
           </div>
@@ -210,8 +223,8 @@
                 <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">Calories per Ingredient</p>
                 <div style="width: 250px; height: 250px;">
                 <DoughnutChart
-                  labels={recipe.ingredientsList.map((ingredient) => ingredient.name)}
-                  data={recipe.ingredientsList.map((ingredient) => ingredient.calories)}
+                  labels={updatedIngredientsList.map((ingredient) => ingredient.name)}
+                  data={updatedIngredientsList.map((ingredient) => ingredient.calories)}
                   width={250}
                   height={250}
                 />
@@ -221,12 +234,19 @@
 
           <div class="col-span-2 flex flex-col items-center">
             <p class="text-lg text-gray-700 dark:text-gray-300">Macros per ingredient</p>
-            <BarChart ingredients={recipe.ingredientsList} />
+            <BarChart ingredients={updatedIngredientsList} />
           </div>
         
                 
         </div>
   
+        <div class="grid place-items-center mb-2">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="servings">
+            Servings
+          </label>
+          <ServingsInput id="servings" bind:servings={updatedServings} {handleAdjustRecipeMacros}/>
+        </div>
+
         <!-- Ingredients & Instructions Card -->
         <Card.Root class="shadow-lg flex flex-row w-full mb-8">
           <!-- Ingredients Section -->
@@ -238,29 +258,51 @@
             <Card.Content>
               <ul class="list-inside space-y-3">
                 {#if recipe.ingredients.length > 0}
-                  {#each recipe.ingredients as ingredient}
+                {#each recipe.ingredients as ingredient}
                   <li>
-                  <button
-                  class="cursor-pointer text-left select-none"
-                    onclick={() => toggleItem(ingredient)}>
-                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient) ? 'line-through text-gray-400' : ''}`}>
-                      {ingredient}
+                    <button
+                      class="cursor-pointer text-left select-none"
+                      onclick={() => toggleItem(ingredient)}
+                      >
+                      <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient) ? 'line-through text-gray-400' : ''}`}>
+                        
+                        {#if updatedServings === originalServings}
+                          {ingredient}
+
+                        {:else}
+
+                          {#if adjustMeasurement(ingredient) === null}
+                            {ingredient}
+
+                          {:else}
+                            {adjustMeasurement(ingredient)}
+
+                          {/if}
+                        {/if}
+
                       </span>
-                  </button>
+                    </button>
                   </li>
-                {/each}
-                {:else}
-                  {#each recipe.ingredientsList as ingredient}
-                  <li>
-                  <button
-                  class="cursor-pointer text-left select-none"
-                    onclick={() => toggleItem(ingredient.name)}>
-                    <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
-                      {ingredient.name}: {ingredient.servingSize}g
-                      </span>
-                  </button>
-                  </li>
-                {/each}
+                  {/each}
+
+                  {:else}
+                    {#each recipe.ingredientsList as ingredient}
+                    <li>
+                    <button
+                    class="cursor-pointer text-left select-none"
+                      onclick={() => toggleItem(ingredient.name)}>
+                      <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
+                        {#if updatedServings === 4}
+                          {ingredient.name}: {ingredient.servingSize}g
+                          
+                          {:else}
+                          {ingredient.name}: {adjustMeasurment(ingredient)}g
+                          
+                          {/if}
+                        </span>
+                    </button>
+                    </li>
+                  {/each}
                 {/if}
                 
               </ul>
@@ -307,24 +349,6 @@
             <Button onclick={generateShoppingList}>Generate shopping list</Button>
           {/if}
           </div>
-        </div>
-
-        <!-- TODO add est time and servings -->
-        <!-- Info Row -->
-        <div class="flex justify-center space-x-12 mb-8">
-          {#if recipe.estimatedTime}
-            <div class="text-center">
-              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Est. Time</h3>
-              <p class="text-md text-gray-800 dark:text-gray-200">{recipe.estimatedTime}</p>
-            </div>
-          {/if}
-
-          {#if recipe.servings}
-            <div class="text-center">
-              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Servings</h3>
-              <p class="text-md text-gray-800 dark:text-gray-200">{recipe.servings}</p>
-            </div>
-          {/if}
         </div>
   
         <div class="flex space-x-4 mt-12">

@@ -16,19 +16,33 @@
   import MultiSelect from '../MultiSelect/MultiSelect.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
 
+  import tagsApi from '$lib/api/tagsApi';
   import recipeApi from '$lib/api/recipeApi';
   import scrapeApi from '$lib/api/scrapeApi';
 
   // selectedList needs to be bound here, so we can update it and force 
   // an update in the parent component
-  let { selectedList = $bindable(), categories, tags } = $props();
+  let { selectedList = $bindable() } = $props();
 
+  let tags = $state([]);
   let selectedTags = $state([]);
   let counter = $state(0);
 
   let isLoading = $state(false);
   let isDialogOpen = $state(false); // control state of the dialog/sheet
   let inputMode = $state("link"); // control between link and manual input
+
+
+
+  onMount(async () => {
+    try {
+      tags = await tagsApi.getRecipeTags();
+    } catch (error) {
+      toast.error("Failed to load tags. Please try again later.");
+    }
+  });
+
+
 
   const resetErrors = () => {
   return {
@@ -37,6 +51,7 @@
     description: "",
     ingredients: "",
     instructions: "",
+    servings: "",
     category: "",
     url: "",
     };
@@ -52,6 +67,7 @@
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
     ingredients: z.string().min(1, "Ingredients are required"),
+    servings: z.number().int().positive("Servings reqirued, it can't be 0."), // .positive() ensures it's > 0
     instructions: z.string().min(1, "Instructions are required"),
     category: z.string().min(1, "Category is required"),
   });
@@ -80,13 +96,14 @@
       linkRequest.parse({ url }); 
 
       const generatedRecipe = await scrapeApi.scrapeLink(url);
-      const { name, description, ingredients, ingredientsInGrams, instructions, category, tags, image } = generatedRecipe;
+      const { name, description, ingredients, ingredientsInGrams, instructions, servings, category, tags, image } = generatedRecipe;
       const newRecipe = await recipeApi.addRecipe(
         name,
         description,
         ingredients,
         ingredientsInGrams,
         instructions,
+        Number(servings),
         category,
         tags,
         image,
@@ -136,6 +153,7 @@
     const description = formData.get('description');
     const ingredients = formData.get('ingredients');
     const instructions = formData.get('instructions');
+    const servings = Number(formData.get('servings'));
     const category = formData.get('category');
     const image = null;
     const recipeListId = selectedList.id;
@@ -148,6 +166,7 @@
         description,
         ingredients,
         instructions,
+        servings,
         category,
       });
       
@@ -159,6 +178,7 @@
         ingredientsArray,
         ingredientsArray,
         instructions,
+        servings,
         category,
         selectedTags,
         image,
@@ -279,9 +299,15 @@
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">
+            <Label for="instructions" class="text-right">Servings</Label>
+            <Input id="servings" type="number" placeholder="how many does this recipe serve?" name="servings" class="col-span-3" value="4"/>
+            <ErrorMessage message={errors.servings} className="col-span-3 col-end-5" />
+          </div>
+
+          <div class="grid grid-cols-4 items-center gap-4">
             <Label for="category" class="text-right">Category</Label>
             <div class="col-span-3">
-              <CategorySelect {categories} name="category" />
+              <CategorySelect name="category" />
             </div>
             <ErrorMessage message={errors.category} className="col-span-3 col-end-5" />
           </div>

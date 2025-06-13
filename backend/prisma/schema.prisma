@@ -85,6 +85,7 @@ model Recipe {
   ingredients     String[]     @default([])
   ingredientsList Ingredient[]
   instructions    String
+  servings        Int          @default(4)
   image           String?
 
   // 1 recipe → 1 category

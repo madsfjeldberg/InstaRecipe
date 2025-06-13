@@ -15,10 +15,6 @@ const authenticateToken = async (req, res, next) => {
     
     try {
         const decodedToken = await auth.verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
-        if(!decodedToken) {
-            return res.status(401).send({ errorMessage: "Invalid token" });
-        }
-        
         req.user = decodedToken;
         next();
 

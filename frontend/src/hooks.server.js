@@ -7,9 +7,8 @@ import userApi from '$lib/api/userApi.js';
 
 const verifyJWT = async (token) => {
   try {
-    const decoded = await authApi.verifyToken(token);
-    return { id: decoded.id, username: decoded.username, email: decoded.email };
-
+    return await authApi.verifyToken(token);
+    
   } catch (error) {
     throw error
   }

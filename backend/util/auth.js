@@ -38,6 +38,7 @@ const generateAccessToken = (user) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      emailNotifications: user.emailNotifications
     }, 
     ACCESS_TOKEN_SECRET,
     { expiresIn: '30m' }
@@ -51,6 +52,7 @@ const generateRefreshToken = async (user) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      emailNotifications: user.emailNotifications
     }, 
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: '7d' }
@@ -72,11 +74,11 @@ const generateTokens = async (user) => {
   return {accessToken, refreshToken}
 }
 
-const verifyToken = async (token, tokenSeceret) => {
+const verifyToken = async (token, tokenSecret) => {
     const SEVEN_DAYS = 7 * 24 * 60 * 60;
 
   try {
-    const decodedPayload = jwt.verify(token, tokenSeceret);
+    const decodedPayload = jwt.verify(token, tokenSecret);
     const ttl = decodedPayload.exp - decodedPayload.iat;
 
     if (ttl === SEVEN_DAYS) {
