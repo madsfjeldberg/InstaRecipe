@@ -9,6 +9,107 @@ import { v4 as uuidv4 } from 'uuid';
 
 import b2Client from '../database/b2Client.js';
 
+
+
+// Main function to handle the upload process
+const uploadRecipeImage = async (imageUrl) => {
+  try {
+
+    const tempDir = path.join(os.tmpdir(), 'images');
+    const fileName = `${uuidv4()}.jpg`;
+    const tempFilePath = path.join(tempDir, fileName);
+    await downloadImage(imageUrl, tempFilePath);
+    await uploadImage(tempFilePath, fileName);
+    await cleanupTempFile(tempFilePath);
+    
+    const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
+    return b2ImagePath;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+const uploadUserAvatar = async (file) => {
+    if (!file || !file.buffer) {
+        throw new Error("Invalid file object provided for upload.");
+    }
+
+    try {
+        console.log('Uploading avatar buffer to Backblaze B2...', file);
+
+        const bucketId = process.env.BACKBLAZE_BUCKET_ID;
+
+        // 1. Generate a unique file name to prevent collisions.
+        // We use the original file's extension.
+        const fileExtension = path.extname(file.originalname);
+        const fileName = `${uuidv4()}${fileExtension}`;
+
+        // 2. Authorize with B2.
+        await b2Client.authorize();
+
+        // 3. Get the upload URL.
+        const uploadUrlResponse = await b2Client.getUploadUrl({
+            bucketId,
+        });
+
+        // 4. Upload the file directly from the buffer.
+        await b2Client.uploadFile({
+            uploadUrl: uploadUrlResponse.data.uploadUrl,
+            uploadAuthToken: uploadUrlResponse.data.authorizationToken,
+            fileName,
+            data: file.buffer, // Use the buffer directly from the file object
+            mime: file.mimetype, // Use the mimetype from the file object
+        });
+
+        // 5. Construct and return the final public URL.
+        const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
+        console.log('Avatar uploaded successfully:', b2ImagePath);
+        return b2ImagePath;
+
+    } catch (error) {
+        console.error("Error uploading avatar to B2:", error);
+        throw error; // Re-throw the error to be handled by the calling route
+    }
+};
+
+
+
+const deleteFile = async (fileName) => {
+  try {
+    await b2Client.authorize();
+    const bucketId = process.env.BACKBLAZE_BUCKET_ID;
+
+    // List file versions to get the fileId
+    const listResponse = await b2Client.listFileNames({
+      bucketId,
+      prefix: fileName,
+      maxFileCount: 1
+    });
+
+    const file = listResponse.data.files.find(f => f.fileName === fileName);
+    if (!file) {
+      throw new Error('File not found in Backblaze B2');
+    }
+
+    // Delete the file version
+    await b2Client.deleteFileVersion({
+      fileName: file.fileName,
+      fileId: file.fileId
+    });
+
+    console.log('File deleted successfully:', fileName);
+    return true;
+  } catch (error) {
+    console.error('Error deleting file from Backblaze B2:', error);
+    throw error;
+  }
+};
+
+
+// ------------------------------------------------------ helper functions to upload recipe image to Backblaze B2 ----------------------------------------------
 // Function to download image from URL
 const downloadImage = async (url, outputPath) => {
   console.log(`Downloading image from DALL-E to ${outputPath}`);
@@ -80,58 +181,10 @@ const cleanupTempFile = async (filePath) => {
   }
 };
 
-// Main function to handle the upload process
-const handleB2Upload = async (imageUrl) => {
-  try {
-
-    const tempDir = path.join(os.tmpdir(), 'images');
-    const fileName = `${uuidv4()}.jpg`;
-    const tempFilePath = path.join(tempDir, fileName);
-    await downloadImage(imageUrl, tempFilePath);
-    await uploadImage(tempFilePath, fileName);
-    await cleanupTempFile(tempFilePath);
-    
-    const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
-    return b2ImagePath;
-
-  } catch (error) {
-    throw error;
-  }
-}
-
-const deleteFile = async (fileName) => {
-  try {
-    await b2Client.authorize();
-    const bucketId = process.env.BACKBLAZE_BUCKET_ID;
-
-    // List file versions to get the fileId
-    const listResponse = await b2Client.listFileNames({
-      bucketId,
-      prefix: fileName,
-      maxFileCount: 1
-    });
-
-    const file = listResponse.data.files.find(f => f.fileName === fileName);
-    if (!file) {
-      throw new Error('File not found in Backblaze B2');
-    }
-
-    // Delete the file version
-    await b2Client.deleteFileVersion({
-      fileName: file.fileName,
-      fileId: file.fileId
-    });
-
-    console.log('File deleted successfully:', fileName);
-    return true;
-  } catch (error) {
-    console.error('Error deleting file from Backblaze B2:', error);
-    throw error;
-  }
-};
 
 const b2 = {
-  handleB2Upload,
+  handleB2Upload: uploadRecipeImage,
+  uploadUserAvatar,
   deleteFile
 }
 
