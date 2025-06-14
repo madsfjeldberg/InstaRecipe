@@ -26,7 +26,7 @@ Ingredients: Parse all listed ingredients into an array.
 IMPORTANT: Add measurements and amounts before each ingredient.
 Prefer using the most common measurement units (e.g., "1 cup", "2 g", "2.4 L", "12 ml", "84 kg", "3 tbps", "5 tsp" "3 large eggs").
 If no measurements are given, use common sense to estimate reasonable amounts based on the ingredient type.
-For example, "2 cups of flour", "1 tsp of sugar", "3 tbsp of oile", "3 large eggs".
+For example, "2 cups of flour", "1 tsp of sugar", "3 tbsp of oil", "3 large eggs".
 If you encounter ingredients with measuerment units like 1/2, 1/4, etc., convert them to decimal format (e.g., 0.5, 0.25).
 If the ingredient is a single item without a measurement (e.g., "onion"), assume a common size (e.g., "1 medium onion").
 
