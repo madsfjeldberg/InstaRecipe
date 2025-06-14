@@ -66,7 +66,7 @@ const generateRecipe = async (text) => {
   const response = await client.chat.completions.create({
     model: "gpt-4.1",
     messages: [
-      { role: "user", content: instructions },
+      { role: "system", content: instructions },
       { role: "user", content: text }
     ],
     response_format: { type: "json_object"}
@@ -129,7 +129,7 @@ const parseUserInputedIngredients = async (ingredients) => {
   const response = await client.chat.completions.create({
     model: "gpt-4.1",
     messages: [
-      { role: "user", content: prompt },
+      { role: "system", content: prompt },
       { role: "user", content: `Ingredients: ${ingredients}` }
     ],
     response_format: { type: "json_object" }
