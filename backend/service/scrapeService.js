@@ -100,7 +100,7 @@ const scrapeInstagram = async (page) => {
     console.log(`Found ${spanElements.length} matching span elements`);
 
     // Extract text with better error handling
-    const scrapedRecipeData = [];
+    let scrapedRecipeData = [];
     for (const element of spanElements) {
         try {
             const text = await element.evaluate((el) => el.innerText);
