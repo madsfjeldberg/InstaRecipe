@@ -32,22 +32,6 @@ const getUsersByPartialUsername = async (query) => {
   }
 }
 
-const getUserAvatar = async (userId) => {
-  try{
-    const response = await fetch(BASE_URL + "/" + userId + "/avatar");
-    
-    if(!response.ok) {
-      const result = await response.json();
-      throw new Error(result.errorMessage);
-    }
-
-    return await response.blob();
-
-  }catch(error) {
-    throw error;
-  }
-}
-
 
 
 const uploadAvatar = async (userId, avatarFile) => {
@@ -58,7 +42,7 @@ const uploadAvatar = async (userId, avatarFile) => {
     body: avatarFile
   });
 
-  return response;
+  return await ifResponseOk(response);
 }
 
 
@@ -123,7 +107,6 @@ const deleteUser = async (userId, email) => {
 
 const userApi = {
   getUserById,
-  getUserAvatar,
   getUsersByPartialUsername,
   uploadAvatar,
   updateUsername,

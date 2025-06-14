@@ -14,9 +14,7 @@
   import userApi from '$lib/api/userApi.js';
 
   import { updateAuthState } from '../../../stores/authStore.js';
-  import { avatarStore } from '../../../stores/avatarStore.js';
 
-  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let { onToggleAuthMode, returnTo } = $props();
 
@@ -53,14 +51,9 @@
       errors.password = "";
      
       LoginRequest.parse({ username, password });
-      const loggedInUser = await authApi.login(username, password);
+      const {data, accessToken} = await authApi.login(username, password);
 
-      const userAvatarBlob = await userApi.getUserAvatar(loggedInUser.id);
-      const reader = new FileReader();
-      reader.readAsDataURL(userAvatarBlob);
-      reader.onload = () => avatarStore.set(reader.result);
-
-      updateAuthState(loggedInUser);
+      updateAuthState(data, accessToken);
       
       goto(returnTo);
       toast.success('Login successful!');

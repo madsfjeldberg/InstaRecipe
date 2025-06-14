@@ -9,8 +9,6 @@
     import userApi from '$lib/api/userApi';
     import recipeApi from '$lib/api/recipeApi';
 
-    import { avatarUrl } from '$lib/utils/util.js';
-
     let searchValue = $state("");
     let searchFocused = $state(false);
     let searchResults = $state([]);
@@ -187,9 +185,9 @@
                                         class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded transition-colors duration-150"
                                     >
                                         <div class="flex-shrink-0">
-                                            {#if usr.avatar}
+                                            {#if usr.avatarUrl}
                                                 <img
-                                                    src={avatarUrl(usr.id)}
+                                                    src={usr.avatarUrl}
                                                     alt={usr.username}
                                                     class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
                                                 />

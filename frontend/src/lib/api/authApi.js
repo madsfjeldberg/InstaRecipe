@@ -1,7 +1,7 @@
-import { isAuthenticated, user, accessToken } from '../../stores/authStore.js';
-import { avatarStore } from '../../stores/avatarStore.js';
 
 import { ifResponseOk, makeOption } from '../utils/util.js';
+
+import { accessToken } from '../../stores/authStore.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth` : '/api/auth';
 
@@ -44,8 +44,7 @@ const login = async (username, password) => {
       throw new Error(result.errorMessage);
     }
 
-    accessToken.set(result.accessToken);
-    return result.data;
+    return result;
     
   } catch (error) {
     console.error(error)

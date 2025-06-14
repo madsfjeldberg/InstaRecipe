@@ -14,16 +14,15 @@
   import DeleteAccountDialog from '$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
 
-  import { avatarStore } from '../../../stores/avatarStore.js';
-
   import userApi from '$lib/api/userApi.js';
+
+  import { user as userStore } from '../../../stores/authStore.js';
 
   const { data } = $props();
   let { user } = data;
-  let username = $state("");
+  let username = $state(user.username);
   let password = $state("");
   let confirmPassword = $state("");
-  username = user.username;
   let changeUsernameLoading = $state(false);
   let changePasswordLoading = $state(false);
 
@@ -190,10 +189,10 @@
     
   </Card.Header>
   <Card.Content class="flex justify-start">
-    {#if $avatarStore && avatarStore !== "null"}
+    {#if $userStore.avatarUrl}
     <img
       class="rounded-full w-28 h-28 object-cover"
-      src={$avatarStore}
+      src={$userStore.avatarUrl}
       loading="lazy"
       alt="User Avatar"
     > 
