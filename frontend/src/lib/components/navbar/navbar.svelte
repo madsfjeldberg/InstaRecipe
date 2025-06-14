@@ -13,11 +13,8 @@
   import SearchBar from '../SearchBar/SearchBar.svelte';
 
   import { updateAuthState, isAuthenticated, user } from '../../../stores/authStore.js';
-  import { avatarStore } from '../../../stores/avatarStore.js';
 
   import authApi from '$lib/api/authApi.js';
-  
-  import { avatarUrl } from '$lib/utils/util.js';
 
 
 
@@ -29,6 +26,7 @@
       goto("/");
 
     }catch(error) {
+      console.error("Logout failed:", error);
       toast.error(error.message);
     }
   };
@@ -99,11 +97,11 @@
             class="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-all rounded-full p-2"
             {...props}
           >
-            {#if avatarUrl($user.id) === null}
+            {#if !$user.avatarUrl}
               <CircleUser class="h-8 w-8" />
             {:else}
               <img
-                src={$avatarStore}
+                src={$user.avatarUrl}
                 alt="User Avatar"
                 class="h-8 w-8 rounded-full object-cover"
               />

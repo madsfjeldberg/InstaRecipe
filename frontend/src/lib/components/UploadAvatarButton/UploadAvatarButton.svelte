@@ -4,10 +4,9 @@
   import { LoaderCircle } from 'lucide-svelte';
   import Button from '../ui/button/button.svelte';
 
-  import { avatarStore } from '../../../stores/avatarStore.js';
-    import userApi from '$lib/api/userApi';
+  import userApi from '$lib/api/userApi.js';
+  import { user as UserStore } from '../../../stores/authStore.js';
 
-  const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}` : '/api';
 
   let { user } = $props();
 
@@ -36,20 +35,15 @@
 
     isUploading = true;
     try {
-      const response = await userApi.uploadAvatar(user.id, formData);
-
-      if (!response.ok) {
-        toast.error('Avatar upload failed', await res.text()); 
-      }
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        avatarStore.set(reader.result);
-      };
-      reader.readAsDataURL(file);
-
+      const updatedUser = await userApi.uploadAvatar(user.id, formData);
+      console.log("Avatar uploaded successfully:", updatedUser);
+      UserStore.update(currentUser => {
+        return { ...currentUser, avatarUrl: updatedUser.avatarUrl };
+      });
       toast.success("Avatar successfully uploaded!");
+
     } catch(error) {
+      console.error("Error uploading avatar:", error);
       toast.error(error.message);
 
     } finally {

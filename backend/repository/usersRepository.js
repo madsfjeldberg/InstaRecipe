@@ -14,16 +14,14 @@ const getUserById = async (userId) => {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true,
                     }
                 },
                 following: {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true,
                     }
                 }
             }
@@ -74,10 +72,8 @@ const getAllUsers = async () => {
                 id: true,
                 username: true,
                 email: true,
-                avatar: true,
-                avatarMime: true, 
-                emailNotifications: true,
-                alertNotifications: true
+                avatarUrl: true,
+                emailNotifications: true
             }
         });
         return allUsers;
@@ -103,10 +99,8 @@ const searchUser = async (partialUsername) => {
             id: true,
             username: true,
             email: true,
-            avatar: true,
-            avatarMime: true, 
+            avatarUrl: true,
             emailNotifications: true,
-            alertNotifications: true,
         }
     });
 
@@ -203,16 +197,14 @@ const follow = async (parentId, childId) => {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true,
                     }
                 },
                 following: {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true
                     }
                 }
             }
@@ -247,16 +239,14 @@ const unfollow = async (parentId, childId) => {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true
                     }
                 },
                 following: {
                     select: {
                         id: true,
                         username: true,
-                        avatar: true,
-                        avatarMime: true
+                        avatarUrl: true
                     }
                 }
             }
@@ -287,8 +277,7 @@ const softDeleteUser = async (userId) => {
                 username: null,
                 email: "deleted@" + userId,
                 password: "deleted_" + userId,
-                avatar: null,
-                avatarMime: null,
+                avatarUrl: null,
                 followers: {
                     disconnect: followers.map( (follower) => ({id: follower.id }))
                 },

@@ -37,6 +37,7 @@ const generateAccessToken = (user) => {
     {
       id: user.id,
       username: user.username,
+      avatarUrl: user.avatarUrl,
       email: user.email,
       emailNotifications: user.emailNotifications
     }, 
@@ -51,6 +52,7 @@ const generateRefreshToken = async (user) => {
     {
       id: user.id,
       username: user.username,
+      avatarUrl: user.avatarUrl,
       email: user.email,
       emailNotifications: user.emailNotifications
     }, 

@@ -8,6 +8,7 @@ import auth from '../util/auth.js';
 import usersRepository from '../repository/usersRepository.js';
 
 import prisma from '../database/prismaClient.js';
+import b2 from '../service/b2FileUploadService.js';
 
 const router = Router();
 const upload = multer();
@@ -53,15 +54,7 @@ router.get("/api/users", async (req, res) => {
   return res.send({ data: users });
 });
 
-router.get("/api/users/:id/avatar", async (req, res) => {
-  let userId = req.params.id;
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) {
-    return res.status(404).send({ errorMessage: 'Could not get avatar, since user not found with id: ' + userId });
-  }
 
-  res.set('Content-Type', user.avatarMime || 'image/png').send(user.avatar);
-});
 
 router.post("/api/users/:id/avatar", authMiddleware.authenticateToken, upload.single("avatar"), async (req, res) => {
     let userId = req.params.id;
@@ -71,14 +64,20 @@ router.post("/api/users/:id/avatar", authMiddleware.authenticateToken, upload.si
       if (!user) {
         return res.status(404).send({ errorMessage: "User not found" });
       }
-      
+
+      if(user.avatarUrl) {
+        await b2.deleteFile(user.avatarUrl.split("/").pop()); 
+      }
+      const userAvatarImageUrl = await b2.uploadUserAvatar(req.file);
+
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          avatar: req.file.buffer,
-          avatarMime: req.file.mimetype,
-        },
+          avatarUrl: userAvatarImageUrl
+        }
       });
+
+
       const { password: _, ...userWithoutPassword } = updatedUser;
       res.send({ data: userWithoutPassword });
     } catch (error) {
@@ -163,6 +162,7 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
     await prisma.recipeList.deleteMany({ where: { userId } });
 
     // Delete the user
+    await b2.deleteFile(user.avatarUrl.split("/").pop());
     await usersRepository.softDeleteUser(userId);
 
     // Clear the auth cookie

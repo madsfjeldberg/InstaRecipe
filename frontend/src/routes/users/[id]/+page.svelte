@@ -10,7 +10,6 @@
     import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
     import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
     
-    import { avatarStore } from '../../../stores/avatarStore.js';
     import { user } from '../../../stores/authStore.js';
     import { socket } from '../../../stores/socketStore.js';
     
@@ -106,14 +105,6 @@
     const handleToggleFollowButton = () => {
         isFollowing = !isFollowing;
     }
-
-
-
-    const avatarUrl = () => {
-        return import.meta.env.VITE_API_URL
-        ? `${import.meta.env.VITE_API_URL}/users/${currentUserId}/avatar`
-        : `/api/users/${currentUserId}/avatar`;
-    };
 </script>
 
 {#if isLoading}
@@ -127,8 +118,8 @@
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
-        {#if currentUser.avatar}
-            <img class="rounded-full w-28 h-28 object-cover" src={avatarUrl()} alt="User Avatar"> 
+        {#if currentUser.avatarUrl}
+            <img class="rounded-full w-28 h-28 object-cover" src={currentUser.avatarUrl} alt="User Avatar"> 
         {:else}
             <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
         {/if}

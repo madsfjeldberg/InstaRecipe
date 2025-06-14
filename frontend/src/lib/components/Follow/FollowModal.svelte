@@ -12,7 +12,6 @@
     import FollowButton from './FollowButton.svelte';
     
     import { user } from '../../../stores/authStore.js';
-    import { avatarStore } from '../../../stores/avatarStore';
 
     const { noOfUsers, label, parentUserList, viewerFollowingList } = $props();
     let searchValue = $state("");
@@ -27,13 +26,6 @@
     const vistUser = (userId) => {
         goto("/users/" + userId);
     }
-
-    const avatarUrl = (userId) => {
-        return import.meta.env.VITE_API_URL
-        ? `${import.meta.env.VITE_API_URL}/users/${userId}/avatar`
-        : `/api/users/${userId}/avatar`;
-    };
-
 </script>
 
 <Dialog.Root>
@@ -65,8 +57,8 @@
             {#each parentUserList as user (user.id)}
                 <div class="flex justify-between items-center gap-4">
                     <button class="flex gap-3" onclick={ () => vistUser(user.id)}>
-                        {#if user.avatar}
-                            <img class="rounded-full w-7 h-7" src={avatarUrl(user.id)} alt={user.username + "' avatar"}>
+                        {#if user.avatarUrl}
+                            <img class="rounded-full w-7 h-7" src={user.avatarUrl} alt={user.username + "' avatar"}>
                         {:else}
                             <CircleUser class="w-7 h-7"/>
                         {/if}
@@ -97,10 +89,10 @@
             {#each filteredUsers as filteredUser (filteredUser.id)}
                 <div class="flex justify-between items-center gap-4">
                     <button class="flex gap-3" onclick={ () => vistUser(filteredUser.id)}>
-                        {#if filteredUser.avatar === null || filteredUser.avatarMime === null}
-                            <CircleUser/>
+                        {#if !filteredUser.avatarUrl}
+                            <CircleUser class="w-7 h-7"/>
                         {:else}
-                            <img src="" alt={filteredUser.username + "' avatar"}>
+                            <img class="w-7 h-7 rounded-full" src={filteredUser.avatarUrl} alt={filteredUser.username + "' avatar"}>
                         {/if}
                      
                         <p>{filteredUser.username}</p>
