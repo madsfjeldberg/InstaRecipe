@@ -92,7 +92,7 @@
                         {#if !filteredUser.avatarUrl}
                             <CircleUser class="w-7 h-7"/>
                         {:else}
-                            <img src={filteredUser.avatarUrl} alt={filteredUser.username + "' avatar"}>
+                            <img class="w-7 h-7 rounded-full" src={filteredUser.avatarUrl} alt={filteredUser.username + "' avatar"}>
                         {/if}
                      
                         <p>{filteredUser.username}</p>
