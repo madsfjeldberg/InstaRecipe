@@ -9,14 +9,14 @@ export const isAuthenticated = writable(false);
 export const user = writable(null);
 export const accessToken = writable(null);
 
-export const updateAuthState = (userData, accessToken) => {
+export const updateAuthState = (userData, newAccessToken) => {
   // Convert userData to boolean, true if userData is not null or undefined
   // can alse be written as: isAuthenticated.set(userData ? true : false);
   isAuthenticated.set(!!userData); 
   user.set(userData);
 
-  if(accessToken) {
-    accessToken.set(accessToken);
+  if(newAccessToken) {
+    accessToken.set(newAccessToken);
   }
 }
 
