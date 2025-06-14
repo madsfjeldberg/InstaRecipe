@@ -5,6 +5,7 @@
     import * as Card from '$lib/components/ui/card/index.js';
     import Separator from '../ui/separator/separator.svelte';
     
+    import CommentCard from './CommentCard.svelte';
     import CommentInput from './CommentInput.svelte';
     import CommentReply from './CommentReply.svelte';
     import { socket } from '../../../stores/socketStore.js';
@@ -37,7 +38,7 @@
         isDisplayingReplyDialog = true;
     }
 </script>
-<!-- TODO REFACTOR AND FINISH COMMENTCARD COMPONENT -->
+
 <CommentInput bind:comments recipeId={recipeId}/> 
 
 {#if comments.length === 0}
@@ -47,57 +48,18 @@
     {#each comments as comment, index (comment.id || index)}
         
         <Separator class="my-4" />
-        <Card.Root class=" mt-4">
-            <Card.Header>
-                <Card.Title>{comment.user.username}</Card.Title>
-            <Card.Description>Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(comment.postedAt).toLocaleTimeString()}</Card.Description>
-            </Card.Header>
-            
-            <Card.Content class="grid gap-4">
-                <p>{comment.comment}</p>
-            </Card.Content>
-            
-            <Card.Footer class="flex justify-end z-10 relative">
-                {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
-                <Button size="sm" disabled>Reply</Button>
-                
-                {:else}
-                <Button size="sm" onclick={ () => showReplyBox(comment.id)}>Reply</Button>
-
-                {/if}
-            </Card.Footer>
-        </Card.Root>
+        <CommentCard className={"mt-4"} {comment} bind:commentToReplyToId isDisplayingReplyDialog onShowReplyBox={showReplyBox}/>
         
         {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
             <CommentReply bind:isDisplayingReplyDialog parentComment={comment}/>
         {/if}
         
         {#if comment.replies && comment.replies.length > 0}
-            {#each comment.replies as reply }
-                            <Card.Root class="w-3/4 mt-2">
-                        <Card.Header>
-                            <Card.Title>{reply.user.username}</Card.Title>
-                        <Card.Description>Date: {new Date(reply.postedAt).toLocaleDateString()} Time: {new Date(reply.postedAt).toLocaleTimeString()}</Card.Description>
-                        </Card.Header>
-                        
-                        <Card.Content class="grid gap-4">
-                            <p>{reply.comment}</p>
-                        </Card.Content>
-                        
-                        <Card.Footer class="flex justify-end z-10 relative">
-                            {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
-                            <Button size="sm" disabled>Reply</Button>
-                            
-                            {:else}
-                            <Button size="sm" onclick={() => showReplyBox(reply.id)}>Reply</Button>
-
-                            {/if}
-                        </Card.Footer>
-                    </Card.Root>
-
-                    {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
-                        <CommentReply bind:isDisplayingReplyDialog parentComment={comment} replyParent={reply}/>
-                    {/if}
+            {#each comment.replies as reply (reply.id) }
+                <CommentCard className={"w-3/4 mt-2"} comment={reply} bind:commentToReplyToId isDisplayingReplyDialog onShowReplyBox={showReplyBox}/>
+                {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
+                    <CommentReply bind:isDisplayingReplyDialog parentComment={comment} replyParent={reply}/>
+                {/if}
             {/each}
         {/if}
     {/each}

@@ -1,13 +1,19 @@
 <script>
-    import { Button } from '$lib/components/ui/button/index.js';
-    import * as Card from '$lib/components/ui/card/index.js';
+    import { Button } from "$lib/components/ui/button/index.js";
+    import * as Card from "$lib/components/ui/card/index.js";
 
-    let { comment, commentToReplyToId = $bindable(), onShowReplyBox  } = $props();
+    let { className, comment, commentToReplyToId = $bindable(), isDisplayingReplyDialog, onShowReplyBox} = $props();
 </script>
 
-<Card.Root class="mt-4">
+<Card.Root class={className}>
     <Card.Header>
-        <Card.Title>{comment.user.username}</Card.Title>
+        <Card.Title>
+            {#if comment.user.username.substring(0, 7) === "deleted"}
+                <span class="italic text-gray-500">Deleted User</span>
+            {:else}
+                {comment.user.username}
+            {/if}
+        </Card.Title>
         <Card.Description
             >Date: {new Date(comment.postedAt).toLocaleDateString()} Time: {new Date(
                 comment.postedAt,
@@ -21,9 +27,11 @@
 
     <Card.Footer class="flex justify-end z-10 relative">
         {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
-            <Button disabled>Reply</Button>
+            <Button size="sm" disabled>Reply</Button>
         {:else}
-            <Button onclick={() => showReplyBox(comment.id)}>Reply</Button>
+            <Button size="sm" onclick={() => onShowReplyBox(comment.id)}
+                >Reply</Button
+            >
         {/if}
     </Card.Footer>
 </Card.Root>

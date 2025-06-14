@@ -83,7 +83,7 @@
         likes = recipe.likes;
         dislikes = recipe.dislikes;
         totalViews = recipe.totalViews;
-        console.log(recipe)
+
       } catch (error) {
         toast.error("Could not load recipe, try again later. " + error.meesage );
 
