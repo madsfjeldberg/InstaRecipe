@@ -9,16 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import b2Client from '../database/b2Client.js';
 
-const authorize = async () => {
-  try {
-    await b2Client.authorize();
-    console.log('Backblaze B2 authorized successfully');
-  } catch (error) {
-    console.error('Error authorizing Backblaze B2:', error);
-    throw error; // Re-throw the error to handle it in the calling function
-  }
-}
-
 // Function to download image from URL
 const downloadImage = async (url, outputPath) => {
   console.log(`Downloading image from DALL-E to ${outputPath}`);
@@ -59,7 +49,7 @@ const uploadImage = async (filePath, fileName) => {
     // Read file into buffer instead of using a stream
     const fileBuffer = await fsPromises.readFile(filePath);
 
-    await authorize();
+    await b2Client.authorize();
 
     const uploadUrl = await b2Client.getUploadUrl({
       bucketId,
@@ -74,10 +64,6 @@ const uploadImage = async (filePath, fileName) => {
       contentType: 'image/jpeg', // Set the appropriate content type
     });
 
-    let imageUrl = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}${fileName}`;
-    
-    console.log('File uploaded successfully:', imageUrl);
-    return imageUrl;
   } catch (error) {
     throw error; // Re-throw the error to handle it in the calling function
   }
@@ -90,6 +76,7 @@ const cleanupTempFile = async (filePath) => {
     console.log(`Temporary file deleted successfully.`);
   } catch (error) {
     console.error(`Error deleting temporary file ${filePath}:`, error);
+    throw error;
   }
 };
 
@@ -114,7 +101,7 @@ const handleB2Upload = async (imageUrl) => {
 
 const deleteFile = async (fileName) => {
   try {
-    await authorize();
+    await b2Client.authorize();
     const bucketId = process.env.BACKBLAZE_BUCKET_ID;
 
     // List file versions to get the fileId

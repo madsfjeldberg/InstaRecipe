@@ -24,9 +24,9 @@ or from the given description in the text.
 
 Ingredients: Parse all listed ingredients into an array.
 IMPORTANT: Add measurements and amounts before each ingredient.
-Prefer using the most common measurement units (e.g., "1 cup", "2 g", "2.4 L", "12 ml", "84 kg", "3 large eggs").
+Prefer using the most common measurement units (e.g., "1 cup", "2 g", "2.4 L", "12 ml", "84 kg", "3 tbps", "5 tsp" "3 large eggs").
 If no measurements are given, use common sense to estimate reasonable amounts based on the ingredient type.
-For example, "2 cups of flour", "1 tablespoon of sugar", "3 large eggs".
+For example, "2 cups of flour", "1 tsp of sugar", "3 tbsp of oil", "3 large eggs".
 If you encounter ingredients with measuerment units like 1/2, 1/4, etc., convert them to decimal format (e.g., 0.5, 0.25).
 If the ingredient is a single item without a measurement (e.g., "onion"), assume a common size (e.g., "1 medium onion").
 
@@ -66,13 +66,13 @@ const generateRecipe = async (text) => {
   const response = await client.chat.completions.create({
     model: "gpt-4.1",
     messages: [
-      { role: "user", content: instructions },
+      { role: "system", content: instructions },
       { role: "user", content: text }
     ],
     response_format: { type: "json_object"}
   });
-
-  return response.choices[0].message.content;
+  const data = JSON.parse(response.choices[0].message.content);
+  return data
 }
 
 const generateRecipeImage = async (prompt) => {
@@ -97,7 +97,6 @@ const parseUserInputedIngredients = async (ingredients) => {
 
   'amount' should be a number. It can be a decimal numbe, but not 1/2, 1/4, 1/3 etc.
   'unit' should be a common measurement unit (e.g., "tbsp", "tbs", "g", "kg", "L", "ml" etc.).
-  if the unit cup is used in the context of a liquid, it should be converted to ml or L depending on the amount (e.g., "1 cup of water" should be "240 ml water" etc).
 
   Example: '1 cup all-purpose flour', '2 tbsp olive oil', '3 large eggs', '1 tsp salt', '412 g chicken', '500 g beff'.
   If the ingredient is a single item without a measurement (e.g., "onion"), assume a common size (e.g., "1 medium onion").
@@ -108,27 +107,29 @@ const parseUserInputedIngredients = async (ingredients) => {
   212g minced beef, 32g carrots, 1 onion, 2 cloves garlic, 1 tbsp olive oil, 1 tsp salt, 1/2 tsp black pepper, 1/4 tsp paprika, 1/2 cup beef broth, 1/4 cup red wine, 1 bay leaf, 1 tsp dried thyme, 1 tsp dried oregano
   
   Example output:
-  [
-    "212 g minced beef",
-    "32 g carrots",
-    "1 medium onion",
-    "2 cloves garlic",
-    "1 tbsp olive oil",
-    "1 tsp salt",
-    "0.5 tsp black pepper",
-    "0.25 tsp paprika",
-    "120 ml beef broth",
-    "60 ml red wine",
-    "1 bay leaf",
-    "1 tsp dried thyme",
-    "1 tsp dried oregano"
-  ]
+  {
+    result: [
+      "212 g minced beef",
+      "32 g carrots",
+      "1 medium onion",
+      "2 cloves garlic",
+      "1 tbsp olive oil",
+      "1 tsp salt",
+      "0.5 tsp black pepper",
+      "0.25 tsp paprika",
+      "120 ml beef broth",
+      "60 ml red wine",
+      "1 bay leaf",
+      "1 tsp dried thyme",
+      "1 tsp dried oregano"
+    ]
+  }
   `
 
   const response = await client.chat.completions.create({
     model: "gpt-4.1",
     messages: [
-      { role: "user", content: prompt },
+      { role: "system", content: prompt },
       { role: "user", content: `Ingredients: ${ingredients}` }
     ],
     response_format: { type: "json_object" }
