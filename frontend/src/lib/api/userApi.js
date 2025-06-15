@@ -1,4 +1,4 @@
-import { isAuthenticated, updateAuthState } from '../../stores/authStore.js';
+import { updateAuthState } from '../../stores/authStore.js';
 
 import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util.js';
 
