@@ -64,40 +64,19 @@
     });
     
     
-    const disconnectFollowing = socket.on("following", async (updatedUser) => {
-        // If I'm looking at another user's profile page, and follow them, update THEIR data:
-        if(currentUser && currentUser.username === updatedUser.username) {
-            currentUser = updatedUser;
-            return;
-        }
+    const handleFollowEvent = async (updatedUser) => {
+        currentUser = updatedUser;
+        viewer = await userApi.getUserById(viewer.id)
+        viewerFollowingList = viewer.following;
+    }
 
-        // if(updatedUser.username !== viewer.username && viewer) {
-        //     currentUser = userApi.getUserById(currentUser.id);
-        //     return;
-        // }
+    const disconnectFollowing = socket.on("following", handleFollowEvent);
+    const disconnectUnfollowing = socket.on("unfollowing", handleFollowEvent);
 
-        // Update my own profile page when follow/unfollow users on my own list
-        if(viewer) {
-            currentUser = await userApi.getUserById(viewer.id)
-            viewerFollowingList = currentUser.following;
-        }
-    })
-
-    const disconnectUnfollowing = socket.on("unfollowing", async (updatedUser) => {
-        if(currentUser && currentUser.username === updatedUser.username) {
-            currentUser = updatedUser;
-            return;
-        }
-
-        if(viewer) {
-            currentUser = await userApi.getUserById(viewer.id)
-            viewerFollowingList = currentUser.following;
-        }
-    });
 
     onDestroy(() => {
-        disconnectFollowing
-        disconnectUnfollowing
+        disconnectFollowing()
+        disconnectUnfollowing()
     })
     
 
@@ -130,12 +109,17 @@
 
         <!-- Stats: followers / following -->
         <div class="flex space-x-8 text-center">
-            <FollowModal noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowingList}/>
-            <FollowModal noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowingList}/>
+            <!-- when inside modal the "logged in" viewer becomes the parentUser / current user, 
+             when follow/unfollow the emitted object will now become the viewer, instead of the actual userprofile we are looking at. 
+             Solution: 
+             add the currentUser as a prop to the FollowModal component, so we can emit the correct user object
+             -->
+            <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowingList}/>
+            <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowingList}/>
         </div>
 
-        <!-- Follow / Unfollow button -->
         <div class="flex gap-6">
+            <!-- Follow / Unfollow button -->
             {#if viewer}
 
                 {#if currentUser.id !== viewer.id} 

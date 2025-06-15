@@ -13,7 +13,7 @@
     
     import { user } from '../../../stores/authStore.js';
 
-    const { noOfUsers, label, parentUserList, viewerFollowingList } = $props();
+    const { topLevelUserId, noOfUsers, label, parentUserList, viewerFollowingList } = $props();
     let searchValue = $state("");
     let filteredUsers = $state([]);
 
@@ -66,22 +66,27 @@
                         <p>{user.username}</p>
                     </button>
                     
+                    <!-- if viewer means im logged in -->
                     {#if viewer }
                         {#if user.id !== viewer.id}
+                            <!-- check to se if the users profile we are looking at are in our own following list if so show unfollow button. -->
                             {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === user.id)}
-                                <UnfollowButton parentUser={user}/>
+                                <UnfollowButton {topLevelUserId} parentUser={user}/>
                             {:else}
-                                <FollowButton parentUser={user}/>
+                                <FollowButton {topLevelUserId} parentUser={user}/>
                             {/if}
                         {/if}
-
-                        {:else} 
-                            <FollowButton parentUser={user}/>
+                        <!-- if user.id === viewer.id -->
+                        <!-- render no buttons, as I should not be able to follow/unfollow my self  -->
+                    {:else} 
+                    <!-- else not logged in, show follow button on all -->
+                        <FollowButton parentUser={user}/>
 
                     {/if}
                 </div>
             {/each}
 
+        <!-- Search in follower / following list -->
         {:else if filteredUsers.length === 0 && searchValue !== ""}
             <p class="p-4 text-center text-gray-500">No results for “{searchValue}”</p>
             

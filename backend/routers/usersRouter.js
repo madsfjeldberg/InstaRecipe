@@ -26,7 +26,7 @@ router.get("/api/users/:id", async (req, res) => {
     if (!foundUser) {
       return res.status(404).send({ data: {} });
     }
-
+    
     res.send({ data: foundUser });
   } catch (error) {
     console.error(error);

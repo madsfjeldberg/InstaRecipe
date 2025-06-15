@@ -7,7 +7,7 @@
     import { user } from '../../../stores/authStore.js';
     import { socket } from '../../../stores/socketStore.js';
 
-    const { parentUser = $bindable(), onToggleFollowButton } = $props();
+    const { topLevelUserId, parentUser, onToggleFollowButton } = $props();
     const viewer = $user;
 
     const unfollow = () => {
@@ -17,12 +17,17 @@
         }
 
         const data = {
+            topLevelUserId,
             parentId: parentUser.id,
             childId: viewer.id,
         };
 
         socket.emit("unfollowing", data);
 
+        if(topLevelUserId) {
+            return;
+        }
+        
         if(onToggleFollowButton) {
             onToggleFollowButton();
         }

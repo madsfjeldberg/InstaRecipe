@@ -179,16 +179,16 @@ const updateEmailNotifications = async (userId, emailNotificationSetting) => {
 
 
 
-const follow = async (parentId, childId) => {
+const follow = async (data) => {
     try{
         const updatedUser = await prisma.user.update({
             where: {
-                id: parentId
+                id: data.parentId
             },
             data: {
                 followers: {
                     connect: {
-                        id: childId
+                        id: data.childId
                     }
                 }
             },
@@ -210,7 +210,13 @@ const follow = async (parentId, childId) => {
             }
         });
 
-        const { password, ...userWithOutPassword} = updatedUser;
+        if(data.topLevelUserId) {
+            const usersProfileWeAreActuallyViewing = await getUserById(data.topLevelUserId);
+            const { password: _, ...userWithOutPassword} = usersProfileWeAreActuallyViewing;
+            return userWithOutPassword;
+        }
+
+        const { password: _, ...userWithOutPassword} = updatedUser;
         return userWithOutPassword;
 
     }catch(error) {
@@ -221,16 +227,16 @@ const follow = async (parentId, childId) => {
 
 
 
-const unfollow = async (parentId, childId) => {
+const unfollow = async (data) => {
     try{
         const updatedUser = await prisma.user.update({
             where: {
-                id: parentId
+                id: data.parentId
             },
             data: {
                 followers: {
                     disconnect: {
-                        id: childId
+                        id: data.childId
                     }
                 }
             },
@@ -252,7 +258,13 @@ const unfollow = async (parentId, childId) => {
             }
         });
 
-        const { password, ...userWithOutPassword} = updatedUser;
+        if(data.topLevelUserId) {
+            const usersProfileWeAreActuallyViewing = await getUserById(data.topLevelUserId);
+            const { password: _, ...userWithOutPassword} = usersProfileWeAreActuallyViewing;
+            return userWithOutPassword;
+        }
+
+        const { password: _, ...userWithOutPassword} = updatedUser;
         return userWithOutPassword;
 
     }catch(error) {
