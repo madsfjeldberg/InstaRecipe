@@ -6,19 +6,38 @@ const getCommentsByRecipeId = async (recipeId) => {
 
         const comments = await prisma.comment.findMany({
             where: { recipeId, parentId: null },
+            orderBy: { postedAt: 'asc' },
             include: {
+                user: { 
+                    select: { 
+                        id: true, 
+                        username: true 
+                    } 
+                },
+                replyToUser: {
+                    select: { 
+                        id: true, 
+                        username: true 
+                    } 
+                },
                 replies: {
+                    orderBy: { postedAt: 'asc' },
                     include: {
-                        //this is used for notification for a person who has replied to a comment that gets a reply on his reply.
+                        // author of reply and used for notification for a person who has replied to a comment that gets a reply on his reply.
                         user: { 
                             select: { 
                                 username: true,
                                 email: true
                             } 
+                        },
+                        replyToUser: { 
+                            select: { 
+                                id: true, 
+                                username: true 
+                            } 
                         }
                     }
                 },
-                user: { select: { username: true } }
             }
         });
         return comments;
@@ -78,11 +97,13 @@ const postComment = async (userId, text, recipeId) => {
                 }
             },
             include: {
+                // Author
                 user: {
                     select: {
                         username: true
                     }
                 },
+
                 //used for email notification when someone posts a comment on a recipe
                 recipe: {
                     select: {
@@ -112,32 +133,45 @@ const postComment = async (userId, text, recipeId) => {
 
 
 
-const postCommentReply = async (userId, text, recipeId, commentParentId) => {
+const postCommentReply = async (newReply) => {
     try {
         const postedComment = await prisma.comment.create({
             data: {
-                comment: text,
+                comment: newReply.comment,
                 user: {
                     connect: {
-                        id: userId
+                        id: newReply.userId
+                    }
+                },
+                replyToUser: { 
+                    connect: {
+                        id: newReply.replyToUserId
                     }
                 },
                 recipe: {
                     connect: {
-                        id: recipeId
+                        id: newReply.recipeId
                     }
                 },
                 parent: {
                     connect: {
-                        id: commentParentId
+                        id: newReply.commentParentId
                     }
                 }
             },
             include: {
+                // for notificatifying author
                 user: {
                     select: {
                       username: true,
                       emailNotifications: true
+                    }
+                },
+                // adding @mentioned user
+                replyToUser: {
+                    select: {
+                        id: true,
+                        username: true
                     }
                 }
             }
