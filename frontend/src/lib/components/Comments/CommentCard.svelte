@@ -22,8 +22,7 @@
 
     <Card.Content class="grid gap-4">
         {#if comment.replyToUser && comment.replyToUser.username.startsWith("deleted")}
-            <p class="italic text-gray-500">@Deleted User</p>
-            {comment.comment}
+            <p class="italic text-gray-500">@Deleted User {comment.comment}</p>
         {:else if comment.replyToUser} 
             <p>@{comment.replyToUser.username} {comment.comment}</p>
         {:else}
