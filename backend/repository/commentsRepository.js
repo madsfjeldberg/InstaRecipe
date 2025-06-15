@@ -80,19 +80,19 @@ const getCommentById = async (commentId) => {
 
 
 
-const postComment = async (userId, text, recipeId) => {
+const postComment = async (newComment) => {
     try {
         const postedComment = await prisma.comment.create({
             data: {
-                comment: text,
+                comment: newComment.comment,
                 user: {
                     connect: {
-                        id: userId
+                        id: newComment.userId
                     }
                 },
                 recipe: {
                     connect: {
-                        id: recipeId
+                        id: newComment.recipeId
                     }
                 }
             },
