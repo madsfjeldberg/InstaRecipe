@@ -25,7 +25,8 @@ const getCommentsByRecipeId = async (recipeId) => {
                     include: {
                         // author of reply and used for notification for a person who has replied to a comment that gets a reply on his reply.
                         user: { 
-                            select: { 
+                            select: {
+                                id: true, 
                                 username: true,
                                 email: true
                             } 
@@ -100,6 +101,7 @@ const postComment = async (newComment) => {
                 // Author
                 user: {
                     select: {
+                        id: true,
                         username: true
                     }
                 },

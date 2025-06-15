@@ -1,4 +1,6 @@
 <script>
+    import { goto } from "$app/navigation";
+
     import { Button } from "$lib/components/ui/button/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
 
@@ -11,7 +13,10 @@
             {#if comment.user.username.startsWith("deleted")}
                 <p class="italic text-gray-500">Deleted User</p>
             {:else}
-                {comment.user.username}
+                <button class="hover:underline text-2xl" onclick={() => goto(`/users/${comment.user.id}`)}>
+                    {comment.user.username}
+                </button>
+
             {/if}
         </Card.Title>
         <Card.Description>
@@ -24,7 +29,12 @@
         {#if comment.replyToUser && comment.replyToUser.username.startsWith("deleted")}
             <p class="italic text-gray-500">@Deleted User {comment.comment}</p>
         {:else if comment.replyToUser} 
-            <p>@{comment.replyToUser.username} {comment.comment}</p>
+            <p>
+                <button class="hover:underline" onclick={() => goto(`/users/${comment.replyToUser.id}`)}>
+                    @{comment.replyToUser.username} 
+                </button>
+                {comment.comment}
+            </p>
         {:else}
             {comment.comment}
         {/if}
