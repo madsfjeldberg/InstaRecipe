@@ -53,7 +53,7 @@ const fetchWithAuth = async (url, options) => {
     return response;
 }
 
-const ifResponseOk = async (response) => {
+const handleResponse = async (response) => {
     const result = await response.json();
 
     if (!response.ok) {
@@ -69,4 +69,4 @@ const ifResponseOk = async (response) => {
 
 
 
-export { makeOption, fetchWithAuth, ifResponseOk };
+export { makeOption, fetchWithAuth, handleResponse };
