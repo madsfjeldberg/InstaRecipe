@@ -48,7 +48,7 @@
     {#each comments as comment, index (comment.id || index)}
         
         <Separator class="my-4" />
-        <CommentCard className={"mt-4"} {comment} bind:commentToReplyToId isDisplayingReplyDialog onShowReplyBox={showReplyBox}/>
+        <CommentCard className={"mt-4"} {comment} bind:commentToReplyToId {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
         
         {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
             <CommentReply bind:isDisplayingReplyDialog parentComment={comment}/>
@@ -56,7 +56,7 @@
         
         {#if comment.replies && comment.replies.length > 0}
             {#each comment.replies as reply (reply.id) }
-                <CommentCard className={"w-3/4 mt-2"} comment={reply} bind:commentToReplyToId isDisplayingReplyDialog onShowReplyBox={showReplyBox}/>
+                <CommentCard className={"w-3/4 mt-2"} comment={reply} bind:commentToReplyToId {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
                 {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
                     <CommentReply bind:isDisplayingReplyDialog parentComment={comment} replyParent={reply}/>
                 {/if}
