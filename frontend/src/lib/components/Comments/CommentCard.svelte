@@ -43,6 +43,12 @@
     <Card.Footer class="flex justify-end z-10 relative">
         {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
             <Button size="sm" disabled>Reply</Button>
+
+            {:else if comment.user.username.startsWith("deleted")}
+            <!-- Ensures you cant reply to deleted users posts -->
+            {:else if comment.replyToUser && comment.replyToUser.username.startsWith("deleted")}
+            <!--   ---||---   -->
+
         {:else}
             <Button size="sm" onclick={() => onShowReplyBox(comment.id)}>
                 Reply
