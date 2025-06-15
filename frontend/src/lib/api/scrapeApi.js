@@ -1,4 +1,4 @@
-import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util.js';
+import { makeOption, fetchWithAuth, handleResponse } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/scrape` : '/api/scrape';
 
@@ -7,7 +7,7 @@ const scrapeLink = async (link) => {
     const option = makeOption("POST", { url: link });
     const response = await fetchWithAuth(BASE_URL, option);
 
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   } catch (error) {
     throw error;

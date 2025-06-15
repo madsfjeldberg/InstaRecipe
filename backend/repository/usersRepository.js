@@ -274,9 +274,8 @@ const softDeleteUser = async (userId) => {
                 id: userId
             },
             data: {
-                username: null,
+                username: "deleted_" + userId,
                 email: "deleted@" + userId,
-                password: "deleted_" + userId,
                 avatarUrl: null,
                 followers: {
                     disconnect: followers.map( (follower) => ({id: follower.id }))

@@ -15,24 +15,24 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  username    String   @unique
-  email       String   @unique
-  password    String
-  avatarUrl   String?
-  isConfirmed Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String       @id @default(uuid())
+  username             String       @unique
+  email                String       @unique
+  password             String
+  avatarUrl            String?
+  isConfirmed          Boolean      @default(false)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  emailNotifications   Boolean      @default(true)
+  isDeleted            Boolean      @default(false)
 
-  emailNotifications Boolean @default(true)
+  // Relations
+  following            User[]       @relation("UserFollows")
+  followers            User[]       @relation("UserFollows")
+  recipeLists          RecipeList[]
 
-  following User[] @relation("UserFollows")
-  followers User[] @relation("UserFollows")
-
-  comments    Comment[]
-  recipeLists RecipeList[]
-  
-  isDeleted   Boolean  @default(false)
+  comments             Comment[]    @relation("Author")
+  repliesReceived      Comment[]    @relation("RepliesToUser")
 }
 
 model RecipeList {
@@ -65,7 +65,7 @@ model Comment {
 
   // Relations to user and recipe
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation("Author", fields: [userId], references: [id])
 
   recipeId String
   recipe   Recipe @relation(fields: [recipeId], references: [id])
@@ -74,6 +74,9 @@ model Comment {
   parentId String? // nullable if it's a root comment
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies  Comment[] @relation("CommentReplies") // children (replies)
+
+  replyToUserId String?
+  replyToUser   User?   @relation("RepliesToUser", fields: [replyToUserId], references: [id])
 }
 
 model Recipe {

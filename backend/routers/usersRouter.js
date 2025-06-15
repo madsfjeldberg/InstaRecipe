@@ -162,7 +162,9 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
     await prisma.recipeList.deleteMany({ where: { userId } });
 
     // Delete the user
-    await b2.deleteFile(user.avatarUrl.split("/").pop());
+    if(user.avatarUrl) {
+      await b2.deleteFile(user.avatarUrl.split("/").pop());
+    }
     await usersRepository.softDeleteUser(userId);
 
     // Clear the auth cookie

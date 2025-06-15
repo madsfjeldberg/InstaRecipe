@@ -1,6 +1,6 @@
-import { isAuthenticated, updateAuthState } from '../../stores/authStore.js';
+import { updateAuthState } from '../../stores/authStore.js';
 
-import { makeOption, fetchWithAuth, ifResponseOk } from '../utils/util.js';
+import { makeOption, fetchWithAuth, handleResponse } from '../utils/util.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/users` : '/api/users';
 
@@ -25,7 +25,7 @@ const getUserById = async (userId) => {
 const getUsersByPartialUsername = async (query) => {
   try {
     const response = await fetch(`${BASE_URL}/?partialUsername=${query}`);
-    return await ifResponseOk(response)
+    return await handleResponse(response)
 
   }catch(error) {
     throw error;
@@ -42,7 +42,7 @@ const uploadAvatar = async (userId, avatarFile) => {
     body: avatarFile
   });
 
-  return await ifResponseOk(response);
+  return await handleResponse(response);
 }
 
 
@@ -53,7 +53,7 @@ const updateUsername = async (id, username, email) => {
     const option = makeOption("PUT", {user});
     const response = await fetchWithAuth(`${BASE_URL}`, option);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   }catch(error) {
     throw error;
@@ -66,7 +66,7 @@ const updatePassword = async (id, password, email) => {
     const option = makeOption("PUT", { user });
     const response = await fetchWithAuth(`${BASE_URL}`, option);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   }catch(error) {
     throw error;
@@ -79,7 +79,7 @@ const updateEmailNotificationsSetting = async (id, notificationSetting, email) =
     const option = makeOption("PUT", { user });
     const response = await fetchWithAuth(`${BASE_URL}`, option);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   }catch(error) {
     throw error;

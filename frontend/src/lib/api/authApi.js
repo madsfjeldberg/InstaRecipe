@@ -1,5 +1,5 @@
 
-import { ifResponseOk, makeOption } from '../utils/util.js';
+import { handleResponse, makeOption } from '../utils/util.js';
 
 import { accessToken } from '../../stores/authStore.js';
 
@@ -11,7 +11,7 @@ const verifyEmail = async (userId) => {
   try {
     const response = await fetch(BASE_URL + "/verify/" + userId);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   }catch(error) {
     throw error;
@@ -25,7 +25,7 @@ const verifyToken = async (token) => {
     const postOption = makeOption("POST", {token});
     const response = await fetch(BASE_URL + "/token/verify", postOption);
 
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   } catch (error) {
     throw error;
@@ -59,7 +59,7 @@ const register = async (username, email, password) => {
     const postOption = makeOption("POST", { username, email, password });
     const response = await fetch(BASE_URL + "/register", postOption);
 
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   } catch (error) {
     throw error;
@@ -111,7 +111,7 @@ const sendRestPasswordRequest = async (email) => {
     const postOption = makeOption("POST", {email})
     const response = await fetch(BASE_URL + "/forgot-password", postOption);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   } catch(error) {
     throw error;
@@ -125,7 +125,7 @@ const resetPassword = async (newPassword, resetToken) => {
     const patchOption = makeOption("PATCH", {newPassword});
     const response = await fetch(`${BASE_URL}/reset-password/${resetToken}`, patchOption);
     
-    return await ifResponseOk(response);
+    return await handleResponse(response);
 
   }catch(error) {
     console.error(error);

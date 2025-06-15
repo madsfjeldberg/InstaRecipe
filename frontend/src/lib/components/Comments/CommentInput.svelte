@@ -37,9 +37,6 @@
 
         const newComment = {
             userId: $user.id,
-            user: {
-                username: $user.username
-            },
             comment: newCommentText,
             postedAt: Date.now(),
             recipeId

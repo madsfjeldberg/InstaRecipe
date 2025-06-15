@@ -15,11 +15,11 @@
 
     onMount( () => {
         if(replyParent) {
-            commentReplyText = "@" + replyParent.user.username + "\n";
+            commentReplyText = "@" + replyParent.user.username + " ";
             return;
         }
 
-        commentReplyText = "@" + parentComment.user.username + "\n"
+        commentReplyText = "@" + parentComment.user.username + " ";
     })
 
 
@@ -36,13 +36,16 @@
             return;
         }
 
+    
         const newCommentReply = {
             userId: $user.id,
+            replyToUserId: replyParent ? replyParent.userId : parentComment.userId, // user being replied to
             recipeId: parentComment.recipeId,
             commentParentId: parentComment.id,
             replyParent: replyParent,
-            comment: commentReplyText
+            comment: parseCommentText(commentReplyText)
         } 
+        
 
         //todo read up on callback acknowledgement use this as error handling.
         socket.emit("new-comment-reply", newCommentReply);
@@ -57,6 +60,10 @@
         isDisplayingReplyDialog = false;
     }
 
+    const parseCommentText = (comment) => {
+        return comment.split(" ").slice(1).join(" "); // Removes the '@username' part
+    }
+
 </script>
 
 {#if replyParent}
@@ -68,5 +75,5 @@
 
 <div class="mb-10 mt-4">
     <Button onclick={postReply}>Submit</Button>
-    <Button onclick={closeReplyBox}>Cancel</Button>
+    <Button onclick={closeReplyBox} variant="ghost">Cancel</Button>
 </div>
