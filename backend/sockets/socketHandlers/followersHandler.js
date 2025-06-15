@@ -5,7 +5,7 @@ export const followersHandler = (socket, io) => {
         console.log("following received user:", data);
 
         try{
-            const updatedUser = await usersRepository.follow(data.parentId, data.childId);
+            const updatedUser = await usersRepository.follow(data);
             
             io.emit("following", updatedUser);
             console.log("emitted follow updated user:", updatedUser);
@@ -20,7 +20,7 @@ export const followersHandler = (socket, io) => {
         console.log("unfollowing received user:", data);
         
         try{
-            const updatedUser = await usersRepository.unfollow(data.parentId, data.childId);
+            const updatedUser = await usersRepository.unfollow(data);
             
             io.emit("unfollowing", updatedUser);
             console.log("emitted unfollow updated user:", updatedUser);
