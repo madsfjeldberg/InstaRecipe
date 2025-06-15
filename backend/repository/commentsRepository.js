@@ -113,7 +113,8 @@ const postComment = async (newComment) => {
                                 user: {
                                     select: {
                                         username: true,
-                                        email: true
+                                        email: true,
+                                        emailNotifications: true
                                     }
                                 }
                             }
@@ -164,6 +165,7 @@ const postCommentReply = async (newReply) => {
                 user: {
                     select: {
                       username: true,
+                      email: true,
                       emailNotifications: true
                     }
                 },

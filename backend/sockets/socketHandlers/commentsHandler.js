@@ -15,7 +15,7 @@ export const commentsHandler = (socket, io) => {
         const emailNotificationEnabled = postedComment.recipe.recipeLists[0].user.emailNotifications;
         if (emailNotificationEnabled) {
           emailService.sendCommentNotification(recipeCreatorEmail, recipeCreatorUsername, postedComment);
-      };
+        };
 
         io.emit("new-comment", postedComment);
         
@@ -37,7 +37,7 @@ export const commentsHandler = (socket, io) => {
             const foundRecipe = await recipeRepository.getRecipeById(newReply.recipeId);
             const recipeName = foundRecipe.name;
             newReply.replyParent.recipe = { name: recipeName };
-          
+            
             const emailsNotificationEnabled = postedCommentReply.user.emailNotifications;
             if (emailsNotificationEnabled) {
               emailService.sendCommentReplyNotification(newReply.replyParent, postedCommentReply);    
