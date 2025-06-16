@@ -11,7 +11,7 @@
   
   import recipeListApi from '$lib/api/recipelistApi.js';
 
-  let { recipeLists = $bindable(), selectedList = $bindable() } = $props();
+  let { recipeLists = $bindable(), selectedList = $bindable(), onSortRecipeList } = $props();
 
   let errors = $state({
     name: "",
@@ -43,6 +43,7 @@
       errors = { ...errors, form: "" };
       // Optionally, you can refresh the recipe lists or perform other actions
       recipeLists = [...recipeLists, createdRecipeList]; // Update the recipeLists state
+      onSortRecipeList(); // Ensure the new list is sorted in the UI
       // CLOSE DIALOG HERE
       isDialogOpen = false;
       

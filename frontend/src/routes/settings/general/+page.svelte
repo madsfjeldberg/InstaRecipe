@@ -16,8 +16,6 @@
 
   import userApi from '$lib/api/userApi.js';
 
-  import { user as userStore } from '../../../stores/authStore.js';
-
   const { data } = $props();
   let { user } = data;
   let username = $state(user.username);
@@ -189,10 +187,10 @@
     
   </Card.Header>
   <Card.Content class="flex justify-start">
-    {#if $userStore.avatarUrl}
+    {#if user.avatarUrl}
     <img
       class="rounded-full w-28 h-28 object-cover"
-      src={$userStore.avatarUrl}
+      src={user.avatarUrl}
       loading="lazy"
       alt="User Avatar"
     > 

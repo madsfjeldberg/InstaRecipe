@@ -7,8 +7,8 @@
 
   import { updateAuthState } from '../../../stores/authStore.js';
 
-  const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL + '/auth' : '/auth';
 
+  
   let status = "verifying";
   let message = "";
 

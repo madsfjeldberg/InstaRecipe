@@ -12,7 +12,6 @@
   import userApi from '$lib/api/userApi';
 
   let { data } = $props();
-  let userId = data.user.id;
   let user = $state(data.user);
   let emailNotifications = $state(data.user.emailNotifications);
   let isLoading = $state(false);
@@ -20,7 +19,7 @@
   
   onMount(async () => {
     try {
-      user = await userApi.getUserById(userId);
+      user = await userApi.getUserById(user.id);
       emailNotifications = user.emailNotifications;
     } catch (error) {
       toast.error(error.message);
@@ -34,7 +33,7 @@
   const saveSettings = async () => {
     try {
       isLoading = true;
-      await userApi.updateEmailNotificationsSetting(userId, emailNotifications, user.email);
+      await userApi.updateEmailNotificationsSetting(user.id, emailNotifications, user.email);
       toast.success("Settings saved successfully!");
 
     } catch (error) {
