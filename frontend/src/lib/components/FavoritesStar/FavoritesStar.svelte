@@ -63,12 +63,10 @@
         );
 
         try{
-
             await recipelistApi.removeRecipeFromFavoritesList(
                 favoritesRecipeList.id,
                 recipeToRemove.id,
             );
-            console.log("removed from favorites:", recipe)
         }catch(error) {
             console.error(error);
             toast.error(error.message)

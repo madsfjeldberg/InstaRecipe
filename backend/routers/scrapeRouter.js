@@ -32,7 +32,6 @@ router.post("/api/scrape", async (req, res) => {
 const generateRecipe = async (scrapedData) => {
   try {
     const generatedRecipe = await ai.generateRecipe(scrapedData);
-    console.log("Parsed AI response:", generatedRecipe);
     // Get temp image url from AI
     const imageUrl = await ai.generateRecipeImage(generatedRecipe.name);
 

@@ -9,7 +9,6 @@
 
   const { returnTo, isRegister } = $props();
   let loginMode = $state(true);
-  console.log(isRegister)
 
   if(isRegister) {
     loginMode = false;

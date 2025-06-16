@@ -38,8 +38,6 @@ const uploadUserAvatar = async (file) => {
     }
 
     try {
-        console.log('Uploading avatar buffer to Backblaze B2...', file);
-
         const bucketId = process.env.BACKBLAZE_BUCKET_ID;
 
         // 1. Generate a unique file name to prevent collisions.
@@ -66,7 +64,6 @@ const uploadUserAvatar = async (file) => {
 
         // 5. Construct and return the final public URL.
         const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
-        console.log('Avatar uploaded successfully:', b2ImagePath);
         return b2ImagePath;
 
     } catch (error) {
@@ -100,7 +97,6 @@ const deleteFile = async (fileName) => {
       fileId: file.fileId
     });
 
-    console.log('File deleted successfully:', fileName);
     return true;
   } catch (error) {
     console.error('Error deleting file from Backblaze B2:', error);
@@ -112,7 +108,6 @@ const deleteFile = async (fileName) => {
 // ------------------------------------------------------ helper functions to upload recipe image to Backblaze B2 ----------------------------------------------
 // Function to download image from URL
 const downloadImage = async (url, outputPath) => {
-  console.log(`Downloading image from DALL-E to ${outputPath}`);
 
   return new Promise((resolve, reject) => {
     // Ensure the directory exists
@@ -144,7 +139,6 @@ const downloadImage = async (url, outputPath) => {
 
 const uploadImage = async (filePath, fileName) => {
   try {
-    console.log('Uploading file to Backblaze B2...');
     const bucketId = process.env.BACKBLAZE_BUCKET_ID;
     
     // Read file into buffer instead of using a stream
@@ -174,7 +168,6 @@ const uploadImage = async (filePath, fileName) => {
 const cleanupTempFile = async (filePath) => {
   try {
     await fsPromises.unlink(filePath);
-    console.log(`Temporary file deleted successfully.`);
   } catch (error) {
     console.error(`Error deleting temporary file ${filePath}:`, error);
     throw error;
