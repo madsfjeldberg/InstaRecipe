@@ -23,8 +23,6 @@
   const { data } = $props();
   const { user } = data;
 
-  let isInitialLoad = $state(true); // Flag to track if it's the initial load
-
   let userId = user.id;
 
   let recipeLists = $state([]);
@@ -45,20 +43,15 @@
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
+      recipeLists = recipeLists.sort((a, b) => a.name.localeCompare(b.name));
       selectedList = recipeLists[0];
-      favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites");
+
+      const favoritesRecipeListIndex = recipeLists.findIndex( (list) => list.name === "Favorites");
+      favoritesRecipeList = recipeLists[favoritesRecipeListIndex];
+      recipeLists.splice(favoritesRecipeListIndex, 1);
+      recipeLists.push(favoritesRecipeList);
     } 
     
-    // Set the flag to false after the initial load
-    isInitialLoad = false;
-    loading = false;
-  });
-
-  // when a new recipe list is selected, fetch the recipes for that list
-  // and pass to recipe table
-  $effect(async () => {
-    if (isInitialLoad || !selectedList) return;
-    loading = true;
     loading = false;
   });
   

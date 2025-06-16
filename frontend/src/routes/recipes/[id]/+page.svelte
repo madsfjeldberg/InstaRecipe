@@ -60,13 +60,8 @@
         const recipeLists = await recipeListApi.getRecipeListsByUserId($user.id);
         favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites" );
       }
-    })
 
-
-    //hvorfor on effect? og ikke onMount?
-    $effect(async () => {
       recipeId = $page.params.id;
-      if (!recipeId) return;
 
       isLoading = true;
       try {
@@ -90,7 +85,7 @@
       } finally {
         isLoading = false;
       }
-    });
+    })
   
 
 

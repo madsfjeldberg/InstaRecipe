@@ -7,6 +7,8 @@ import userApi from '$lib/api/userApi.js';
 
 const verifyJWT = async (token) => {
   try {
+    // verifies against the source of truth (redis)
+    // will throw an error if the token is invalid or expired
     return await authApi.verifyToken(token);
     
   } catch (error) {

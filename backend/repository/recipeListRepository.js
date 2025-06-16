@@ -5,7 +5,8 @@ const createFavoritesList = async (userId) => {
         const staredList = await prisma.recipeList.create({
             data: {
                 name: "Favorites",
-                userId: userId
+                userId: userId,
+                isPrivate: true
             }
         })
         return staredList;

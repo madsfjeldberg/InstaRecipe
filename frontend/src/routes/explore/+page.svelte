@@ -13,6 +13,7 @@
 
   const { data } = $props();
   const { user } = data;
+  
   let loading = $state(true);
   let recipes = $state([]);
   let favoritesRecipeList = $state(null);
