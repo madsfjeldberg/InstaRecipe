@@ -1,4 +1,4 @@
-import { handleResponse, makeOption } from '../utils/util.js';
+import { handleResponse, makeOption } from '../utils/api.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/categories` : '/api/categories';
 

@@ -1,5 +1,5 @@
 
-import { handleResponse, makeOption } from '../utils/util.js';
+import { handleResponse, makeOption } from '../utils/api.js';
 
 import { accessToken } from '../../stores/authStore.js';
 
