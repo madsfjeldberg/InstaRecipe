@@ -4,8 +4,8 @@
   import { Input } from '$lib/components/ui/input/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
 
-  import LoginForm from '../LoginForm/Loginform.svelte';
-  import RegisterForm from '../RegisterForm/Registerform.svelte';
+  import LoginForm from '../Loginform/Loginform.svelte';
+  import RegisterForm from '../Registerform/Registerform.svelte';
 
   const { returnTo, isRegister } = $props();
   let loginMode = $state(true);

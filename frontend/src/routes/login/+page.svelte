@@ -1,5 +1,5 @@
 <script>
-  import AuthForm from '$lib/components/AuthForm/AuthForm.svelte';
+  import AuthForm from '$lib/components/Authform/Authform.svelte';
 
   import { updateAuthState } from '../../stores/authStore.js';
 
