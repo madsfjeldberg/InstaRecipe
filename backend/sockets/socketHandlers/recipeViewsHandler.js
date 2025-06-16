@@ -6,7 +6,7 @@ export const recipeViewsHandler = (socket, io) => {
         try {
             const updatedRecipe = await recipeRepository.incrementTotalViews(data.recipeId);
             const totalViews = updatedRecipe.totalViews;
-            socket.broadcast.emit("update-recipe-views", { totalViews });
+            socket.broadcast.emit("update-recipe-views", { totalViews, recipeId: data.recipeId });
 
         } catch (error) {
             socket.emit("update-recipe-views-error", error.message);

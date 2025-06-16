@@ -22,6 +22,7 @@
     }
 
     const disconnect = socket.on("update-recipe-views", (data) => {
+      if (data.recipeId !== recipeId) return;
       totalViews = data.totalViews;
     });
     onDestroy(disconnect);
