@@ -4,8 +4,8 @@
   import { Input } from '$lib/components/ui/input/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
 
-  import LoginForm from '../Loginform/Loginform.svelte';
-  import RegisterForm from '../Registerform/Registerform.svelte';
+  import Loginform from '../Loginform/Loginform.svelte';
+  import Registerform from '../Registerform/Registerform.svelte';
 
   const { returnTo, isRegister } = $props();
   let loginMode = $state(true);
@@ -29,7 +29,7 @@
 </svelte:head>
 
 {#if loginMode}
-  <LoginForm onToggleAuthMode={handleToggleAuthMode} {returnTo} />
+  <Loginform onToggleAuthMode={handleToggleAuthMode} {returnTo} />
 {:else}
-  <RegisterForm onToggleAuthMode={handleToggleAuthMode} />
+  <Registerform onToggleAuthMode={handleToggleAuthMode} />
 {/if}

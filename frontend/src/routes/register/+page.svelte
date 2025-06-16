@@ -1,5 +1,5 @@
 <script>
-  import AuthForm from '$lib/components/AuthForm/AuthForm.svelte';
+  import Authform from '$lib/components/Authform/Authform.svelte';
 
   const isRegister = true;
   
@@ -9,4 +9,4 @@
   <title>InstaRecipe | Register</title>
 </svelte:head>
 
-<AuthForm {isRegister}/>
+<Authform {isRegister}/>
