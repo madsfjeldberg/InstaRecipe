@@ -4,7 +4,7 @@
   
   import { toast } from 'svelte-sonner';
 
-  import { Plus, ScrollText, ExternalLink, LoaderCircle } from 'lucide-svelte';
+  import { Plus, ScrollText, ExternalLink, LoaderCircle, Star } from 'lucide-svelte';
   import Button from '$lib/components/ui/button/button.svelte';
   import Separator from '$lib/components/ui/separator/separator.svelte';
 
@@ -43,19 +43,23 @@
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
-      recipeLists = recipeLists.sort((a, b) => a.name.localeCompare(b.name));
+      sortRecipeList();
       selectedList = recipeLists[0];
-
-      const favoritesRecipeListIndex = recipeLists.findIndex( (list) => list.name === "Favorites");
-      favoritesRecipeList = recipeLists[favoritesRecipeListIndex];
-      recipeLists.splice(favoritesRecipeListIndex, 1);
-      recipeLists.push(favoritesRecipeList);
     } 
     
     loading = false;
   });
   
-  
+  // sort the list when added a new list
+  const sortRecipeList = () => {
+    recipeLists = recipeLists.sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Ensures the Favorites list is always at the first
+    const favoritesRecipeListIndex = recipeLists.findIndex( (list) => list.name === "Favorites");
+    favoritesRecipeList = recipeLists[favoritesRecipeListIndex];
+    recipeLists.splice(favoritesRecipeListIndex, 1);
+    recipeLists.unshift(favoritesRecipeList);
+  }
 </script>
 
 <svelte:head>
@@ -69,7 +73,7 @@
 
   <div class="col-span-4 flex items-center gap-2">
     <RecipeListSelect {user} bind:recipeLists bind:selectedList />
-    <AddListDialog bind:recipeLists bind:selectedList/>
+    <AddListDialog bind:recipeLists bind:selectedList onSortRecipeList={sortRecipeList}/>
   </div>
 
   <div class="col-span-8 mt-10">
@@ -80,18 +84,14 @@
 
       {:else if selectedList}
 
-        {#if selectedList.name !== "Favorites"}
-          <div class="group flex items-center justify-between mb-4">
-              <EditListDialog bind:selectedList bind:recipeLists />
-            <AddRecipeDialog bind:selectedList/>
-          </div>
+        {#if selectedList.name === "Favorites"}
+        <EditListDialog bind:selectedList bind:recipeLists />
+
         {:else}
-          <h1 class="text-2xl font-semibold">{selectedList.name}</h1>
-          {#if selectedList.isPrivate}
-            <p>(Private)</p>
-          {:else}
-            <p>(Public)</p>
-          {/if}
+        <div class="group flex items-center justify-between mb-4">
+          <EditListDialog bind:selectedList bind:recipeLists />
+          <AddRecipeDialog bind:selectedList/>
+        </div>
         {/if}
         
         <div transition:blur={{ duration: 250 }} class="grid grid-cols-8">

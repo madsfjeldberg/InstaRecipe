@@ -112,7 +112,9 @@
     </div>
    <Sheet.Footer>
     <Sheet.Action class={buttonVariants({ variant: 'destructive' })} onclick={handleDelete}>Delete</Sheet.Action>
-    <DeleteListDialog bind:recipeLists bind:selectedList bind:isSheetDialogOpen />
+    {#if selectedList.name !== "Favorites"}
+      <DeleteListDialog bind:recipeLists bind:selectedList bind:isSheetDialogOpen />
+    {/if}
    </Sheet.Footer>
   </Sheet.Content>
  </Sheet.Root>
