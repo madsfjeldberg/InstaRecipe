@@ -24,10 +24,9 @@
     if (files.length === 0) return;
     const file = files[0]; // only one file is allowed
     // restrict size
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      toast.error('File size exceeds 2MB limit.');
-      console.error('File size exceeds 2MB limit');
+      toast.error('File size exceeds 5MB limit.');
       return;
     }
     const formData = new FormData();
@@ -36,7 +35,6 @@
     isUploading = true;
     try {
       const updatedUser = await userApi.uploadAvatar(user.id, formData);
-      console.log("Avatar uploaded successfully:", updatedUser);
       UserStore.update(currentUser => {
         return { ...currentUser, avatarUrl: updatedUser.avatarUrl };
       });
