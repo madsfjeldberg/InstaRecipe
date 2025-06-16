@@ -7,8 +7,6 @@ export const registerSocketHandlers = (io) => {
     
     io.on("connection", (socket) => {
 
-        console.log("A client has connected:", socket.id);
-
         commentsHandler(socket, io);
         likeDislikeHandler(socket, io);
         recipeViewsHandler(socket, io);

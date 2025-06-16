@@ -36,7 +36,6 @@ const main = async () => {
       create: { name }
     });
   };
-  console.log('Tags seeded!');
 
   for (const name of categories) {
     await prisma.category.upsert({
@@ -45,7 +44,6 @@ const main = async () => {
       create: { name }
     });
   };
-  console.log('Categories seeded!');
 
 }
 

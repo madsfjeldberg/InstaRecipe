@@ -20,7 +20,6 @@ const scrapeSite = async (url) => {
             scrapedData = await scrapeInstagram(page);
 
         } else {
-            console.log("No specific URL detected");
             throw new Error("Provided either invalid URL or unsupported URL");
         }
 
@@ -66,7 +65,6 @@ const launchPuppeteer = async () => {
 
 
 const scrapeValdemarsro = async (page) => {
-    console.log("Detected valdemarsro URL");
     try {
 
         await page.waitForSelector("div.post-recipe", { timeout: 2000 });
@@ -88,13 +86,8 @@ const scrapeValdemarsro = async (page) => {
 
 
 const scrapeInstagram = async (page) => {
-    console.log("Detected Instagram URL");
-    // Wait for the specific span to be present
-    // const spanSelector = "span.x193iq5w.xeuugli.x1fj9vlw.x13faqbe.x1vvkbs.xt0psk2.x1i0vuye.xvs91rp.xo1l8bm.x5n08af.x10wh9bi.x1wdrske.x8viiok.x18hxmgj";
-    // await page.waitForSelector(spanSelector, { timeout: 5000 }).catch(() => {
-    //     console.error("No matching span elements found or timeout waiting for them");
-    // });
 
+    // Wait for the specific span to be present
     const additionalSpanSelector = "span.x1lliihq.x1plvlek.xryxfnj.x1n2onr6.x1ji0vk5.x18bv5gf.x193iq5w.xeuugli.x1fj9vlw.x13faqbe.x1vvkbs.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x1i0vuye.xvs91rp.xo1l8bm.x5n08af.x10wh9bi.xpm28yp.x8viiok.x1o7cslx";
     await page.waitForSelector(additionalSpanSelector, { timeout: 5000 }).catch(() => {
       console.error("No additional matching span elements found or timeout waiting for them");
@@ -102,7 +95,6 @@ const scrapeInstagram = async (page) => {
 
     // Find all matching span elements
     const spanElements = await page.$$(additionalSpanSelector);
-    console.log(`Found ${spanElements.length} matching span elements`);
 
     // Extract text with better error handling
     let scrapedRecipeData = [];
@@ -118,7 +110,6 @@ const scrapeInstagram = async (page) => {
         }
     }
     scrapedRecipeData = scrapedRecipeData.join("\n");
-    console.log("Extracted data:", scrapedRecipeData);
 
     if (scrapedRecipeData.length === 0) {
         throw new Error("No matching span content found on page");
