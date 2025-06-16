@@ -16,6 +16,7 @@
     import userApi from '$lib/api/userApi.js';
     import recipeListApi from '$lib/api/recipelistApi.js';
 
+    import { sortRecipeList } from '$lib/utils/recipeList.js';
 
 
     const currentUserId = $page.params.id;
@@ -38,6 +39,7 @@
         try {
             currentUser = await userApi.getUserById(currentUserId);
             currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
+            currentUserRecipeLists = sortRecipeList(currentUserRecipeLists);
             viewerSelectedList = currentUserRecipeLists[0];
 
             if(!$user) {

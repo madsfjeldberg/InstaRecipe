@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { blur } from 'svelte/transition';
   
   import { toast } from 'svelte-sonner';
@@ -17,8 +18,9 @@
 
   import recipeListApi from '$lib/api/recipelistApi.js';
   import tagsApi from '$lib/api/tagsApi.js';
-  import { goto } from '$app/navigation';
   
+  import { sortRecipeList } from '$lib/utils/recipeList.js';
+
 
   const { data } = $props();
   const { user } = data;
@@ -43,23 +45,12 @@
 
     // Set the selected list to the first one if available
     if (recipeLists.length > 0) {
-      sortRecipeList();
+      recipeLists = sortRecipeList(recipeLists);
       selectedList = recipeLists[0];
     } 
     
     loading = false;
   });
-  
-  // sort the list when added a new list
-  const sortRecipeList = () => {
-    recipeLists = recipeLists.sort((a, b) => a.name.localeCompare(b.name));
-    
-    // Ensures the Favorites list is always at the first
-    const favoritesRecipeListIndex = recipeLists.findIndex( (list) => list.name === "Favorites");
-    favoritesRecipeList = recipeLists[favoritesRecipeListIndex];
-    recipeLists.splice(favoritesRecipeListIndex, 1);
-    recipeLists.unshift(favoritesRecipeList);
-  }
 </script>
 
 <svelte:head>
