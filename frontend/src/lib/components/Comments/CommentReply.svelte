@@ -47,7 +47,6 @@
         } 
         
 
-        //todo read up on callback acknowledgement use this as error handling.
         socket.emit("new-comment-reply", newCommentReply);
 
         closeReplyBox();

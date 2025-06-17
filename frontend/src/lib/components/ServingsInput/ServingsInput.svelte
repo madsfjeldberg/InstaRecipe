@@ -4,10 +4,10 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
 
-	let { servings = $bindable(), handleAdjustRecipeMacros } = $props();
-	const onAdjustRecipeMacros = handleAdjustRecipeMacros;
+	let { servings = $bindable(), onAdjustRecipeMacros } = $props();
 
 
+	
 	$effect(() => {
 		if (servings === null || servings === undefined || servings <= 0) {
 			return;

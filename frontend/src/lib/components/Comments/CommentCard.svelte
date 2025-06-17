@@ -4,7 +4,7 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
 
-    let { className, comment, commentToReplyToId = $bindable(), isDisplayingReplyDialog, onShowReplyBox} = $props();
+    let { className, comment, commentToReplyToId, isDisplayingReplyDialog, onShowReplyBox} = $props();
 </script>
 
 <Card.Root class={className}>
@@ -45,8 +45,11 @@
             <Button size="sm" disabled>Reply</Button>
 
             {:else if comment.user.username.startsWith("deleted")}
+            <!-- This displays nothing -->
             <!-- Ensures you cant reply to deleted users posts -->
+
             {:else if comment.replyToUser && comment.replyToUser.username.startsWith("deleted")}
+            <!--   ---||---   -->
             <!--   ---||---   -->
 
         {:else}

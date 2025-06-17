@@ -27,7 +27,10 @@ export const handle = async ({ event, resolve }) => {
       event.cookies.delete('refreshToken', { path: '/' });
 
       event.locals.user = null;
-      throw redirect(303, '/login');
+      throw redirect(303, '/login?returnTo=' + encodeURIComponent(event.url.pathname)); 
+      //                                             ^^
+      // im logged in on 2 devices, I logout of one, the other one should redirect to login when attempting to access a protected route. 
+      // Next time I login, redirect me back to original requested page
     }
 
   } else {

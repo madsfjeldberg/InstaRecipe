@@ -127,7 +127,9 @@
     const adjustMeasurement = (ingredient) => {
       const parts = ingredient.split(" ");
       const quantity = parseFloat(parts[0]);
-      if (isNaN(quantity)) return null;
+      if (isNaN(quantity)) {
+        return null;
+      }
 
       const adjustedQuantity = (quantity * (updatedServings / originalServings));
       parts[0] = adjustedQuantity;
@@ -204,11 +206,7 @@
                 <Separator class="mb-4" />
               </Card.Header>
                 <Card.Content class="w-full">
-                  {#if originalServings === updatedServings}
-                    <RecipeNutritionTable ingredientsList={originalIngredientsList} />
-                  {:else}
                     <RecipeNutritionTable ingredientsList={updatedIngredientsList} />
-                  {/if}
                 </Card.Content>
             </Card.Root>
           </div>
@@ -239,7 +237,7 @@
           <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="servings">
             Servings
           </label>
-          <ServingsInput id="servings" bind:servings={updatedServings} {handleAdjustRecipeMacros}/>
+          <ServingsInput id="servings" bind:servings={updatedServings} onAdjustRecipeMacros={handleAdjustRecipeMacros} />
         </div>
 
         <!-- Ingredients & Instructions Card -->
@@ -261,18 +259,12 @@
                       >
                       <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient) ? 'line-through text-gray-400' : ''}`}>
                         
-                        {#if updatedServings === originalServings}
+                        {#if adjustMeasurement(ingredient) === null}
                           {ingredient}
 
                         {:else}
+                          {adjustMeasurement(ingredient)}
 
-                          {#if adjustMeasurement(ingredient) === null}
-                            {ingredient}
-
-                          {:else}
-                            {adjustMeasurement(ingredient)}
-
-                          {/if}
                         {/if}
 
                       </span>
@@ -287,14 +279,8 @@
                     class="cursor-pointer text-left select-none"
                       onclick={() => toggleItem(ingredient.name)}>
                       <span class={`font-medium transition-all duration-150 ${checkedItems.includes(ingredient.name) ? 'line-through text-gray-400' : ''}`}>
-                        {#if updatedServings === 4}
-                          {ingredient.name}: {ingredient.servingSize}g
-                          
-                          {:else}
-                          {ingredient.name}: {ingredient.servingSize * updatedServings/originalServings}g
-                          
-                          {/if}
-                        </span>
+                        {ingredient.name}: {ingredient.servingSize * updatedServings/originalServings}g
+                      </span>
                     </button>
                     </li>
                   {/each}
@@ -303,6 +289,7 @@
               </ul>
             </Card.Content>
           </div>
+
           <!-- Instructions Section -->
           <div class="flex-1 p-6">
             <Card.Header>
@@ -327,7 +314,7 @@
           </div>
         </Card.Root>
 
-        <!-- Diagrams & Comment Grid -->
+        <!-- Comment Grid -->
         <div class="grid grid-cols-4 gap-8 mb-8">
           <!-- Left Side: Comments -->
           <div class="col-span-3">

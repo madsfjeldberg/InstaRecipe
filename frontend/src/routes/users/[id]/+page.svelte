@@ -67,9 +67,11 @@
     
     
     const handleFollowEvent = async (updatedUser) => {
-        currentUser = updatedUser;
-        viewer = await userApi.getUserById(viewer.id)
-        viewerFollowingList = viewer.following;
+        if (updatedUser.id === currentUser.id) {   
+            currentUser = updatedUser;
+            viewer = await userApi.getUserById(viewer.id)
+            viewerFollowingList = viewer.following;
+        }
     }
 
     const disconnectFollowing = socket.on("following", handleFollowEvent);
