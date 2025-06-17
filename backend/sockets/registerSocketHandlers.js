@@ -12,8 +12,6 @@ export const registerSocketHandlers = (io) => {
         recipeViewsHandler(socket, io);
         followersHandler(socket, io);
 
-        socket.on("disconnect", () => {
-            console.log("A client has disconnected:", socket.id);
-        })
+        socket.on("disconnect", () => {})
     })
 }

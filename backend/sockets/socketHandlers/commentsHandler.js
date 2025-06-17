@@ -5,7 +5,6 @@ import recipeRepository from '../../repository/recipeRepository.js';
 
 export const commentsHandler = (socket, io) => {
     socket.on("new-comment", async (newComment) => {
-        console.log("comment recived:", newComment);
 
         const postedComment = await commentsRepository.postComment(newComment);
         
@@ -18,15 +17,11 @@ export const commentsHandler = (socket, io) => {
         };
 
         io.emit("new-comment", postedComment);
-        
-        console.log("comment emitted:", postedComment)
     })
 
 
 
     socket.on("new-comment-reply", async (newReply) => {
-        console.log("reply recived:", newReply);
-
         const postedCommentReply = await commentsRepository.postCommentReply(newReply);
         
         if(!newReply.replyParent) {
@@ -46,7 +41,5 @@ export const commentsHandler = (socket, io) => {
         }
 
         io.emit("new-comment-reply", postedCommentReply);
-        
-        console.log("reply emitted:", postedCommentReply);
     })
 }

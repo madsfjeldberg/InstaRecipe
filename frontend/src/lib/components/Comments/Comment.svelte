@@ -17,6 +17,9 @@
         
     const disconnect = socket.on("new-comment-reply", (commentReply) => {
         if(recipeId === commentReply.recipeId) {
+            // we need to fint the parent comment and add the reply to it
+            // we do this to avoid having to re-fetch all comments and getting instant feedback
+            // and to keep the replies nested under their parent comment
             comments = comments.map( (comment) => {
                 if(comment.id === commentReply.parentId) {
                     return {
@@ -48,7 +51,7 @@
     {#each comments as comment, index (comment.id || index)}
         
         <Separator class="my-4" />
-        <CommentCard className={"mt-4"} {comment} bind:commentToReplyToId {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
+        <CommentCard className={"mt-4"} {comment} {commentToReplyToId} {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
         
         {#if isDisplayingReplyDialog && commentToReplyToId === comment.id}
             <CommentReply bind:isDisplayingReplyDialog parentComment={comment}/>
@@ -56,7 +59,7 @@
         
         {#if comment.replies && comment.replies.length > 0}
             {#each comment.replies as reply (reply.id) }
-                <CommentCard className={"w-3/4 mt-2"} comment={reply} bind:commentToReplyToId {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
+                <CommentCard className={"w-3/4 mt-2"} comment={reply} {commentToReplyToId} {isDisplayingReplyDialog} onShowReplyBox={showReplyBox}/>
                 {#if isDisplayingReplyDialog && commentToReplyToId === reply.id}
                     <CommentReply bind:isDisplayingReplyDialog parentComment={comment} replyParent={reply}/>
                 {/if}

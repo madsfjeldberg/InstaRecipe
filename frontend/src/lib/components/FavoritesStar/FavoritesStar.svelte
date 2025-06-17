@@ -8,7 +8,7 @@
 
     import recipelistApi from '$lib/api/recipelistApi.js';
     
-    const { favoritesRecipeList = $bindable(), recipe } = $props();
+    let { favoritesRecipeList = $bindable(), recipe } = $props();
 
 
     const isAddedToFavoritesRecipeList = async (event) => {
@@ -58,9 +58,15 @@
 
 
     const removeFromFavoritesList = async (recipeToRemove) => {
-        favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter(
-            (recipe) => recipe.id !== recipeToRemove.id,
-        );
+        // favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter(
+        //     (recipe) => recipe.id !== recipeToRemove.id,
+        // );
+        favoritesRecipeList = {
+            ...favoritesRecipeList,
+            recipes: favoritesRecipeList.recipes.filter(
+                (recipe) => recipe.id !== recipeToRemove.id,
+            ),
+        };
 
         try{
             await recipelistApi.removeRecipeFromFavoritesList(
