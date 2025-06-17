@@ -26,7 +26,7 @@
     
     let viewerState = $state(viewer || null);
     let viewerSelectedListState = $state(currentUserRecipeLists ? currentUserRecipeLists[0] : null);
-    let viewerFavoritesRecipeListState = $state(viewerFavoritesRecipeList || []);
+    let viewerFavoritesRecipeListState = $state(viewerFavoritesRecipeList || null);
     let viewerFollowingListState = $state(viewerFollowingList || []);
 
     let isFollowingState = $state(isFollowing || false);

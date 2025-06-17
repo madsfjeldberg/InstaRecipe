@@ -103,12 +103,20 @@
                         <p>{filteredUser.username}</p>
                     </button>
                     
-                    {#if filteredUser.id !== viewer.id}
+                <!-- i dont want to be able to follow myself when searching -->
+                    {#if viewer && viewer.id !== filteredUser.id }
                         {#if viewerFollowingList && viewerFollowingList.some( (followingUser) => followingUser.id === filteredUser.id)}
                             <UnfollowButton parentUser={filteredUser}/>
                         {:else}
                             <FollowButton parentUser={filteredUser}/>
                         {/if}
+                            
+                    {:else}
+
+                        {#if !viewer}
+                            <FollowButton parentUser={filteredUser}/>
+                        {/if}
+
                     {/if}
                 </div>
             {/each}
