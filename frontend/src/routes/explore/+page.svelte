@@ -4,7 +4,7 @@
   import { blur } from 'svelte/transition';
 
   import { LoaderCircle } from 'lucide-svelte';
-  import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+  import RecipeCard from '$lib/components/Recipe/RecipeCard/RecipeCard.svelte';
   import Separator from '$lib/components/ui/separator/separator.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
   

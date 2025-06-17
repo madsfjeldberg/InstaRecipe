@@ -13,15 +13,15 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import Badge from '$lib/components/ui/badge/badge.svelte';
 
-    import Comment from '$lib/components/Comments/Comment.svelte';
-    import CommentInput from '$lib/components/Comments/CommentInput.svelte';
-    import RecipeViews from '$lib/components/RecipePopularity/RecipeViews.svelte';
-    import LikeDislikeButtonsCombined from '$lib/components/RecipePopularity/LikeDislikeButtonsCombined.svelte';
-    import ServingsInput from '$lib/components/ServingsInput/ServingsInput.svelte';
-    import FavoritesStar from '$lib/components/FavoritesStar/FavoritesStar.svelte';
+    import Comment from '$lib/components/Recipe/Comments/Comment.svelte';
+    import CommentInput from '$lib/components/Recipe/Comments/CommentInput.svelte';
+    import RecipeViews from '$lib/components/Recipe/RecipePopularity/RecipeViews.svelte';
+    import LikeDislikeButtonsCombined from '$lib/components/Recipe/RecipePopularity/LikeDislikeButtonsCombined.svelte';
+    import ServingsInput from '$lib/components/Recipe/ServingsInput/ServingsInput.svelte';
+    import FavoritesStar from '$lib/components/Recipe/RecipePopularity/FavoritesStar/FavoritesStar.svelte';
     import DoughnutChart from '$lib/components/ChartJs/DoughnutChart.svelte';
     import BarChart from '$lib/components/ChartJs/BarChart.svelte';
-    import RecipeNutritionTable from '$lib/components/RecipeNutritionTable/RecipeNutritionTable.svelte';
+    import RecipeNutritionTable from '$lib/components/Recipe/RecipeNutritionTable/RecipeNutritionTable.svelte';
     
     import { handleLike, handleDislike } from '$lib/utils/recipeLikes.js';
 

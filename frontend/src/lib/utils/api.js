@@ -45,7 +45,7 @@ const fetchWithAuth = async (url, options) => {
             console.error(error);
             updateAuthState(null, null);
             toast.error("Session expired. Please log in again.");
-            goto("/login");
+            goto("/auth/login");
             throw new Error("Unauthorized");
         }
     }

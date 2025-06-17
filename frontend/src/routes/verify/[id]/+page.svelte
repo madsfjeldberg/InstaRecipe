@@ -47,6 +47,6 @@
   {:else}
     <h1 class="font-bold text-3xl text-center text-red-600">Verification failed</h1>
     <p class="mt-4 text-center dark:text-gray-200">{message}</p>
-    <a href="/login" class="mt-4 text-blue-600 hover:underline">Go to login</a>
+    <a href="/auth/login" class="mt-4 text-blue-600 hover:underline">Go to login</a>
   {/if}
 </div>

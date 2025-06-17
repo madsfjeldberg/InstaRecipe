@@ -9,12 +9,12 @@
   import Button from '$lib/components/ui/button/button.svelte';
   import Separator from '$lib/components/ui/separator/separator.svelte';
 
-  import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
-  import AddListDialog from '$lib/components/AddListDialog/AddListDialog.svelte';
-  import AddRecipeDialog from '$lib/components/AddRecipeDialog/AddRecipeDialog.svelte';
-  import DeleteListDialog from '$lib/components/DeleteListDialog/DeleteListDialog.svelte';
-  import EditListDialog from '$lib/components/EditListDialog/EditListDialog.svelte';
-  import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+  import RecipeListSelect from '$lib/components/RecipeList/RecipeListSelect/RecipeListSelect.svelte';
+  import AddListDialog from '$lib/components/RecipeList/AddListDialog/AddListDialog.svelte';
+  import AddRecipeDialog from '$lib/components/Recipe/AddRecipeDialog/AddRecipeDialog.svelte';
+  import DeleteListDialog from '$lib/components/RecipeList/DeleteListDialog/DeleteListDialog.svelte';
+  import EditListDialog from '$lib/components/RecipeList/EditListDialog/EditListDialog.svelte';
+  import RecipeCard from '$lib/components/Recipe/RecipeCard/RecipeCard.svelte';
 
   import recipeListApi from '$lib/api/recipelistApi.js';
   import tagsApi from '$lib/api/tagsApi.js';

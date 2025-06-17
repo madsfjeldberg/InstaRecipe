@@ -10,8 +10,8 @@
   import { Checkbox } from '$lib/components/ui/checkbox/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   
-  import UploadAvatarButton from '$lib/components/UploadAvatarButton/UploadAvatarButton.svelte';
-  import DeleteAccountDialog from '$lib/components/DeleteAccountDialog/DeleteAccountDialog.svelte';
+  import UploadAvatarButton from '$lib/components/User/UploadAvatarButton/UploadAvatarButton.svelte';
+  import DeleteAccountDialog from '$lib/components/User/DeleteAccountDialog/DeleteAccountDialog.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/ErrorMessage.svelte';
 
   import userApi from '$lib/api/userApi.js';
