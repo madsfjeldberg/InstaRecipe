@@ -18,59 +18,29 @@
 
     import { sortRecipeList } from '$lib/utils/recipeList.js';
 
+    const { data } = $props();
+    const { currentUser, currentUserRecipeLists, viewer, viewerFavoritesRecipeList, viewerFollowingList, isFollowing } = data;
 
-    const currentUserId = $page.params.id;
-    let currentUser = $state(null);
-    let currentUserRecipeLists = $state(null);
+    let currentUserState = $state(currentUser || null);
+    let currentUserRecipeListsState = $state(currentUserRecipeLists || []);
     
-    let viewer = $state(null);
-    let viewerSelectedList = $state(null);
-    let viewerFavoritesRecipeList = $state(null);
-    let viewerFollowingList = $state([]);
+    let viewerState = $state(viewer || null);
+    let viewerSelectedListState = $state(currentUserRecipeLists ? currentUserRecipeLists[0] : null);
+    let viewerFavoritesRecipeListState = $state(viewerFavoritesRecipeList || []);
+    let viewerFollowingListState = $state(viewerFollowingList || []);
 
-    let isLoading = $state(true);
-    let isFollowing = $state(false);
+    let isFollowingState = $state(isFollowing || false);
     let isShowingFollowersModal = $state(false);
     let isShowingFollowingModal = $state(false);
 
 
-
-    onMount(async () => {
-        try {
-            currentUser = await userApi.getUserById(currentUserId);
-            currentUserRecipeLists = await recipeListApi.getRecipeListsByUserId(currentUserId);
-            currentUserRecipeLists = sortRecipeList(currentUserRecipeLists);
-            viewerSelectedList = currentUserRecipeLists[0];
-
-            if(!$user) {
-                return;
-            }
-
-            viewer = await userApi.getUserById($user.id);
-            const viewerRecipeLists = await recipeListApi.getRecipeListsByUserId(viewer.id);
-            viewerFavoritesRecipeList = viewerRecipeLists.find( (list) => list.name === "Favorites" );
-            viewerFollowingList = viewer.following;
-            
-            if(currentUser.followers.length === 0 || !viewer) {
-                isFollowing = false;
-                return;
-            }
-
-            isFollowing = currentUser.followers.some((follower) => follower.id === viewer.id);
-            
-        } catch (error) {
-            console.error(error);
-        } finally {
-            isLoading = false;
-        }
-    });
     
     
     const handleFollowEvent = async (updatedUser) => {
-        if (updatedUser.id === currentUser.id) {   
-            currentUser = updatedUser;
-            viewer = await userApi.getUserById(viewer.id)
-            viewerFollowingList = viewer.following;
+        if (updatedUser.id === currentUserState.id) {   
+            currentUserState = updatedUser;
+            viewerState = await userApi.getUserById(viewerState.id)
+            viewerFollowingListState = viewerState.following;
         }
     }
 
@@ -86,54 +56,49 @@
 
 
     const handleToggleFollowButton = () => {
-        isFollowing = !isFollowing;
+        isFollowingState = !isFollowingState;
     }
 </script>
 
-{#if isLoading}
-    <div class="flex items-center justify-center min-h-screen">
-        <LoaderCircle class="animate-spin h-16 w-16" />
-        <h1 class="text-2xl font-semibold">Loading...</h1>
-    </div>
-{/if}
 
-{#if currentUser}
+
+{#if currentUserState}
     <div class="flex flex-col items-center mt-12 space-y-6">
 
         <!-- Profile picture + username -->
-        {#if currentUser.avatarUrl}
-            <img class="rounded-full w-28 h-28 object-cover" src={currentUser.avatarUrl} alt="User Avatar"> 
+        {#if currentUserState.avatarUrl}
+            <img class="rounded-full w-28 h-28 object-cover" src={currentUserState.avatarUrl} alt="User Avatar"> 
         {:else}
             <CircleUser class="w-28 h-28 rounded-full text-gray-400" />
         {/if}
 
         <div class="flex flex-col items-center">
-            <h1 class="text-3xl font-semibold mt-4">{currentUser.username}</h1>
+            <h1 class="text-3xl font-semibold mt-4">{currentUserState.username}</h1>
         </div>
 
         <!-- Stats: followers / following -->
         <div class="flex space-x-8 text-center">
-            <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowingList}/>
-            <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowingList}/>
+            <FollowModal topLevelUserId={currentUserState.id} noOfUsers={currentUserState.followers.length} label={"followers"} parentUserList={currentUserState.followers} viewerFollowingList={viewerFollowingListState}/>
+            <FollowModal topLevelUserId={currentUserState.id} noOfUsers={currentUserState.following.length} label={"following"} parentUserList={currentUserState.following} viewerFollowingList={viewerFollowingListState}/>
         </div>
 
         <div class="flex gap-6">
             <!-- Follow / Unfollow button -->
-            {#if viewer}
+            {#if viewerState}
 
-                {#if currentUser.id !== viewer.id} 
-                    {#if isFollowing}
-                        <UnfollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                {#if currentUserState.id !== viewerState.id} 
+                    {#if isFollowingState}
+                        <UnfollowButton bind:parentUser={currentUserState} onToggleFollowButton={handleToggleFollowButton} />
                     {:else}
-                        <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />
+                        <FollowButton bind:parentUser={currentUserState} onToggleFollowButton={handleToggleFollowButton} />
                     {/if}
                 {/if}
 
             {:else}
-                <FollowButton bind:parentUser={currentUser} onToggleFollowButton={handleToggleFollowButton} />  
+                <FollowButton bind:parentUser={currentUserState} onToggleFollowButton={handleToggleFollowButton} />  
             {/if}
 
-            <RecipeListSelect user={currentUser} bind:recipeLists={currentUserRecipeLists} bind:selectedList={viewerSelectedList}/>
+            <RecipeListSelect user={currentUserState} bind:recipeLists={currentUserRecipeListsState} bind:selectedList={viewerSelectedListState}/>
         </div>
 
     </div>
@@ -142,16 +107,16 @@
     <Separator class="mt-4 mb-6 h-[2px]" />
 
 
-    {#if viewerSelectedList}    
-        {#if viewerSelectedList.recipes.length > 0}
+    {#if viewerSelectedListState}    
+        {#if viewerSelectedListState.recipes.length > 0}
             <div class="grid grid-cols-3 gap-4 mt-4">
-                {#each viewerSelectedList.recipes as recipe (recipe.id)}
-                    <RecipeCard {recipe} bind:selectedList={viewerSelectedList} bind:favoritesRecipeList={viewerFavoritesRecipeList} parentUser={currentUser}/>
+                {#each viewerSelectedListState.recipes as recipe (recipe.id)}
+                    <RecipeCard {recipe} bind:selectedList={viewerSelectedListState} bind:favoritesRecipeList={viewerFavoritesRecipeListState} parentUser={currentUserState}/>
                 {/each}
             </div>
 
         {:else}
-            <h3 class="flex justify-center">{viewerSelectedList.name} is empty, no recipes found...</h3>
+            <h3 class="flex justify-center">{viewerSelectedListState.name} is empty, no recipes found...</h3>
 
         {/if}
     {/if}
