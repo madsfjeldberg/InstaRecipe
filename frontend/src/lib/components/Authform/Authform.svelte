@@ -7,8 +7,12 @@
   import Loginform from '../Loginform/Loginform.svelte';
   import Registerform from '../Registerform/Registerform.svelte';
 
-  const { returnTo } = $props();
+  const { returnTo, isRegister } = $props();
   let loginMode = $state(true);
+
+  if(isRegister) {
+    loginMode = false;
+  }
 
   const handleToggleAuthMode = () => {
     loginMode = !loginMode;

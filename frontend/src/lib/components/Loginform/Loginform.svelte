@@ -55,7 +55,7 @@
 
       updateAuthState(data, accessToken);
       
-      goto(returnTo);
+      goto(returnTo ? returnTo : '/explore');
       toast.success('Login successful!');
       
     } catch (error) {
