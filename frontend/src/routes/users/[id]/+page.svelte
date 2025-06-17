@@ -113,11 +113,6 @@
 
         <!-- Stats: followers / following -->
         <div class="flex space-x-8 text-center">
-            <!-- when inside modal the "logged in" viewer becomes the parentUser / current user, 
-             when follow/unfollow the emitted object will now become the viewer, instead of the actual userprofile we are looking at. 
-             Solution: 
-             add the currentUser as a prop to the FollowModal component, so we can emit the correct user object
-             -->
             <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.followers.length} label={"followers"} parentUserList={currentUser.followers} {viewerFollowingList}/>
             <FollowModal topLevelUserId={currentUser.id} noOfUsers={currentUser.following.length} label={"following"} parentUserList={currentUser.following} {viewerFollowingList}/>
         </div>
