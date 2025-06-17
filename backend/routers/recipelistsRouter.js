@@ -59,21 +59,11 @@ router.post("/api/recipelists", authMiddleware.authenticateToken, async (req, re
   }
 });
 
-router.post("/api/recipelists/:listId/recipe/:recipeId", authMiddleware.authenticateToken, async (req, res) => {
-  try {
-    const updatedList = await recipeListRepository.addRecipeToFavoritesList(req.params.listId, req.params.recipeId);
-    res.send({ data: updatedList });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ errorMessage: "Server Error. Error adding recipe to stared list" });
-  }  
-});
 
 router.put("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
   const { listId } = req.params;
   const { name, isPrivate } = req.body;
-
+  
   if (!listId || !name || isPrivate === undefined) {
     return res.status(400).send({ errorMessage: "List ID, name, and visibility are required" });
   }
@@ -86,12 +76,28 @@ router.put("/api/recipelists/:listId", authMiddleware.authenticateToken, async (
         recipes: true
       }
     });
-
+    
     res.send({ data: updatedRecipeList });
   } catch (error) {
     console.error("Error updating recipe list:", error);
     res.status(500).send({ errorMessage: "Could not update name/privacy settings on recipe list with id: " + listId });
   }
+});
+
+router.patch("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
+
+  if(!req.params.listId, !req.body.recipeId) {
+    return res.status(401).send({ errorMessage: "Must include both listId and recipeId"});
+  }
+
+  try {
+    const updatedList = await recipeListRepository.addRecipeToFavoritesList(req.params.listId, req.body.recipeId);
+    res.send({ data: updatedList });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errorMessage: "Server Error. Error adding recipe to stared list" });
+  }  
 });
 
 router.delete("/api/recipelists/:listId/recipe/:recipeId", authMiddleware.authenticateToken, async (req, res) => {

@@ -27,8 +27,8 @@ const addRecipeList = async (name, userId) => {
 
 const addRecipeToFavoritesRecipeList = async (favoritesListId, recipeId) => {
   try {
-    const option = makeOption("POST");
-    const response = await fetchWithAuth(BASE_URL + "/" + favoritesListId + "/recipe/" + recipeId, option);
+    const option = makeOption("PATCH", {recipeId});
+    const response = await fetchWithAuth(BASE_URL + "/" + favoritesListId, option);
     
     return await handleResponse(response);
     
