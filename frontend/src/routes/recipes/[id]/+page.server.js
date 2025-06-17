@@ -1,7 +1,10 @@
+import { error } from '@sveltejs/kit'; 
+
 import recipeApi from '$lib/api/recipeApi.js';
 import commentsApi from '$lib/api/commentsApi.js';
 import recipeListApi from '$lib/api/recipelistApi.js';
-import { error } from '@sveltejs/kit'; // For throwing HTTP errors
+
+
 
 export async function load({ params, locals }) {
     const recipeId = params.id;

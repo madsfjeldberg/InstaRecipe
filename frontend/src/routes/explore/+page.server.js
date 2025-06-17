@@ -1,6 +1,8 @@
 import recipeApi from "$lib/api/recipeApi";
 import recipeListApi from "$lib/api/recipelistApi";
 
+
+
 export async function load({ locals }) {
 
     let favoritesRecipeList = null;
@@ -16,6 +18,7 @@ export async function load({ locals }) {
 
     } catch (error) {
         console.error("Error loading recipes:", error);
+        throw error(500, 'Could not load recipe lists. Please try again later.');
     }
 
     return {

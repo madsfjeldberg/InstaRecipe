@@ -1,6 +1,11 @@
+import { error } from '@sveltejs/kit';
+
 import userApi from '$lib/api/userApi.js';
 import recipeListApi from '$lib/api/recipelistApi.js';
+
 import { sortRecipeList } from '$lib/utils/recipeList.js'; // Assuming this can be imported on server
+
+
 
 export async function load({ params, locals }) {
     const currentUserId = params.id;
@@ -29,6 +34,7 @@ export async function load({ params, locals }) {
 
     } catch (error) {
         console.error("Error fetching data on server:", error);
+        throw error(500, 'Could not load recipe lists. Please try again later.');
     }
 
 
