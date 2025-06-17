@@ -153,7 +153,12 @@ router.delete("/api/users", authMiddleware.authenticateToken, async (req, res) =
     await prisma.recipe.deleteMany({
       where: {
         recipeLists: {
-          some: { id: { in: listIds } },
+          some: { 
+            id: { in: listIds },
+            name: {
+              not: "Favorites",
+            },
+           },
         },
       },
     });
