@@ -61,12 +61,6 @@
         favoritesRecipeList.recipes = favoritesRecipeList.recipes.filter(
             (recipe) => recipe.id !== recipeToRemove.id,
         );
-        // favoritesRecipeList = {
-        //     ...favoritesRecipeList,
-        //     recipes: favoritesRecipeList.recipes.filter(
-        //         (recipe) => recipe.id !== recipeToRemove.id,
-        //     ),
-        // };
 
         try{
             await recipelistApi.removeRecipeFromFavoritesList(
