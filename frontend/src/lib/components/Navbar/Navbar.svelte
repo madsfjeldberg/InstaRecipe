@@ -71,7 +71,7 @@
             <span class="sr-only">InstaRecipe</span>
           </a>
           <Navlink href="/explore" class="text-muted-foreground hover:text-foreground"> Explore </Navlink>
-          <Navlink href="/recipes" class="text-muted-foreground hover:text-foreground"> Recipes </Navlink>
+          <Navlink href="/users/recipes" class="text-muted-foreground hover:text-foreground"> Recipes </Navlink>
           <Navlink href="/settings/general" class="hover:text-foreground"> Settings </Navlink>
         </nav>
       </Sheet.Content>
