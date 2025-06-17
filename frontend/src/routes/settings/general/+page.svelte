@@ -17,8 +17,8 @@
   import userApi from '$lib/api/userApi.js';
 
   const { data } = $props();
-  let { user } = data;
-  let username = $state(user.username);
+  let user = $state(data.user);
+  let username = $state(data.user.username);
   let password = $state("");
   let confirmPassword = $state("");
   let changeUsernameLoading = $state(false);
@@ -200,7 +200,7 @@
   </Card.Content>
   <Card.Footer>
     <div class="flex gap-4">
-      <UploadAvatarButton {user} />
+      <UploadAvatarButton bind:user />
     </div>
   </Card.Footer>
 </Card.Root>

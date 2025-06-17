@@ -5,10 +5,10 @@
   import Button from '../../ui/button/button.svelte';
 
   import userApi from '$lib/api/userApi.js';
-  import { user as UserStore } from '../../../../stores/authStore.js';
+  import { user as userStore } from '../../../../stores/authStore.js';
 
 
-  let { user } = $props();
+  let { user = $bindable() } = $props();
 
   let browseInput = $state(null);
   let files = $state(null);
@@ -35,7 +35,9 @@
     isUploading = true;
     try {
       const updatedUser = await userApi.uploadAvatar(user.id, formData);
-      UserStore.update(currentUser => {
+      user = updatedUser; 
+      
+      userStore.update(currentUser => {
         return { ...currentUser, avatarUrl: updatedUser.avatarUrl };
       });
       toast.success("Avatar successfully uploaded!");
