@@ -68,7 +68,7 @@ model Comment {
   user   User   @relation("Author", fields: [userId], references: [id])
 
   recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   // Self-referencing relation for nested comments
   parentId String? // nullable if it's a root comment
