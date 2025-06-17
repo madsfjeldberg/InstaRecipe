@@ -40,35 +40,32 @@ const uploadUserAvatar = async (file) => {
     try {
         const bucketId = process.env.BACKBLAZE_BUCKET_ID;
 
-        // 1. Generate a unique file name to prevent collisions.
-        // We use the original file's extension.
+        // Generate a unique file name to prevent collisions.
         const fileExtension = path.extname(file.originalname);
         const fileName = `${uuidv4()}${fileExtension}`;
 
-        // 2. Authorize with B2.
         await b2Client.authorize();
 
-        // 3. Get the upload URL.
         const uploadUrlResponse = await b2Client.getUploadUrl({
             bucketId,
         });
 
-        // 4. Upload the file directly from the buffer.
+        // upload the file directly from the buffer, to the upload url fetched before
         await b2Client.uploadFile({
             uploadUrl: uploadUrlResponse.data.uploadUrl,
             uploadAuthToken: uploadUrlResponse.data.authorizationToken,
             fileName,
             data: file.buffer, // Use the buffer directly from the file object
-            mime: file.mimetype, // Use the mimetype from the file object
+            mime: file.mimetype, 
         });
 
-        // 5. Construct and return the final public URL.
+        // public URL.
         const b2ImagePath = `${process.env.BACKBLAZE_IMAGE_URL_PREFIX}/${fileName}`;
         return b2ImagePath;
 
     } catch (error) {
         console.error("Error uploading avatar to B2:", error);
-        throw error; // Re-throw the error to be handled by the calling route
+        throw error;
     }
 };
 
