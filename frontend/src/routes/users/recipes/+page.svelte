@@ -37,7 +37,8 @@
     // Fetch the initial recipe list when the component mounts
     try {
       recipeLists = await recipeListApi.getRecipeListsByUserId(userId);
-      
+      favoritesRecipeList = recipeLists.find(list => list.name === "Favorites");
+
     } catch(error) {
       toast.error(error.message + "\nTry again later");
       return;
