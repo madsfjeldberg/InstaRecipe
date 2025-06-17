@@ -129,13 +129,13 @@
 
 <div class="p-4 flex flex-col items-center">
     {#if isError}
-    <div class="flex flex-col items-center justify-center h-screen">
-      Error loading recipe. Please try again later.
-      <Button onclick={() => history.back()} class="mt-4"> 
-        <ArrowLeft class="mr-2"/>
-        Go back
-      </Button>
-    </div> 
+      <div class="flex flex-col items-center justify-center h-screen">
+        Error loading recipe. Please try again later.
+        <Button onclick={() => history.back()} class="mt-4"> 
+          <ArrowLeft class="mr-2"/>
+          Go back
+        </Button>
+      </div> 
 
   {:else if recipe}
       <!-- Header & Image -->

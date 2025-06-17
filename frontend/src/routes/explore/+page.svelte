@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import { blur } from 'svelte/transition';
 
-  import { LoaderCircle } from 'lucide-svelte';
+  import { LoaderCircle, ArrowLeft } from 'lucide-svelte';
   import RecipeCard from '$lib/components/Recipe/RecipeCard/RecipeCard.svelte';
   import Separator from '$lib/components/ui/separator/separator.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
@@ -14,32 +14,9 @@
   const { data } = $props();
   const { user } = data;
   
-  let loading = $state(true);
-  let recipes = $state([]);
-  let favoritesRecipeList = $state(null);
-
-  onMount(async () => {
-    loading = true;
-    try {
-      recipes = await recipeApi.getAllRecipes();
-      
-      if(!user) {
-        return;
-      }
-
-      const recipeLists = await recipeListApi.getRecipeListsByUserId(user.id);
-
-      if (recipeLists.length > 0) {
-        favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites");
-      } 
-
-    } catch (error) {
-      console.error("Error fetching recipes:", error);
-      
-    } finally {
-      loading = false;
-    }
-  });
+  let isError = $state(!data.recipes);
+  let recipes = $state(data.recipes);
+  let favoritesRecipeList = $state(data.favoritesRecipeList);
 
 </script>
 
@@ -56,11 +33,14 @@
     
   {/if}
 
-  {#if loading}
-    <!-- still loading: show spinner -->
-    <div class="flex justify-center items-center h-64">
-      <LoaderCircle class="animate-spin h-16 w-16" />
-    </div>
+  {#if isError}
+    <div class="flex flex-col items-center justify-center h-screen">
+      Error loading recipe. Please try again later.
+      <Button onclick={() => history.back()} class="mt-4"> 
+        <ArrowLeft class="mr-2"/>
+        Go back
+      </Button>
+    </div> 
   {:else}
     <!-- only *this* block gets mounted when loading → false -->
     <div 
