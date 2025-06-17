@@ -39,7 +39,7 @@
     event.stopPropagation();
     
     if(!$user) {
-      toast.error("You have to login/register to like this recipe.");
+      toast.error("You have to login/register to dislike this recipe.");
       return;
     }
 
