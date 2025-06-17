@@ -60,7 +60,7 @@
   <Card.Header class="p-0">
     <img
       src={image || '/recipe-image-placeholder.png'}
-      alt=""
+      alt={(recipe.name) + ' image'} 
       class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
     />
     <Card.Title class="ml-4 text-xl mr-2 line-clamp-2 min-h-16">{name}</Card.Title>

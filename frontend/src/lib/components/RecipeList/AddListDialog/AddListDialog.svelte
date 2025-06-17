@@ -10,6 +10,7 @@
   import { isAuthenticated, user } from '../../../../stores/authStore.js';
   
   import recipeListApi from '$lib/api/recipelistApi.js';
+    import { toast } from 'svelte-sonner';
 
   let { recipeLists = $bindable(), selectedList = $bindable(), onSortRecipeList } = $props();
 
@@ -46,6 +47,8 @@
       recipeLists = onSortRecipeList(updatedList); // Ensure the new list is sorted in the ui
       // CLOSE DIALOG HERE
       isDialogOpen = false;
+
+      toast.success("List created successfully!");
       
     } catch (error) {
       if (error instanceof z.ZodError) {
