@@ -2,8 +2,6 @@ import 'dotenv/config';
 
 import { Router } from 'express';
 
-import authMiddleware from '../middleware/authMiddleware.js';
-
 import auth from '../util/auth.js';
 import emailService from '../util/email.js';
 
@@ -89,7 +87,7 @@ router.post("/api/auth/register", async (req, res) => {
 
 
 
-router.post("/api/auth/login", authMiddleware.isAuthenticated, async (req, res) => {
+router.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
