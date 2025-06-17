@@ -9,7 +9,7 @@ const redis = await createClient({
     port: process.env.REDIS_DEV_PORT
   }
 })
-.connect(console.log("Redis client has been connected to Redis Cloud"))
+.connect()
 .catch(console.error);
 
 export default redis;

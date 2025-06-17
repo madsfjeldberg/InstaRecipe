@@ -61,6 +61,4 @@ const io = new Server(httpServer, {
 registerSocketHandlers(io);
 
 const PORT = process.env.PORT || 9000;
-httpServer.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
+httpServer.listen(PORT);
