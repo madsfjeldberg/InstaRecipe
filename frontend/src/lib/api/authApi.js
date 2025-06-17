@@ -9,7 +9,8 @@ const BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const verifyEmail = async (userId) => {
   try {
-    const response = await fetch(BASE_URL + "/verify/" + userId);
+    const postOption = makeOption("POST");
+    const response = await fetch(BASE_URL + "/verify/" + userId, postOption);
     
     return await handleResponse(response);
 

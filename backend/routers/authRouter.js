@@ -22,7 +22,7 @@ const cookieOptions = {
 };
 
 
-router.get("/api/auth/verify/:id", async (req, res) => {
+router.post("/api/auth/verify/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
