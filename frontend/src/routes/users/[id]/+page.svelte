@@ -4,11 +4,11 @@
 
     import { LoaderCircle, CircleUser } from 'lucide-svelte';
     import { Separator } from '$lib/components/ui/separator';
-    import FollowButton from '$lib/components/Follow/FollowButton.svelte';
-    import UnfollowButton from '$lib/components/Follow/UnfollowButton.svelte';
-    import FollowModal from '$lib/components/Follow/FollowModal.svelte';
-    import RecipeListSelect from '$lib/components/RecipeListSelect/RecipeListSelect.svelte';
-    import RecipeCard from '$lib/components/RecipeCard/RecipeCard.svelte';
+    import FollowButton from '$lib/components/User/Follow/FollowButton.svelte';
+    import UnfollowButton from '$lib/components/User/Follow/UnfollowButton.svelte';
+    import FollowModal from '$lib/components/User/Follow/FollowModal.svelte';
+    import RecipeListSelect from '$lib/components/RecipeList/RecipeListSelect/RecipeListSelect.svelte';
+    import RecipeCard from '$lib/components/Recipe/RecipeCard/RecipeCard.svelte';
     
     import { user } from '../../../stores/authStore.js';
     import { socket } from '../../../stores/socketStore.js';

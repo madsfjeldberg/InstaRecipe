@@ -24,7 +24,7 @@
     </p>
     <div class="mt-8 flex justify-center gap-4">
       <Button onclick={() => goto("/explore")} size="lg">Explore Recipes</Button>
-      <Button onclick={() => goto("/register")} variant="outline" size="lg">Get Started</Button>
+      <Button onclick={() => goto("/auth/register")} variant="outline" size="lg">Get Started</Button>
     </div>
 
     <Separator class="my-16" />

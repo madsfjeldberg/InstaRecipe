@@ -37,7 +37,7 @@ const sendPasswordResetEmail = (to, token) => {
   const html = `
     <h1>Reset your password</h1>
     <p>Click the link below to reset your password:</p>
-    <a href="${FRONTEND_URL}/login/reset-password/${token}">Reset Password</a>
+    <a href="${FRONTEND_URL}/auth/reset-password/${token}">Reset Password</a>
   `;
   return sendEmail(to, subject, html);
 }
