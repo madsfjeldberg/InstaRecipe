@@ -34,58 +34,27 @@
     import recipeListApi from '$lib/api/recipelistApi.js';
 
 
+    const { data } = $props();
+   
+    let recipe = $state(data.recipe);
+    let comments = $state(data.comments);
+    let updatedServings = $state(recipe.servings);
+    let originalServings = $state(recipe.servings);
+    let updatedIngredientsList = $state(recipe.ingredientsList);
+    let originalIngredientsList = $state(recipe.ingredientsList.map(ingredient => ({ ...ingredient })));
+
+    let checkedItems = $state([]); 
+    let steps = $state(recipe.instructions.split(/\d+\.\s/).filter(step => step.trim()));
+    let likes = $state(recipe.likes);
+    let dislikes = $state(recipe.dislikes);
+    let totalViews = $state(recipe.totalViews);
+
+    // isLoading can be true if recipe is null (e.g. error from server)
+    let isError = $state(!recipe); 
+    let isGroceryListGenerating = $state(false);
     
-    let recipe = $state(null);
-    let comments = $state([]);
-    let updatedServings = $state();
-    let originalServings = $state();
-    let updatedIngredientsList = $state([]);
-    let originalIngredientsList = $state([]);
-
-    let checkedItems = $state([]);
-    let steps = $state([]);
-    let likes = $state([]);
-    let dislikes = $state([]);
-    let totalViews = $state();
-    
-    let isLoading = $state(true);
-    let isGroceryListGenerating = $state(false)
-    let recipeId = $state(null);
-    
-    let favoritesRecipeList = $state(null)
-
-
-    onMount( async () => {
-      if($user) {
-        const recipeLists = await recipeListApi.getRecipeListsByUserId($user.id);
-        favoritesRecipeList = recipeLists.find( (list) => list.name === "Favorites" );
-      }
-
-      recipeId = $page.params.id;
-
-      isLoading = true;
-      try {
-        recipe = await recipeApi.getRecipeById(recipeId);
-        updatedServings = recipe.servings;
-        originalServings = updatedServings;
-        
-        updatedIngredientsList = recipe.ingredientsList;
-        originalIngredientsList = recipe.ingredientsList.map(ingredient => ({ ...ingredient }));
-
-        steps = recipe.instructions.split(/\d+\.\s/).filter(step => step.trim());
-        comments = await commentsApi.getCommentsByRecipeId(recipeId);
-      
-        likes = recipe.likes;
-        dislikes = recipe.dislikes;
-        totalViews = recipe.totalViews;
-
-      } catch (error) {
-        toast.error("Could not load recipe, try again later. " + error.meesage );
-
-      } finally {
-        isLoading = false;
-      }
-    })
+    // logged in users favorites list
+    let favoritesRecipeList = $state(data.favoritesRecipeList);
   
 
 
@@ -159,12 +128,16 @@
 </svelte:head>
 
 <div class="p-4 flex flex-col items-center">
-    {#if isLoading}
+    {#if isError}
     <div class="flex flex-col items-center justify-center h-screen">
-      <Stretch size="60" color="#105e7f" /><span>Loading...</span>
-    </div>
+      Error loading recipe. Please try again later.
+      <Button onclick={() => history.back()} class="mt-4"> 
+        <ArrowLeft class="mr-2"/>
+        Go back
+      </Button>
+    </div> 
 
-    {:else if recipe}
+  {:else if recipe}
       <!-- Header & Image -->
        <div class="flex justify-start w-full mb-4">
         <Button variant="ghost" class="flex items-center hover:bg-primary hover:text-secondary" onclick={() => history.back()}>
@@ -180,8 +153,8 @@
             <Badge>{recipe.category.name}</Badge>
           </div>
           <div class="col-span-1 flex justify-end items-center gap-3">
-            <RecipeViews {totalViews} {recipeId} />
-            <LikeDislikeButtonsCombined bind:likes bind:dislikes {recipeId}/>
+            <RecipeViews {totalViews} recipeId={recipe.id} />
+            <LikeDislikeButtonsCombined bind:likes bind:dislikes recipeId={recipe.id}/>
             <FavoritesStar bind:favoritesRecipeList {recipe} />
           </div>
           <div>

@@ -2,8 +2,10 @@
     import { onMount, onDestroy } from 'svelte';
     import { page } from '$app/stores';
 
-    import { LoaderCircle, CircleUser } from 'lucide-svelte';
+    import { LoaderCircle, CircleUser, ArrowLeft } from 'lucide-svelte';
     import { Separator } from '$lib/components/ui/separator';
+    import Button from '$lib/components/ui/button/button.svelte';
+
     import FollowButton from '$lib/components/User/Follow/FollowButton.svelte';
     import UnfollowButton from '$lib/components/User/Follow/UnfollowButton.svelte';
     import FollowModal from '$lib/components/User/Follow/FollowModal.svelte';
@@ -121,4 +123,13 @@
         {/if}
     {/if}
 
+
+{:else}
+    <div class="flex flex-col items-center justify-center h-screen">
+      Error loading recipe. Please try again later.
+      <Button onclick={() => history.back()} class="mt-4"> 
+        <ArrowLeft/>
+        Go back
+      </Button>
+    </div> 
 {/if}
