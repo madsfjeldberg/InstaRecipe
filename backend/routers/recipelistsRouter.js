@@ -86,7 +86,7 @@ router.put("/api/recipelists/:listId", authMiddleware.authenticateToken, async (
 
 router.patch("/api/recipelists/:listId", authMiddleware.authenticateToken, async (req, res) => {
 
-  if(!req.params.listId, !req.body.recipeId) {
+  if(!req.params.listId && !req.body.recipeId) {
     return res.status(401).send({ errorMessage: "Must include both listId and recipeId"});
   }
 
