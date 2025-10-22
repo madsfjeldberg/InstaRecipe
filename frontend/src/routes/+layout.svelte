@@ -18,7 +18,6 @@
 
   let { data, children } = $props();
   
-  
   onMount(() => {
     // on mount, update auth state
     // this makes sure the correct state is set when page is refreshed
